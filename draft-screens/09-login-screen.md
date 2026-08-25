@@ -9,7 +9,7 @@ Design reference: [`design/design.pen`](../design/design.pen), node `bi8Au`
 Staff authentication entry point for the admin console. Single form, no
 role branching at this stage — `OWNER` and `TELLER` share the same login
 screen; role determines what they see after signing in (see
-[RBAC](05-rbac.md)).
+[RBAC](../spec/05-rbac.md)).
 
 ## Layout
 
@@ -34,7 +34,7 @@ Two-panel, full-bleed (1440×1024 desktop reference):
 | Help row | "Forgot your password? Contact your admin to reset it." |
 
 **Phone number, not email** — matches the data model
-([`User.phone`](02-data-model.md#user) is the login identifier; there is
+([`User.phone`](../spec/02-data-model.md#user) is the login identifier; there is
 no email field), so password recovery is admin-mediated rather than a
 self-service email reset link.
 
@@ -52,7 +52,7 @@ Empty fields, neutral borders, no messaging beyond the standing help row.
 
 ### Disabled account (`pZvyt`)
 Distinct from a bad password — reflects `User.active = false`
-([Data Model](02-data-model.md#user): "disabled accounts can't log in").
+([Data Model](../spec/02-data-model.md#user): "disabled accounts can't log in").
 - Fields keep neutral (non-error) borders — the credentials themselves
   weren't wrong.
 - Banner copy: "This account has been disabled. Contact your admin to

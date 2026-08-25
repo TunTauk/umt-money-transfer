@@ -9,10 +9,10 @@ with the "Send" nav item active.
 
 CRUD surface for `SEND` transactions — customer hands over cash
 (principal + fee), we wire the principal out via one of our accounts. See
-[Overview](01-overview.md#send-customer--elsewhere) for the business
-definition and [Ledger & Accounting](03-ledger-accounting.md#send) for the
+[Overview](../spec/01-overview.md#send-customer--elsewhere) for the business
+definition and [Ledger & Accounting](../spec/03-ledger-accounting.md#send) for the
 double-entry posting. Creatable by Teller or Admin/Owner (see
-[Transactions & Lifecycle](04-transactions-lifecycle.md#types)).
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#types)).
 
 ## List view (`u6DD6`)
 
@@ -24,7 +24,7 @@ double-entry posting. Creatable by Teller or Admin/Owner (see
 Search box ("Search by name, phone, reference...") plus four filter
 chips: **Status**, **Date range**, **Account**, **Created by** — a subset
 of the full filter set defined in
-[Search & Filter](07-search-filter.md#structured-filters), scoped
+[Search & Filter](../spec/07-search-filter.md#structured-filters), scoped
 implicitly to `type = SEND` since this is the type-specific list. Note
 per that spec, **Created by** is Admin/Owner only.
 
@@ -59,11 +59,11 @@ visible while filling the form.
    (the account that wires the principal out)
 4. **Amount** — Principal (MMK), Fee (MMK) — two fields side by side
 5. **Note (optional)** — free text; per
-   [Data Model](02-data-model.md#transaction), this is the catch-all for
+   [Data Model](../spec/02-data-model.md#transaction), this is the catch-all for
    any compliance-relevant detail since no fixed KYC threshold exists yet
 6. **Actions** — Cancel / "Save as Pending" — the transaction always
    lands as `PENDING` first, per the state machine in
-   [Transactions & Lifecycle](04-transactions-lifecycle.md#statuses); a
+   [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses); a
    separate action later transitions it to `COMPLETED`.
 
 ### Summary card
@@ -81,7 +81,7 @@ customer needs to hand over is unambiguous:
 
 Below the totals, a warning banner (amber `#F5D488` on translucent white)
 surfaces the **insufficient-balance guardrail** from
-[Transactions & Lifecycle](04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design):
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design):
 non-blocking by design — the teller can still proceed, this is advisory
 only.
 
@@ -90,8 +90,8 @@ only.
 - Row-level detail/edit view (clicking a reference or the `ellipsis` menu)
   isn't designed yet — needed for "Edit fields of own `PENDING`
   transaction" and the `PENDING → COMPLETED` / `CANCELLED` transitions
-  from [Transactions & Lifecycle](04-transactions-lifecycle.md#transitions--permissions).
+  from [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#transitions--permissions).
 - No amount-range or type-specific sort control shown on the list beyond
   the shared filter chips — confirm whether Send needs its own sort
   beyond the global "Newest first / Amount high→low" from
-  [Search & Filter](07-search-filter.md#sort).
+  [Search & Filter](../spec/07-search-filter.md#sort).

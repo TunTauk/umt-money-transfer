@@ -10,9 +10,9 @@ active.
 Owner injecting or pulling capital from an account or the cash drawer —
 e.g. funding an account at the start of the day, or withdrawing profit.
 Admin/Owner only, both types. See
-[Overview](01-overview.md#capital-deposit--withdrawal) and the
+[Overview](../spec/01-overview.md#capital-deposit--withdrawal) and the
 double-entry example in
-[Ledger & Accounting](03-ledger-accounting.md#capital-deposit), where the
+[Ledger & Accounting](../spec/03-ledger-accounting.md#capital-deposit), where the
 offsetting side posts to the reporting-only `Owner Equity` account (same
 pattern as `Fee Income` — not real money, just tracks where capital came
 from/went for reporting).
@@ -37,14 +37,14 @@ low expected volume, admin-only, doesn't yet justify filter chips.
 | Type | **Deposit** / **Withdrawal** tag — green with `arrow-down-left` icon for Deposit, red with `arrow-up-right` icon for Withdrawal. Arrow direction reflects money's direction relative to the account, not a judgment of good/bad |
 | Account | The account or Cash Drawer affected |
 | Amount | Bold |
-| Status | Badge — same `PENDING → COMPLETED` state machine as every other transaction type, per the single-`Transaction`-table design in [Data Model](02-data-model.md#design-decision-single-transaction-table) |
+| Status | Badge — same `PENDING → COMPLETED` state machine as every other transaction type, per the single-`Transaction`-table design in [Data Model](../spec/02-data-model.md#design-decision-single-transaction-table) |
 | Created by | Always an Owner |
 | — | Row actions |
 
 No Fee column, matching
 [Internal Transfer](13-internal-transfer-screen.md#table-columns) — `fee`
 is always 0 for this type per
-[Data Model](02-data-model.md#transaction).
+[Data Model](../spec/02-data-model.md#transaction).
 
 ## Type tag colors
 

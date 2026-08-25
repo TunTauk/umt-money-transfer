@@ -9,12 +9,12 @@ instanced with the "Payout" nav item active.
 
 CRUD surface for `PAYOUT` transactions — someone elsewhere transfers
 money into one of our accounts, we verify it landed, then pay the
-recipient cash. See [Overview](01-overview.md#payout-elsewhere--customer)
+recipient cash. See [Overview](../spec/01-overview.md#payout-elsewhere--customer)
 for the business definition — this is called out there as the
 **highest-risk flow** in the business, since paying cash against a
 claimed transfer that turns out to be fake/already-used is the main fraud
 exposure. Creatable by Teller or Admin/Owner (see
-[Transactions & Lifecycle](04-transactions-lifecycle.md#types)).
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#types)).
 
 ## List view (`h6DRsc`)
 
@@ -52,7 +52,7 @@ if someone needs to look it up later.
 Two-column layout: form card (flexible width) + a 320px side column with
 a duplicate-reference warning and a flow guide. Structured as three
 numbered sections, mirroring the actual procedure from
-[OCR & Payout Verification](06-ocr-payout-verification.md#flow):
+[OCR & Payout Verification](../spec/06-ocr-payout-verification.md#flow):
 
 ### 1. Provider & Screenshot
 - Provider toggle — **KBZ Bank** / **Wave Money** — picked by the teller
@@ -96,7 +96,7 @@ transitions to `COMPLETED` once cash is paid out.
 duplicate reference — WM2408241 was already used on a completed payout
 (PYT-8790, 12 Aug). You can still proceed at your judgment." Implements
 the **duplicate external reference guardrail** from
-[Transactions & Lifecycle](04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design) —
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design) —
 non-blocking by design, teller judgment overrides.
 
 **Guide Card**: a numbered 3-step reminder of the payout flow (upload →
@@ -108,6 +108,6 @@ teller to leave the form.
 - Row-level detail/edit view isn't designed yet — same gap noted on the
   [Send screen](11-send-screen.md#open-questions).
 - Multiple attachments per transaction (e.g. a blurry re-upload followed
-  by a clearer one, per [Data Model](02-data-model.md#transactionattachment))
+  by a clearer one, per [Data Model](../spec/02-data-model.md#transactionattachment))
   aren't represented in the Dropzone — it currently shows only the latest
   upload. Worth a "view all attachments" affordance once that matters.

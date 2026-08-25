@@ -12,8 +12,8 @@ a full page, reflecting how much simpler this flow is than Send/Payout.
 Moves money between our own accounts (e.g. KBZ #1 → Wave #2) — no
 customer involved, no fee. Admin/Owner only, both to create and to view
 who's moving capital around. See
-[Overview](01-overview.md#internal-transfer) and the double-entry example
-in [Ledger & Accounting](03-ledger-accounting.md#internal-transfer).
+[Overview](../spec/01-overview.md#internal-transfer) and the double-entry example
+in [Ledger & Accounting](../spec/03-ledger-accounting.md#internal-transfer).
 
 ## List view (`GQPgE`)
 
@@ -34,12 +34,12 @@ Revisit if that assumption breaks.
 | From | Source account name |
 | To | Destination account name |
 | Amount | Bold |
-| Status | Badge — this type still goes through the same `PENDING → COMPLETED` state machine as customer transactions (per [Data Model](02-data-model.md#design-decision-single-transaction-table): one `Transaction` table, one status machine, for every type) |
+| Status | Badge — this type still goes through the same `PENDING → COMPLETED` state machine as customer transactions (per [Data Model](../spec/02-data-model.md#design-decision-single-transaction-table): one `Transaction` table, one status machine, for every type) |
 | Created by | Always an Owner, per RBAC — the column is kept for consistency with the other transaction lists rather than because the value varies |
 | — | Row actions |
 
 No Fee column — internal transfers are always `fee = 0` per
-[Data Model](02-data-model.md#transaction) ("0 for non-customer types"),
+[Data Model](../spec/02-data-model.md#transaction) ("0 for non-customer types"),
 so showing it would just be dead space on every row.
 
 ## Create — "New Internal Transfer" (`YWNBw`)
@@ -65,7 +65,7 @@ submit.
 ## Open questions
 
 - Whether "Transfer" should save as `PENDING` (matching Send/Payout, per
-  [Transactions & Lifecycle](04-transactions-lifecycle.md#statuses)) or
+  [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses)) or
   go straight to `COMPLETED` — the spec's state machine applies uniformly
   to all transaction types, but an internal transfer between our own
   accounts has no external counterparty to wait on, so a same-step

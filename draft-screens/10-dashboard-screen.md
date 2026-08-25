@@ -10,7 +10,7 @@ item active.
 Landing screen after login. Answers two questions at a glance: "where does
 our money stand right now?" and "what needs attention today?" — live
 balances plus the stale-`PENDING` monitoring view called for in
-[Transactions & Lifecycle](04-transactions-lifecycle.md#operational-implication).
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#operational-implication).
 
 ## Layout
 
@@ -41,7 +41,7 @@ Four equal-width cards:
 
 Each card: label + small icon chip (top row), large bold value (bottom).
 All balances are derived live from `LedgerEntry` rows, never a stored
-column — see [Ledger & Accounting](03-ledger-accounting.md).
+column — see [Ledger & Accounting](../spec/03-ledger-accounting.md).
 
 ## Account Balances panel
 
@@ -69,7 +69,7 @@ written).
 - Rows sorted oldest-first (per the spec's operational note), each showing
   customer name, type + amount, and age in red (`4h 12m` etc.).
 - Directly supports the fraud control described in
-  [Transactions & Lifecycle](04-transactions-lifecycle.md#transitions--permissions):
+  [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#transitions--permissions):
   a `PENDING` transaction with no ledger trace is only caught if someone
   looks — this panel is that "someone looks."
 
@@ -96,4 +96,4 @@ written).
   actual live count once wired to data.
 - Whether the Pending panel should be filterable by staff member here, or
   only via the full Transactions screen's "Created by" filter
-  (admin/owner only, per [Search & Filter](07-search-filter.md)).
+  (admin/owner only, per [Search & Filter](../spec/07-search-filter.md)).

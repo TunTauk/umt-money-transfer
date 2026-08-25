@@ -7,7 +7,7 @@ and `MwM47` ("Topbar"), instanced with the "Summary" nav item active.
 ## Purpose
 
 Implements the **Reports** section of
-[Ledger & Accounting](03-ledger-accounting.md#reports): live balances,
+[Ledger & Accounting](../spec/03-ledger-accounting.md#reports): live balances,
 profit, and daily reconciliation, in one place. Distinct from
 [Dashboard](10-dashboard-screen.md), which is operational ("what needs my
 attention right now"); this screen is analytical ("how is the business
@@ -30,7 +30,7 @@ chip + bold value), with the first card highlighted (`$brand-dark`):
 
 | Card | Value shown | Source |
 |---|---|---|
-| Total Balance (all accounts) | Live sum across every account | `LedgerEntry`-derived, per [Ledger & Accounting](03-ledger-accounting.md#why-double-entry) — not period-scoped, since a balance is a point-in-time fact, not a range total |
+| Total Balance (all accounts) | Live sum across every account | `LedgerEntry`-derived, per [Ledger & Accounting](../spec/03-ledger-accounting.md#why-double-entry) — not period-scoped, since a balance is a point-in-time fact, not a range total |
 | Fee Income (this month) | Sum of `FeeIncome` credits over the selected range | Implements "**Profit** — sum of `Fee Income` credits over a date range" from the Reports spec |
 | Send volume | Count of `SEND` transactions in range | Operational context alongside profit |
 | Payout volume | Count of `PAYOUT` transactions in range | Operational context alongside profit |
@@ -90,5 +90,5 @@ imagine it.
   spec's framing, but isn't designed.
 - Date-range chip interaction (what "This month" expands to, whether it
   matches the same Today/Yesterday/This week/This month/Custom set from
-  [Search & Filter](07-search-filter.md#structured-filters)) isn't
+  [Search & Filter](../spec/07-search-filter.md#structured-filters)) isn't
   confirmed.

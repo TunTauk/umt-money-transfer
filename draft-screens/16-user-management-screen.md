@@ -9,8 +9,8 @@ active.
 
 Owner-only screen for managing staff logins — create tellers, disable
 accounts, reset passwords. Maps directly to the `User` entity in
-[Data Model](02-data-model.md#user) and the "Manage staff logins" row in
-[RBAC](05-rbac.md), which is Owner-only, no Teller access at all (not
+[Data Model](../spec/02-data-model.md#user) and the "Manage staff logins" row in
+[RBAC](../spec/05-rbac.md), which is Owner-only, no Teller access at all (not
 even to view).
 
 ## List view (`yPc7P`)
@@ -28,7 +28,7 @@ of tellers plus the owner), so filtering doesn't earn its space here.
 | Column | Content |
 |---|---|
 | Name | Avatar (initials, e.g. "AA") + name |
-| Phone | The login identifier — per [Data Model](02-data-model.md#user), there is no email field, phone is the only credential identity |
+| Phone | The login identifier — per [Data Model](../spec/02-data-model.md#user), there is no email field, phone is the only credential identity |
 | Role | Badge — **Owner** (filled `$brand-dark`, white text) vs. **Teller** (outlined, neutral) — the filled treatment for Owner mirrors how few of these accounts should exist and makes them easy to spot in a longer list |
 | Status | Dot + "Active"/"Disabled" |
 | Created | Account creation date |
@@ -48,7 +48,7 @@ reset it." This screen is where that contact actually resolves.
 
 Nilar Aye's row shows `Status = Disabled` (grey dot, "Disabled" label,
 not the green "Active" dot other rows use) — corresponds to `User.active
-= false` in [Data Model](02-data-model.md#user): "disabled accounts can't
+= false` in [Data Model](../spec/02-data-model.md#user): "disabled accounts can't
 log in." A disabled account attempting to log in hits the
 [Login screen's disabled-account state](09-login-screen.md#disabled-account-pzvyt).
 
