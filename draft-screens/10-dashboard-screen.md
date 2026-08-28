@@ -30,14 +30,28 @@ stacked top to bottom:
 
 ## Stats row
 
-Four equal-width cards:
+Four equal-width cards. The first two are pure balance totals; the last
+two are risk-glance metrics, deliberately paired to answer "what needs a
+closer look right now":
 
 | Card | Value shown | Style |
 |---|---|---|
 | Total Balance | Sum across all accounts | Highlighted — `$brand-dark` fill, white text, visually dominant over the other three |
 | Cash Drawer | `Account` balance, `type = CASH` | Neutral card |
-| Bank Accounts | Sum of `type = BANK` accounts | Neutral card |
-| Wallet Accounts | Sum of `type = WALLET` accounts | Neutral card |
+| Lowest Balance | The `Account` with the smallest live balance, name + amount | Neutral card, red icon chip |
+| Oldest Pending | Age of the longest-waiting `PENDING` transaction, plus its type + party | Neutral card, red icon chip |
+
+Per-type sum cards (Bank Accounts, Wallet Accounts) were dropped — with
+the full breakdown already one table down in the
+[Account Balances panel](#account-balances-panel), a same-page total by
+`type` didn't add a decision a teller or owner makes from the dashboard.
+**Lowest Balance** and **Oldest Pending** replace them: both are early
+warning signals — an account running low risks blocking the next Send
+before someone notices, and an aging `PENDING` transaction is the exact
+scenario the [Pending panel](#pending-panel-xudwl) below exists to catch
+([Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#transitions--permissions)).
+Surfacing both in the stats row means that risk is visible without
+scrolling to the panels beneath.
 
 Each card: label + small icon chip (top row), large bold value (bottom).
 All balances are derived live from `LedgerEntry` rows, never a stored
@@ -56,8 +70,7 @@ Full-width table, one row per `Account`:
 | Balance | Right-aligned, bold |
 
 Header includes a "View all accounts" link through to the
-[Accounts screen](11-account-management-screen.md) (if/when that spec is
-written).
+[Accounts screen](19-account-management-screen.md).
 
 ## Bottom row
 
@@ -74,12 +87,24 @@ written).
   looks — this panel is that "someone looks."
 
 ### Recent Activity panel (`cY2XQ`)
-- Neutral-bordered panel, "View all" link through to the
-  [Transactions screen](12-transactions-screen.md).
+- Neutral-bordered panel, no "View all" link — there's no longer a
+  single cross-type screen for it to point at (see below).
 - Rows show name, transaction type (`SEND`, `PAYOUT`, `CAPITAL_DEPOSIT`,
   `INTERNAL_TRANSFER`), amount, and a status badge.
 - Only completed activity shown here — pending items live in the Pending
   panel instead, not duplicated.
+
+There is deliberately no unified Transactions screen in this design — a
+single cross-type list duplicated filters that are better scoped per
+type and risked being a second, confusing place to look for the same
+data. Instead, [Send](11-send-screen.md#filter-bar),
+[Payout](13-payout-screen.md#filter-bar),
+[Internal Transfer](15-internal-transfer-screen.md#filter-bar), and
+[Capital](17-capital-screen.md#filter-bar) each carry their own full
+search + filter bar (search box, Status, Date range, Account, Created
+by, Amount). This Recent Activity panel stays a small, mixed-type
+glance — for anything beyond it, go to the specific type's own screen
+and search there.
 
 ## Status badge colors (shared pattern)
 
@@ -95,5 +120,5 @@ written).
 - Real pending count vs. the "6" placeholder shown — needs to reflect an
   actual live count once wired to data.
 - Whether the Pending panel should be filterable by staff member here, or
-  only via the full Transactions screen's "Created by" filter
-  (admin/owner only, per [Search & Filter](../spec/07-search-filter.md)).
+  only via each type-specific screen's "Created by" filter (admin/owner
+  only, per [Search & Filter](../spec/07-search-filter.md)).

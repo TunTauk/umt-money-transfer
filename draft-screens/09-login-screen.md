@@ -31,17 +31,18 @@ Two-panel, full-bleed (1440×1024 desktop reference):
 | Phone number field | Label + input with leading phone icon, placeholder `09xxxxxxxxx` |
 | Password field | Label + input with leading lock icon and trailing show/hide (`eye-off`) icon, masked placeholder |
 | Submit button | Full-width "Sign in", `$brand` fill |
-| Help row | "Forgot your password? Contact your admin to reset it." |
 
 **Phone number, not email** — matches the data model
 ([`User.phone`](../spec/02-data-model.md#user) is the login identifier; there is
 no email field), so password recovery is admin-mediated rather than a
-self-service email reset link.
+self-service email reset link. The screen no longer surfaces this path
+directly (the "Forgot your password? Contact your admin to reset it."
+help row was removed) — see Open Questions below.
 
 ## States
 
 ### Default
-Empty fields, neutral borders, no messaging beyond the standing help row.
+Empty fields, neutral borders, no messaging.
 
 ### Error — invalid credentials (`KgNAx`)
 - Red-bordered inputs (`$error` stroke) on both fields.
@@ -79,6 +80,15 @@ Distinct from a bad password — reflects `User.active = false`
 
 ## Open questions
 
+- **No visible password-recovery path.** The "Forgot your password?
+  Contact your admin to reset it." help row was removed from all three
+  states. Since there's no self-service reset (no email field, per
+  [Data Model](../spec/02-data-model.md#user)), a locked-out teller now
+  has no on-screen guidance at all — recovery relies entirely on knowing
+  to go find the owner, who resets it from the
+  [User Management screen](21-user-management-screen.md#reset-password).
+  Confirm this is intentional, or that guidance exists elsewhere
+  (physical signage, onboarding, etc.).
 - Session mechanism (cookie vs. JWT) — not a design concern but affects
   whether "remember me" belongs on this screen.
 - Rate limiting / lockout after repeated failed attempts is not yet

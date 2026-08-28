@@ -2,7 +2,9 @@
 
 Design reference: [`design/design.pen`](../design/design.pen), node
 `EFe7N` ("Summary"). Uses the shared shell components `MYYNH` ("Sidebar")
-and `MwM47` ("Topbar"), instanced with the "Summary" nav item active.
+and `MwM47` ("Topbar"), instanced with the "Summary" nav item active. The
+"Enter today's count" action opens a separate screen (a modal) — see
+[Summary Screen — Enter Count](24-summary-enter-count-screen.md).
 
 ## Purpose
 
@@ -55,9 +57,10 @@ screen, not just documented in the spec.
 
 ### Header
 - Title + subtitle (above)
-- "Enter today's count" button — the entry point for the admin/owner's
-  actual-count input; the form/modal behind it isn't designed yet (see
-  Open Questions)
+- "Enter today's count" button → opens
+  [Summary Screen — Enter Count](24-summary-enter-count-screen.md)
+  (`z5ZFy`) as a modal overlay, the entry point for the admin/owner's
+  actual-count input.
 
 ### Table columns
 
@@ -78,10 +81,6 @@ imagine it.
 
 ## Open questions
 
-- **"Enter today's count" form isn't designed.** Needs one input per
-  account (actual cash/balance), likely a modal — the reconciliation
-  table itself is read-only/computed, this is where the admin/owner's
-  manual entry happens.
 - Whether reconciliation is literally daily (one entry per calendar day,
   history kept) or always shows only "today's" comparison isn't decided —
   affects whether this screen needs a reconciliation history view.

@@ -1,9 +1,11 @@
-# Account Management Screen
+# Account Management Screen — List
 
 Design reference: [`design/design.pen`](../design/design.pen), node
 `QU5zW` ("Accounts - List"). Uses the shared shell components `MYYNH`
 ("Sidebar") and `MwM47` ("Topbar"), instanced with the "Accounts" nav
-item active.
+item active. The create form is a separate screen (a modal, not a full
+page) — see
+[Account Management Screen — New](20-account-new-screen.md).
 
 ## Purpose
 
@@ -14,13 +16,14 @@ Internal Transfer, and Capital screens. Referenced from
 [Dashboard](10-dashboard-screen.md#account-balances-panel) via its "View
 all accounts" link.
 
-## List view (`QU5zW`)
-
-### Page header
+## Page header
 - Title "Accounts", subtitle: "Cash, bank, and wallet accounts we hold
   money in."
-- Primary button "Add Account" — no create/edit form has been designed
-  yet (see Open Questions).
+- Primary button "Add Account" → opens
+  [Account Management Screen — New](20-account-new-screen.md) (`wwO0x`)
+  as a modal overlay, matching the
+  [Internal Transfer](16-internal-transfer-new-screen.md) /
+  [Capital](18-capital-new-screen.md) pattern.
 
 No filter bar — account count is expected to stay small (a handful of
 Cash/Bank/Wallet entries), so filtering isn't needed yet.
@@ -48,12 +51,6 @@ still fully present in the list for historical reference.
 
 ## Open questions
 
-- **No Add/Edit Account form designed yet.** Based on the `Account`
-  fields in [Data Model](../spec/02-data-model.md#account), it would need: Name,
-  Type (Cash/Bank/Wallet), Provider (conditional — hidden for Cash),
-  Account Number, and an Active toggle. Likely a modal, matching the
-  [Internal Transfer](13-internal-transfer-screen.md#create--new-internal-transfer-ywnbw)
-  pattern given how few fields are involved.
 - Row actions (`ellipsis` menu) aren't specified — presumably Edit and
   Deactivate/Reactivate, but Deactivate needs a confirmation state since
   it affects every screen with an account picker.

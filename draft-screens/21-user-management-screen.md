@@ -1,9 +1,10 @@
-# User Management Screen
+# User Management Screen — List
 
 Design reference: [`design/design.pen`](../design/design.pen), node
 `yPc7P` ("Users - List"). Uses the shared shell components `MYYNH`
 ("Sidebar") and `MwM47` ("Topbar"), instanced with the "Users" nav item
-active.
+active. The create form is a separate screen (a modal, not a full page)
+— see [User Management Screen — New](22-user-new-screen.md).
 
 ## Purpose
 
@@ -13,12 +14,15 @@ accounts, reset passwords. Maps directly to the `User` entity in
 [RBAC](../spec/05-rbac.md), which is Owner-only, no Teller access at all (not
 even to view).
 
-## List view (`yPc7P`)
-
-### Page header
+## Page header
 - Title "Staff Users", subtitle: "Manage teller and owner logins. Owner
   only."
-- Primary button "Add Staff".
+- Primary button "Add Staff" → opens
+  [User Management Screen — New](22-user-new-screen.md) (`vz3nM`) as a
+  modal overlay, matching the
+  [Internal Transfer](16-internal-transfer-new-screen.md) /
+  [Capital](18-capital-new-screen.md) / [Account](20-account-new-screen.md)
+  pattern.
 
 No filter bar or search — staff count is expected to be small (a handful
 of tellers plus the owner), so filtering doesn't earn its space here.
@@ -54,12 +58,6 @@ log in." A disabled account attempting to log in hits the
 
 ## Open questions
 
-- **No Add Staff / Edit Staff form designed yet.** Based on the `User`
-  fields, it would need: Name, Phone, Role (Owner/Teller), and for
-  creation, an initial password (set by the owner, since there's no
-  self-service signup). Likely a modal, matching the
-  [Internal Transfer](13-internal-transfer-screen.md#create--new-internal-transfer-ywnbw)
-  pattern.
 - "Reset password" flow isn't designed — does it generate a temporary
   password shown once, send nothing (owner communicates it out-of-band),
   or something else? Affects whether this needs its own confirmation

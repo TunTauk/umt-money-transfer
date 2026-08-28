@@ -1,32 +1,40 @@
-# Send Screen
+# Send Screen — List
 
-Design reference: [`design/design.pen`](../design/design.pen) — two nodes:
-`u6DD6` ("Send - List") and `JYyqN` ("Send - New"). Both use the shared
-shell components `MYYNH` ("Sidebar") and `MwM47` ("Topbar"), instanced
-with the "Send" nav item active.
+Design reference: [`design/design.pen`](../design/design.pen), node
+`u6DD6` ("Send - List"). Uses the shared shell components `MYYNH`
+("Sidebar") and `MwM47` ("Topbar"), instanced with the "Send" nav item
+active. The create form is a separate top-level screen — see
+[Send Screen — New](12-send-new-screen.md).
 
 ## Purpose
 
-CRUD surface for `SEND` transactions — customer hands over cash
+List/search surface for `SEND` transactions — customer hands over cash
 (principal + fee), we wire the principal out via one of our accounts. See
 [Overview](../spec/01-overview.md#send-customer--elsewhere) for the business
 definition and [Ledger & Accounting](../spec/03-ledger-accounting.md#send) for the
 double-entry posting. Creatable by Teller or Admin/Owner (see
 [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#types)).
 
-## List view (`u6DD6`)
-
-### Page header
+## Page header
 - Title "Send Transactions", subtitle describing the flow.
-- Primary button "New Send" → opens the create form.
+- Primary button "New Send" → navigates to
+  [Send Screen — New](12-send-new-screen.md) (`JYyqN`), a separate
+  top-level screen rather than a modal or an inline panel — matches how
+  Payout's create flow is also its own screen, given both need real
+  space for form + summary/verification content.
 
 ### Filter bar
-Search box ("Search by name, phone, reference...") plus four filter
-chips: **Status**, **Date range**, **Account**, **Created by** — a subset
-of the full filter set defined in
+Search box ("Search by name, phone, reference...") plus five filter
+chips: **Status**, **Date range**, **Account**, **Created by**,
+**Amount** — the full filter set defined in
 [Search & Filter](../spec/07-search-filter.md#structured-filters), scoped
 implicitly to `type = SEND` since this is the type-specific list. Note
 per that spec, **Created by** is Admin/Owner only.
+
+This is Send's dedicated search — there's no separate cross-type
+Transactions screen in this design (see
+[Dashboard](10-dashboard-screen.md#recent-activity-panel-cy2xq) for why
+that was removed in favor of per-screen search).
 
 ### Table columns
 
@@ -44,46 +52,6 @@ per that spec, **Created by** is Admin/Owner only.
 Amount (principal) is deliberately not a separate column here — Fee is
 the number a teller scans for; principal detail lives in the row/detail
 view. Revisit if usage shows principal is needed at a glance too.
-
-## Create form — "New Send" (`JYyqN`)
-
-Two-column layout: form card (flexible width) + a summary card (fixed
-340px) pinned to the right so the customer-facing total is always
-visible while filling the form.
-
-### Form card sections
-
-1. **Sender** — Name, Phone (phone icon)
-2. **Recipient** — Name, Phone (phone icon)
-3. **Send Via (our account)** — dropdown over active `Account` records
-   (the account that wires the principal out)
-4. **Amount** — Principal (MMK), Fee (MMK) — two fields side by side
-5. **Note (optional)** — free text; per
-   [Data Model](../spec/02-data-model.md#transaction), this is the catch-all for
-   any compliance-relevant detail since no fixed KYC threshold exists yet
-6. **Actions** — Cancel / "Save as Pending" — the transaction always
-   lands as `PENDING` first, per the state machine in
-   [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses); a
-   separate action later transitions it to `COMPLETED`.
-
-### Summary card
-
-Dark (`$brand-dark`) panel showing the computed totals so the number the
-customer needs to hand over is unambiguous:
-
-| Row | Value |
-|---|---|
-| Principal | K 200,000 |
-| Fee | K 3,000 |
-| — divider — | |
-| **Customer pays** | K 203,000 (bold) |
-| **Wired out** | K 200,000 (bold) |
-
-Below the totals, a warning banner (amber `#F5D488` on translucent white)
-surfaces the **insufficient-balance guardrail** from
-[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design):
-non-blocking by design — the teller can still proceed, this is advisory
-only.
 
 ## Open questions
 
