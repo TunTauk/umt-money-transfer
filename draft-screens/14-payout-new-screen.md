@@ -47,10 +47,15 @@ capture isn't part of the OCR/verification procedure itself, so it isn't
 folded into the numbering):
 
 ### 1. Provider & Screenshot
-- Provider toggle — **KBZ Bank** / **Wave Money** — picked by the teller
-  up front rather than auto-detected, since anchoring OCR rules on a
-  known provider layout is far more reliable (per the OCR spec's
-  rationale).
+- Provider dropdown — **KBZ Bank**, **Wave Money**, **AYA Bank**, **CB
+  Bank**, **True Money**, and further providers as they're onboarded —
+  picked by the teller up front rather than auto-detected, since
+  anchoring OCR rules on a known provider layout is far more reliable
+  (per the OCR spec's rationale). A dropdown replaces the earlier
+  two-option toggle so the control scales as more banks/wallets are
+  added, without needing a redesign each time — also brings this screen
+  in line with [OCR & Payout Verification](../spec/06-ocr-payout-verification.md#flow),
+  which already describes provider selection as a dropdown.
 - Dropzone showing the uploaded screenshot (filename, "Uploaded · OCR
   complete" status) with a "Replace" action for re-upload.
 
@@ -108,6 +113,14 @@ teller to leave the form.
 
 ## Open questions
 
+- **OCR rule coverage per provider.** [OCR & Payout Verification](../spec/06-ocr-payout-verification.md#open)
+  notes that anchor keywords/regex only exist for KBZ and Wave so far.
+  Widening the provider dropdown to AYA Bank, CB Bank, True Money, etc.
+  means those newly-listed providers won't actually prefill anything in
+  [Verify Extracted Fields](#2-verify-extracted-fields) until their own
+  parsing rules are built — worth deciding whether to hide/label
+  unsupported providers as "manual entry only" until then, rather than
+  silently showing an empty OCR pass.
 - Multiple attachments per transaction (e.g. a blurry re-upload followed
   by a clearer one, per [Data Model](../spec/02-data-model.md#transactionattachment))
   aren't represented in the Dropzone — it currently shows only the latest
