@@ -64,7 +64,7 @@ Full-width table, one row per `Account`:
 | Column | Content |
 |---|---|
 | Account | Name, e.g. "KBZ - 09765112340" |
-| Type | Badge — `CASH` (indigo), `BANK` (green), `WALLET` (amber) |
+| Type | Badge — `CASH` (indigo) or `BANK` (green). Wave/mobile-wallet accounts show `BANK` too — see [Data Model](../spec/02-data-model.md#account) |
 | Provider | "KBZ Bank", "Wave Money", or "—" for cash |
 | Status | Dot + "Active"/"Inactive" |
 | Balance | Right-aligned, bold |

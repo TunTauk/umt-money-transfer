@@ -27,9 +27,9 @@ A real place money sits.
 |---|---|---|
 | id | uuid | |
 | name | string | e.g. "KBZ - 09xxxxxxx", "Wave - 09xxxxxxx", "Cash Drawer" |
-| type | enum | `CASH`, `BANK`, `WALLET` |
+| type | enum | `CASH`, `BANK` — mobile wallets (Wave) are `BANK` too, distinguished only by `provider`; `WALLET` was dropped as its own type since the two behave identically in every flow |
 | provider | string \| null | e.g. "KBZ Bank", "Wave Money" — null for `CASH` |
-| account_number | string \| null | masked in UI where sensible |
+| account_number | string \| null | shown unmasked in the admin account list |
 | active | boolean | deactivated accounts are hidden from new-transaction pickers but keep history |
 | created_at | timestamp | |
 

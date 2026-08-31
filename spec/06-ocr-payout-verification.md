@@ -68,6 +68,32 @@ separate backup process. Only the OCR processing itself is self-hosted
   Burmese script. Acceptable because OCR is only ever prefilling a form a
   human reviews before confirming — never a source of truth on its own.
 
+## OCR on Send
+
+[Send's create form](../draft-screens/12-send-new-screen.md#form-card-sections)
+uses the same OCR mechanism against its own (optional) screenshot of the
+outbound wire confirmation, with two differences from the Payout flow
+above:
+
+- **The extracted identity field flips.** Payout's screenshot is of
+  *someone else's* inbound transfer, so it shows the Sender's name — that
+  field gets OCR-prefilled. Send's screenshot is of *our own* outbound
+  confirmation, which shows who *we* sent to — so it's the **Recipient's**
+  name that gets OCR-prefilled instead, carrying the same Burmese-script
+  reliability caveat as step 5 above. Sender on Send is always the
+  walk-in customer at the counter and is never OCR-sourced.
+- **No independent-verification step.** Steps 8–9 above (teller
+  independently confirms the transfer landed, then pays cash) exist
+  because Payout is paying cash out against a claim we didn't perform
+  ourselves — the core fraud exposure called out in
+  [Overview](01-overview.md#payout-elsewhere--customer). Send carries no
+  equivalent risk, since we execute the outbound wire ourselves rather
+  than trusting an external claim, so the flow ends after step 6 (teller
+  reviews the prefilled fields, then saves as `PENDING`). The duplicate-
+  reference guardrail below is likewise Payout-only — reusing an outbound
+  reference on Send doesn't let anyone claim money they haven't
+  transferred, unlike reusing an inbound reference on Payout.
+
 ## Fraud guardrail: duplicate reference number
 
 If a completed Payout already used the same `external_reference_no` as the

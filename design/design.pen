@@ -14,132 +14,6 @@
       "children": [
         {
           "type": "frame",
-          "id": "R7Szk",
-          "name": "Brand Panel",
-          "width": 560,
-          "height": "fill_container",
-          "fill": "$brand-dark",
-          "layout": "vertical",
-          "padding": 64,
-          "justifyContent": "space_between",
-          "children": [
-            {
-              "type": "frame",
-              "id": "E8u1V",
-              "name": "Brand Top",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 40,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "eVy3e",
-                  "name": "Wordmark Row",
-                  "gap": 10,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "rDSuv",
-                      "width": 36,
-                      "height": 36,
-                      "fill": "$brand-light",
-                      "cornerRadius": 10,
-                      "layout": "vertical",
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "CMNsw",
-                          "fill": "#FFFFFF",
-                          "content": "U",
-                          "fontFamily": "$font",
-                          "fontSize": 17,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "jjdNl",
-                      "fill": "#FFFFFF",
-                      "content": "UMT",
-                      "fontFamily": "$font",
-                      "fontSize": 17,
-                      "fontWeight": "700"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "HLNsK",
-                  "name": "Brand Copy",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 16,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "k4EmAV",
-                      "name": "Headline",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Send and receive with confidence.",
-                      "lineHeight": 1.2,
-                      "fontFamily": "$font",
-                      "fontSize": 34,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "pezEz",
-                      "name": "Description",
-                      "fill": "#FFFFFFB3",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "The internal console for tracking every kyat across Send, Payout, and account reconciliation.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "ASfvX",
-              "name": "Brand Footer",
-              "gap": 8,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "xou9G",
-                  "width": 15,
-                  "height": 15,
-                  "icon": "shield-check",
-                  "library": "lucide",
-                  "fill": "#FFFFFF80"
-                },
-                {
-                  "type": "text",
-                  "id": "y4lri",
-                  "fill": "#FFFFFF80",
-                  "content": "Staff access only · MMK",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "frame",
           "id": "jndFC",
           "name": "Form Panel",
           "width": "fill_container",
@@ -363,132 +237,6 @@
       "height": 1024,
       "fill": "$bg",
       "children": [
-        {
-          "type": "frame",
-          "id": "V9TxU9",
-          "name": "Brand Panel",
-          "width": 560,
-          "height": "fill_container",
-          "fill": "$brand-dark",
-          "layout": "vertical",
-          "padding": 64,
-          "justifyContent": "space_between",
-          "children": [
-            {
-              "type": "frame",
-              "id": "gkx26",
-              "name": "Brand Top",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 40,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "dqtoD",
-                  "name": "Wordmark Row",
-                  "gap": 10,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "DZlWd",
-                      "width": 36,
-                      "height": 36,
-                      "fill": "$brand-light",
-                      "cornerRadius": 10,
-                      "layout": "vertical",
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "Ah6fs",
-                          "fill": "#FFFFFF",
-                          "content": "U",
-                          "fontFamily": "$font",
-                          "fontSize": 17,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "QAWiv",
-                      "fill": "#FFFFFF",
-                      "content": "UMT",
-                      "fontFamily": "$font",
-                      "fontSize": 17,
-                      "fontWeight": "700"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "PGNRH",
-                  "name": "Brand Copy",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 16,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "C2Cnu",
-                      "name": "Headline",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Send and receive with confidence.",
-                      "lineHeight": 1.2,
-                      "fontFamily": "$font",
-                      "fontSize": 34,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "RQjVW",
-                      "name": "Description",
-                      "fill": "#FFFFFFB3",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "The internal console for tracking every kyat across Send, Payout, and account reconciliation.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "U057i",
-              "name": "Brand Footer",
-              "gap": 8,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "FtbQw",
-                  "width": 15,
-                  "height": 15,
-                  "icon": "shield-check",
-                  "library": "lucide",
-                  "fill": "#FFFFFF80"
-                },
-                {
-                  "type": "text",
-                  "id": "B7l6qE",
-                  "fill": "#FFFFFF80",
-                  "content": "Staff access only · MMK",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
-            }
-          ]
-        },
         {
           "type": "frame",
           "id": "efihF",
@@ -747,132 +495,6 @@
       "height": 1024,
       "fill": "$bg",
       "children": [
-        {
-          "type": "frame",
-          "id": "CX71o",
-          "name": "Brand Panel",
-          "width": 560,
-          "height": "fill_container",
-          "fill": "$brand-dark",
-          "layout": "vertical",
-          "padding": 64,
-          "justifyContent": "space_between",
-          "children": [
-            {
-              "type": "frame",
-              "id": "GyjLu",
-              "name": "Brand Top",
-              "width": "fill_container",
-              "layout": "vertical",
-              "gap": 40,
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "Nfsdt",
-                  "name": "Wordmark Row",
-                  "gap": 10,
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "frame",
-                      "id": "mU4iG",
-                      "width": 36,
-                      "height": 36,
-                      "fill": "$brand-light",
-                      "cornerRadius": 10,
-                      "layout": "vertical",
-                      "justifyContent": "center",
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "text",
-                          "id": "TG5Zb",
-                          "fill": "#FFFFFF",
-                          "content": "U",
-                          "fontFamily": "$font",
-                          "fontSize": 17,
-                          "fontWeight": "700"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "text",
-                      "id": "lYdVz",
-                      "fill": "#FFFFFF",
-                      "content": "UMT",
-                      "fontFamily": "$font",
-                      "fontSize": 17,
-                      "fontWeight": "700"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
-                  "id": "R8rGzo",
-                  "name": "Brand Copy",
-                  "width": "fill_container",
-                  "layout": "vertical",
-                  "gap": 16,
-                  "children": [
-                    {
-                      "type": "text",
-                      "id": "cxLvW",
-                      "name": "Headline",
-                      "fill": "#FFFFFF",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Send and receive with confidence.",
-                      "lineHeight": 1.2,
-                      "fontFamily": "$font",
-                      "fontSize": 34,
-                      "fontWeight": "700"
-                    },
-                    {
-                      "type": "text",
-                      "id": "gPbUd",
-                      "name": "Description",
-                      "fill": "#FFFFFFB3",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "The internal console for tracking every kyat across Send, Payout, and account reconciliation.",
-                      "lineHeight": 1.5,
-                      "fontFamily": "$font",
-                      "fontSize": 15,
-                      "fontWeight": "normal"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "vZMOS",
-              "name": "Brand Footer",
-              "gap": 8,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "O3KWE",
-                  "width": 15,
-                  "height": 15,
-                  "icon": "shield-check",
-                  "library": "lucide",
-                  "fill": "#FFFFFF80"
-                },
-                {
-                  "type": "text",
-                  "id": "mjveR",
-                  "fill": "#FFFFFF80",
-                  "content": "Staff access only · MMK",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
-            }
-          ]
-        },
         {
           "type": "frame",
           "id": "RqUqY",
@@ -1678,6 +1300,7 @@
                       "id": "RrAFg",
                       "name": "Stat - Total Balance",
                       "width": "fill_container",
+                      "height": 138,
                       "fill": "$brand-dark",
                       "cornerRadius": 12,
                       "stroke": "#00000000",
@@ -1751,6 +1374,7 @@
                       "id": "qfkmI",
                       "name": "Stat - Cash Drawer",
                       "width": "fill_container",
+                      "height": 138,
                       "fill": "$surface",
                       "cornerRadius": 12,
                       "stroke": "$border",
@@ -1815,6 +1439,7 @@
                       "id": "HcKTa",
                       "name": "Stat - Lowest Balance",
                       "width": "fill_container",
+                      "height": 138,
                       "fill": "$surface",
                       "cornerRadius": 12,
                       "stroke": "$border",
@@ -1888,6 +1513,7 @@
                       "id": "IVLYM",
                       "name": "Stat - Oldest Pending",
                       "width": "fill_container",
+                      "height": 138,
                       "fill": "$surface",
                       "cornerRadius": 12,
                       "stroke": "$border",

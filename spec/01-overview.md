@@ -42,9 +42,12 @@ Admin/owner only.
 ## Accounts we hold money in
 
 - **Cash** — the physical cash drawer
-- **Bank** — multiple KBZ Bank accounts (and potentially other banks)
-- **Wallet** — multiple Wave Money accounts (and potentially other mobile
-  wallets)
+- **Bank** — multiple KBZ Bank accounts, Wave Money accounts, and
+  potentially other banks or mobile wallets. Mobile wallets aren't a
+  separate `Account.type` — they're `BANK` too, distinguished only by
+  `provider` (e.g. "Wave Money" vs "KBZ Bank"), since the two behave
+  identically in every flow (Send, Payout, ledger posting, account
+  pickers).
 
 Each is tracked as an `Account` record with a live, derived balance — see
 [Ledger & Accounting](03-ledger-accounting.md).
