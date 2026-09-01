@@ -881,7 +881,7 @@
                       "type": "text",
                       "id": "Y8Uef",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -915,7 +915,7 @@
                       "type": "text",
                       "id": "l0iV3",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -1575,7 +1575,7 @@
                           "type": "text",
                           "id": "OYNC0",
                           "fill": "$error",
-                          "content": "Payout — Ko Zaw Min",
+                          "content": "Withdrawal — Ko Zaw Min",
                           "fontFamily": "$font",
                           "fontSize": 12,
                           "fontWeight": "500"
@@ -2232,7 +2232,7 @@
                                       "type": "text",
                                       "id": "y0Ru2",
                                       "fill": "$text-secondary",
-                                      "content": "Payout · K 2,150,000",
+                                      "content": "Withdrawal · K 2,150,000",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -2278,7 +2278,7 @@
                                       "type": "text",
                                       "id": "kPqxY",
                                       "fill": "$text-secondary",
-                                      "content": "Payout · K 640,000",
+                                      "content": "Withdrawal · K 640,000",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -2324,7 +2324,7 @@
                                       "type": "text",
                                       "id": "XgKza",
                                       "fill": "$text-secondary",
-                                      "content": "Send · K 1,000,000",
+                                      "content": "Deposit · K 1,000,000",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -2370,7 +2370,7 @@
                                       "type": "text",
                                       "id": "l21LS",
                                       "fill": "$text-secondary",
-                                      "content": "Send · K 320,000",
+                                      "content": "Deposit · K 320,000",
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "normal"
@@ -2671,7 +2671,7 @@
       "id": "FNQQT",
       "x": 4700,
       "y": 1164,
-      "name": "Send - List",
+      "name": "Deposit - List",
       "clip": true,
       "width": 1440,
       "height": 1140,
@@ -2805,7 +2805,7 @@
                       "type": "text",
                       "id": "Noros",
                       "fill": "#FFFFFF",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -2839,7 +2839,7 @@
                       "type": "text",
                       "id": "YW2Ai",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -3159,7 +3159,7 @@
                           "type": "text",
                           "id": "uazu6",
                           "fill": "$text-primary",
-                          "content": "Send Transactions",
+                          "content": "Deposit Transactions",
                           "fontFamily": "$font",
                           "fontSize": 24,
                           "fontWeight": "700"
@@ -3168,7 +3168,7 @@
                           "type": "text",
                           "id": "xZ4Ok",
                           "fill": "$text-secondary",
-                          "content": "Cash in from customer, wired out to recipient.",
+                          "content": "Cash in from customer, deposited into the recipient's account.",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -3201,7 +3201,7 @@
                           "type": "text",
                           "id": "d6yG8E",
                           "fill": "#FFFFFF",
-                          "content": "New Send",
+                          "content": "New Deposit",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "600"
@@ -3564,7 +3564,7 @@
                               "id": "G5KCL",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 60,
+                              "width": 130,
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -3594,7 +3594,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 95,
-                              "content": "SND-10231",
+                              "content": "DEP-10231",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "700"
@@ -3605,7 +3605,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": 230,
-                              "content": "Ko Zaw Min → Mya Thuzar",
+                              "content": "Mya Thuzar",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -3685,30 +3685,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "yTNAJ",
+                              "id": "D6tol",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "Y6gLa",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "v0rPGz",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "W8qPxN",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "o3EDb",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -3738,7 +3740,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 95,
-                              "content": "SND-10230",
+                              "content": "DEP-10230",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "700"
@@ -3749,7 +3751,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": 230,
-                              "content": "Ma Thida → U Kyaw Zin",
+                              "content": "U Kyaw Zin",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -3829,30 +3831,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "QZdJK",
+                              "id": "vmjmK",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "ryo5f",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "x55v7S",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "KBezs",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "nXZys",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -3882,7 +3886,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 95,
-                              "content": "SND-10229",
+                              "content": "DEP-10229",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "700"
@@ -3893,7 +3897,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": 230,
-                              "content": "U Aung Ko → Daw Nilar",
+                              "content": "Daw Nilar",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -3973,51 +3977,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "CUyGL",
+                              "id": "gCPJn",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "qcmxw",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "aqTVy",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "B1E19",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "CD3H8",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "lcas0",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "H0YEy",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "Igqxe",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "x",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "n2jOZ",
+                                      "fill": "$text-secondary",
+                                      "content": "Cancel",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -4047,7 +4055,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 95,
-                              "content": "SND-10228",
+                              "content": "DEP-10228",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "700"
@@ -4058,7 +4066,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": 230,
-                              "content": "Ma Su Su → Ko Htet",
+                              "content": "Ko Htet",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -4138,11 +4146,11 @@
                             },
                             {
                               "type": "frame",
-                              "id": "f5TnV",
+                              "id": "n5axGA",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -4169,7 +4177,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 95,
-                              "content": "SND-10227",
+                              "content": "DEP-10227",
                               "fontFamily": "$font",
                               "fontSize": 12,
                               "fontWeight": "700"
@@ -4180,7 +4188,7 @@
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
                               "width": 230,
-                              "content": "Ko Zaw Win → Ma Ei Ei",
+                              "content": "Ma Ei Ei",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
@@ -4260,11 +4268,11 @@
                             },
                             {
                               "type": "frame",
-                              "id": "WYN8O",
+                              "id": "bMfwz",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -4284,7 +4292,7 @@
       "id": "OChsR",
       "x": 4700,
       "y": 2444,
-      "name": "Send - New",
+      "name": "Deposit - New",
       "clip": true,
       "width": 1440,
       "height": 1400,
@@ -4418,7 +4426,7 @@
                       "type": "text",
                       "id": "cJRmg",
                       "fill": "#FFFFFF",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -4452,7 +4460,7 @@
                       "type": "text",
                       "id": "Unfj6",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -4797,7 +4805,7 @@
                           "type": "text",
                           "id": "TwM3i",
                           "fill": "$text-primary",
-                          "content": "New Send",
+                          "content": "New Deposit",
                           "fontFamily": "$font",
                           "fontSize": 24,
                           "fontWeight": "700"
@@ -4806,7 +4814,7 @@
                           "type": "text",
                           "id": "j7Onv",
                           "fill": "$text-secondary",
-                          "content": "Cash in from customer, wired out to recipient.",
+                          "content": "Cash in from customer, deposited into the recipient's account.",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "normal"
@@ -5005,138 +5013,6 @@
                         },
                         {
                           "type": "frame",
-                          "id": "tzrH2",
-                          "name": "Sender Section",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 14,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "J94g2",
-                              "fill": "$text-primary",
-                              "content": "Sender",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "Z0tcx",
-                              "width": "fill_container",
-                              "gap": 14,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "GDDd3",
-                                  "name": "Name Field",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 8,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "qnrar",
-                                      "fill": "$text-secondary",
-                                      "content": "Name",
-                                      "fontFamily": "$font",
-                                      "fontSize": 12,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "kD77x",
-                                      "width": "fill_container",
-                                      "height": 44,
-                                      "fill": "$bg",
-                                      "cornerRadius": 10,
-                                      "stroke": "$border",
-                                      "strokeWidth": 1,
-                                      "gap": 10,
-                                      "padding": [
-                                        0,
-                                        14
-                                      ],
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "text",
-                                          "id": "A5F9B",
-                                          "fill": "$text-tertiary",
-                                          "textGrowth": "fixed-width",
-                                          "width": "fill_container",
-                                          "content": "Full name",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "YKWtp",
-                                  "name": "Phone Field",
-                                  "width": "fill_container",
-                                  "layout": "vertical",
-                                  "gap": 8,
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "fEoQh",
-                                      "fill": "$text-secondary",
-                                      "content": "Phone",
-                                      "fontFamily": "$font",
-                                      "fontSize": 12,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "ctv32",
-                                      "width": "fill_container",
-                                      "height": 44,
-                                      "fill": "$bg",
-                                      "cornerRadius": 10,
-                                      "stroke": "$border",
-                                      "strokeWidth": 1,
-                                      "gap": 10,
-                                      "padding": [
-                                        0,
-                                        14
-                                      ],
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "icon",
-                                          "id": "NWnJP",
-                                          "width": 16,
-                                          "height": 16,
-                                          "icon": "phone",
-                                          "library": "lucide",
-                                          "fill": "$text-tertiary"
-                                        },
-                                        {
-                                          "type": "text",
-                                          "id": "pOe8S",
-                                          "fill": "$text-tertiary",
-                                          "textGrowth": "fixed-width",
-                                          "width": "fill_container",
-                                          "content": "09xxxxxxxxx",
-                                          "fontFamily": "$font",
-                                          "fontSize": 13,
-                                          "fontWeight": "normal"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
                           "id": "iku2b",
                           "name": "Recipient Section",
                           "width": "fill_container",
@@ -5239,7 +5115,7 @@
                                           "textGrowth": "fixed-width",
                                           "width": "fill_container",
                                           "content": "မိမိစံ",
-                                          "fontFamily": "$font",
+                                          "fontFamily": "Noto Sans Myanmar",
                                           "fontSize": 13,
                                           "fontWeight": "normal"
                                         }
@@ -6091,7 +5967,7 @@
                                   "type": "text",
                                   "id": "GAaur",
                                   "fill": "#FFFFFF",
-                                  "content": "Wired out",
+                                  "content": "Deposited",
                                   "fontFamily": "$font",
                                   "fontSize": 14,
                                   "fontWeight": "700"
@@ -6157,7 +6033,7 @@
       "id": "Lro1Y",
       "x": 6280,
       "y": 2444,
-      "name": "Payout - List",
+      "name": "Withdrawal - List",
       "clip": true,
       "width": 1440,
       "height": 1140,
@@ -6291,7 +6167,7 @@
                       "type": "text",
                       "id": "iuSRA",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -6325,7 +6201,7 @@
                       "type": "text",
                       "id": "BYelI",
                       "fill": "#FFFFFF",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -6645,7 +6521,7 @@
                           "type": "text",
                           "id": "t9yo8c",
                           "fill": "$text-primary",
-                          "content": "Payout Transactions",
+                          "content": "Withdrawal Transactions",
                           "fontFamily": "$font",
                           "fontSize": 24,
                           "fontWeight": "700"
@@ -6687,7 +6563,7 @@
                           "type": "text",
                           "id": "qlQHv",
                           "fill": "#FFFFFF",
-                          "content": "New Payout",
+                          "content": "New Withdrawal",
                           "fontFamily": "$font",
                           "fontSize": 13,
                           "fontWeight": "600"
@@ -6977,7 +6853,7 @@
                               "id": "N4PYdR",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "CUSTOMER",
                               "fontFamily": "$font",
                               "fontSize": 11,
@@ -6989,8 +6865,21 @@
                               "id": "kulAE",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "SOURCE",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.4
+                            },
+                            {
+                              "type": "text",
+                              "id": "s2eV3",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "FEE",
+                              "textAlign": "right",
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -7013,8 +6902,20 @@
                               "id": "R47zmP",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "CREATED BY",
+                              "fontFamily": "$font",
+                              "fontSize": 11,
+                              "fontWeight": "700",
+                              "letterSpacing": 0.4
+                            },
+                            {
+                              "type": "text",
+                              "id": "p4JrHF",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "DATE",
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -7025,7 +6926,7 @@
                               "id": "VqNYr",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 60,
+                              "width": 130,
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -7055,7 +6956,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 110,
-                              "content": "PYT-8821",
+                              "content": "WDL-8821",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -7065,7 +6966,7 @@
                               "id": "GM4CL",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "Ko Zaw Min",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -7076,11 +6977,23 @@
                               "id": "F4VoHJ",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "Wave - 09777123xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Z3Ds3",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "K 50,000",
+                              "textAlign": "right",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
                             },
                             {
                               "type": "frame",
@@ -7115,59 +7028,74 @@
                               "id": "S3a3c",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "Mya Mya",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
+                              "type": "text",
+                              "id": "GYufi",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "28 Aug, 8:05 AM",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
                               "type": "frame",
-                              "id": "k7ZSF",
+                              "id": "XlJVs",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "mM96x",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "ce9rE",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "lvlYG",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "INrNQ",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "DYUnD",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "ZD9HZ",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "hMair",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "x",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "op4Zl",
+                                      "fill": "$text-secondary",
+                                      "content": "Cancel",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -7197,7 +7125,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 110,
-                              "content": "PYT-8820",
+                              "content": "WDL-8820",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -7207,7 +7135,7 @@
                               "id": "pM3VJ",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "Mi Mi San",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -7218,11 +7146,23 @@
                               "id": "C7hyn0",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "KBZ - 09512345xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "p3dtgL",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "K 15,000",
+                              "textAlign": "right",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
                             },
                             {
                               "type": "frame",
@@ -7257,38 +7197,51 @@
                               "id": "NBYm8",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "Aung Ko",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
+                              "type": "text",
+                              "id": "zxhJO",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "28 Aug, 7:40 AM",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
                               "type": "frame",
-                              "id": "SmDy9",
+                              "id": "Y4NIH",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "QxSUt",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "XQIEK",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "sraKj",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "BKn2e",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -7318,7 +7271,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 110,
-                              "content": "PYT-8819",
+                              "content": "WDL-8819",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -7328,7 +7281,7 @@
                               "id": "I0ppW2",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "Daw Nilar",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -7339,11 +7292,23 @@
                               "id": "TYrqo",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "KBZ - 09598765xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "rhP0L",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "K 20,000",
+                              "textAlign": "right",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
                             },
                             {
                               "type": "frame",
@@ -7378,38 +7343,51 @@
                               "id": "f51Hg",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "Mya Mya",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
+                              "type": "text",
+                              "id": "H1ABxZ",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "27 Aug, 3:10 PM",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
                               "type": "frame",
-                              "id": "f5xYKf",
+                              "id": "AYRIo",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "uSHqs",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "KJX4L",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "gKW16",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "soU7w",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -7439,7 +7417,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 110,
-                              "content": "PYT-8818",
+                              "content": "WDL-8818",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -7449,7 +7427,7 @@
                               "id": "Kynl5",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "Ko Htet Naing",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -7460,11 +7438,23 @@
                               "id": "wUpRK",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "Wave - 09777123xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "t2HBEm",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "K 30,000",
+                              "textAlign": "right",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
                             },
                             {
                               "type": "frame",
@@ -7499,19 +7489,30 @@
                               "id": "IIgwW",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "Daw Hla",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
+                              "type": "text",
+                              "id": "Jk9vp",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "27 Aug, 1:05 PM",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
                               "type": "frame",
-                              "id": "JtuYI",
+                              "id": "oVDRJ",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -7538,7 +7539,7 @@
                               "fill": "$brand",
                               "textGrowth": "fixed-width",
                               "width": 110,
-                              "content": "PYT-8817",
+                              "content": "WDL-8817",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "700"
@@ -7548,7 +7549,7 @@
                               "id": "IVUvk",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 260,
+                              "width": 170,
                               "content": "Ma Ei Ei",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -7559,11 +7560,23 @@
                               "id": "O4UGbm",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 220,
+                              "width": 160,
                               "content": "KBZ - 09512345xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Abois",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": 95,
+                              "content": "K 10,000",
+                              "textAlign": "right",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "700"
                             },
                             {
                               "type": "frame",
@@ -7598,19 +7611,30 @@
                               "id": "yTB7F",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 110,
                               "content": "Aung Ko",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
                             },
                             {
+                              "type": "text",
+                              "id": "DE4cv",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": 100,
+                              "content": "26 Aug, 4:22 PM",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            },
+                            {
                               "type": "frame",
-                              "id": "A5X5Cw",
+                              "id": "KsXdp",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -7630,7 +7654,7 @@
       "id": "CfAa1",
       "x": 6280,
       "y": 3724,
-      "name": "Payout - New",
+      "name": "Withdrawal - New",
       "clip": true,
       "width": 1440,
       "height": 1400,
@@ -7764,7 +7788,7 @@
                       "type": "text",
                       "id": "zsO5H",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -7798,7 +7822,7 @@
                       "type": "text",
                       "id": "LPVsu",
                       "fill": "#FFFFFF",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -8143,7 +8167,7 @@
                           "type": "text",
                           "id": "VzOx1",
                           "fill": "$text-primary",
-                          "content": "New Payout",
+                          "content": "New Withdrawal",
                           "fontFamily": "$font",
                           "fontSize": 24,
                           "fontWeight": "700"
@@ -8342,112 +8366,6 @@
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "600"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "zfL13",
-                          "name": "Sender Section",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 14,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "qU05r",
-                              "fill": "$text-primary",
-                              "content": "Sender",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "K8M7a",
-                              "name": "Sender Name (from transfer) Field",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "F2MoM",
-                                  "gap": 6,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "bUbyh",
-                                      "fill": "$text-secondary",
-                                      "content": "Sender Name (from transfer)",
-                                      "fontFamily": "$font",
-                                      "fontSize": 12,
-                                      "fontWeight": "600"
-                                    },
-                                    {
-                                      "type": "frame",
-                                      "id": "y54CJC",
-                                      "fill": "$status-completed-bg",
-                                      "cornerRadius": 5,
-                                      "gap": 3,
-                                      "padding": [
-                                        2,
-                                        6
-                                      ],
-                                      "alignItems": "center",
-                                      "children": [
-                                        {
-                                          "type": "icon",
-                                          "id": "TT8Pm",
-                                          "width": 10,
-                                          "height": 10,
-                                          "icon": "sparkles",
-                                          "library": "lucide",
-                                          "fill": "$status-completed-text"
-                                        },
-                                        {
-                                          "type": "text",
-                                          "id": "p1wbe",
-                                          "fill": "$status-completed-text",
-                                          "content": "OCR",
-                                          "fontFamily": "$font",
-                                          "fontSize": 10,
-                                          "fontWeight": "700"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "v6xKH",
-                                  "width": "fill_container",
-                                  "height": 44,
-                                  "fill": "$bg",
-                                  "cornerRadius": 10,
-                                  "stroke": "$brand-light",
-                                  "strokeWidth": 1.5,
-                                  "padding": [
-                                    0,
-                                    14
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "fVcMH",
-                                      "fill": "$text-primary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "ဇော်မင်း",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "500"
                                     }
                                   ]
                                 }
@@ -9264,6 +9182,124 @@
                       "children": [
                         {
                           "type": "frame",
+                          "id": "LEdID",
+                          "name": "Summary Card",
+                          "width": "fill_container",
+                          "fill": "$brand-dark",
+                          "cornerRadius": 12,
+                          "layout": "vertical",
+                          "gap": 20,
+                          "padding": 24,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "KpcmJ",
+                              "fill": "#FFFFFF",
+                              "content": "Summary",
+                              "fontFamily": "$font",
+                              "fontSize": 15,
+                              "fontWeight": "700"
+                            },
+                            {
+                              "type": "frame",
+                              "id": "OnEXH",
+                              "name": "Totals",
+                              "width": "fill_container",
+                              "layout": "vertical",
+                              "gap": 12,
+                              "children": [
+                                {
+                                  "type": "frame",
+                                  "id": "nfrLt",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "V6WoDJ",
+                                      "fill": "#FFFFFFB3",
+                                      "content": "Amount received",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "DFNO8",
+                                      "fill": "#FFFFFF",
+                                      "content": "K 2,150,000",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "iZiuq",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "RuPex",
+                                      "fill": "#FFFFFFB3",
+                                      "content": "Fee",
+                                      "fontFamily": "$font",
+                                      "fontSize": 13
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "tNKxW",
+                                      "fill": "#FFFFFF",
+                                      "content": "K 50,000",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "600"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "fwpVi",
+                                  "width": "fill_container",
+                                  "height": 1,
+                                  "fill": "#FFFFFF26"
+                                },
+                                {
+                                  "type": "frame",
+                                  "id": "dyUGZ",
+                                  "width": "fill_container",
+                                  "justifyContent": "space_between",
+                                  "alignItems": "center",
+                                  "children": [
+                                    {
+                                      "type": "text",
+                                      "id": "X1glh",
+                                      "fill": "#FFFFFF",
+                                      "content": "Cash to pay out",
+                                      "fontFamily": "$font",
+                                      "fontSize": 14,
+                                      "fontWeight": "700"
+                                    },
+                                    {
+                                      "type": "text",
+                                      "id": "H39RuX",
+                                      "fill": "#FFFFFF",
+                                      "content": "K 2,100,000",
+                                      "fontFamily": "$font",
+                                      "fontSize": 16,
+                                      "fontWeight": "700"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
                           "id": "uATwX",
                           "name": "Duplicate Warning",
                           "width": "fill_container",
@@ -9307,7 +9343,7 @@
                               "fill": "$error",
                               "textGrowth": "fixed-width",
                               "width": "fill_container",
-                              "content": "WM2408241 was already used on a completed payout (PYT-8790, 12 Aug). You can still proceed at your judgment.",
+                              "content": "WM2408241 was already used on a completed withdrawal (WDL-8790, 12 Aug). You can still proceed at your judgment.",
                               "lineHeight": 1.5,
                               "fontFamily": "$font",
                               "fontSize": 12,
@@ -9898,7 +9934,7 @@
                       "type": "text",
                       "id": "Ccr0C",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -9932,7 +9968,7 @@
                       "type": "text",
                       "id": "c1J689",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -10584,7 +10620,7 @@
                               "id": "hoNzl",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "FROM",
                               "fontFamily": "$font",
                               "fontSize": 11,
@@ -10596,7 +10632,7 @@
                               "id": "TdxzX",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "TO",
                               "fontFamily": "$font",
                               "fontSize": 11,
@@ -10645,7 +10681,7 @@
                               "id": "oZ2WK",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 60,
+                              "width": 130,
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -10685,7 +10721,7 @@
                               "id": "ZVMhE",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "KBZ - 09512345xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -10696,7 +10732,7 @@
                               "id": "aK9iA",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "Wave - 09777123xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -10755,30 +10791,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "E34tv",
+                              "id": "rFl6V",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "yRoSP",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "vsHXw",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "H2Sl1",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "LhXzA",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -10818,7 +10856,7 @@
                               "id": "ormGc",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "Cash Drawer",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -10829,7 +10867,7 @@
                               "id": "K4ifV6",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "KBZ - 09598765xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -10888,30 +10926,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "wqg86",
+                              "id": "LNHWw",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "fFczL",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "A8wvp",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "EG2ed",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "QRgh4",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -10951,7 +10991,7 @@
                               "id": "kFOAP",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "Wave - 09777123xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -10962,7 +11002,7 @@
                               "id": "h8L3s",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "KBZ - 09512345xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -11021,51 +11061,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "Sug0v",
+                              "id": "Scb0T",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "QF82r",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "WVie8",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "QAuKo",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "DiLZm",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "MmVad",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "n5EbhS",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "sTnne",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "x",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "CVngX",
+                                      "fill": "$text-secondary",
+                                      "content": "Cancel",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -11105,7 +11149,7 @@
                               "id": "XMoCR",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "KBZ - 09598765xx",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -11116,7 +11160,7 @@
                               "id": "EnuNf",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 230,
+                              "width": 195,
                               "content": "Cash Drawer",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -11175,11 +11219,11 @@
                             },
                             {
                               "type": "frame",
-                              "id": "rLUnd",
+                              "id": "F1YYt4",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -11706,7 +11750,7 @@
                       "type": "text",
                       "id": "soqhp",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -11740,7 +11784,7 @@
                       "type": "text",
                       "id": "ONQub",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -12453,7 +12497,7 @@
                               "id": "Z9KaKS",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 60,
+                              "width": 130,
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -12591,30 +12635,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "LPoOM",
+                              "id": "tkVSC",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "NGs68",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "PqMVr",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "uKswx",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "ErbIz",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -12752,30 +12798,32 @@
                             },
                             {
                               "type": "frame",
-                              "id": "RUcNj",
+                              "id": "urx7q",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "UQJIk",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "S8UJX5",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "wQl36",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "rotate-ccw",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "ezHEE",
+                                      "fill": "$text-secondary",
+                                      "content": "Void",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -12913,51 +12961,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "D26Ae",
+                              "id": "Apavw",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 130,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "N0Oy3",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "ANcyL",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "kvTK1",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "f6JggM",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "wiMOA",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "D3ccm",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "v6eOgy",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "x",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "WavDq",
+                                      "fill": "$text-secondary",
+                                      "content": "Cancel",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -13095,11 +13147,11 @@
                             },
                             {
                               "type": "frame",
-                              "id": "jkhYY",
+                              "id": "lZCtI",
                               "name": "Row Actions",
-                              "width": 60,
+                              "width": 130,
                               "height": "fit_content(0)",
-                              "gap": 4,
+                              "gap": 6,
                               "justifyContent": "end"
                             }
                           ]
@@ -13624,7 +13676,7 @@
                       "type": "text",
                       "id": "etdP1",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -13658,7 +13710,7 @@
                       "type": "text",
                       "id": "j7Ro5Q",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -14095,7 +14147,7 @@
                               "id": "r4xFUz",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "PROVIDER",
                               "fontFamily": "$font",
                               "fontSize": 11,
@@ -14119,7 +14171,7 @@
                               "id": "DkcFl",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "BALANCE",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14144,7 +14196,7 @@
                               "id": "ETCWK",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 60,
+                              "width": 140,
                               "fontFamily": "$font",
                               "fontSize": 11,
                               "fontWeight": "700",
@@ -14212,7 +14264,7 @@
                               "id": "cbV7x",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "KBZ Bank",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -14234,7 +14286,7 @@
                               "id": "NNki7",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "K 38,200,000",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14268,51 +14320,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "TmfE6",
+                              "id": "gPxWg",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "FS3zi",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "f7TAql",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "e4VA6",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "F5K78j",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "cK5mY",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "rtq9Z",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "SA3yy",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "EqmFc",
+                                      "fill": "$text-secondary",
+                                      "content": "Deactivate",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -14380,7 +14436,7 @@
                               "id": "XgVUX",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "KBZ Bank",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -14402,7 +14458,7 @@
                               "id": "IM00o",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "K 14,900,000",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14436,51 +14492,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "U5JjS",
+                              "id": "v5xrOl",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "oF4xO",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "yzTVh",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "Ttoln",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "z9rME",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "N4a9B1",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "N4pin",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "G8mJWh",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "MJx37",
+                                      "fill": "$text-secondary",
+                                      "content": "Deactivate",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -14548,7 +14608,7 @@
                               "id": "rfWsL",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "Wave Money",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -14570,7 +14630,7 @@
                               "id": "O3HtHD",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "K 18,670,000",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14604,51 +14664,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "GdnQH",
+                              "id": "iwheh",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "Aw3CW",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "I0m2I",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "i5yI3",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "q3H56S",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "L5Vcq",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "tSmAQ",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "K1ZhBL",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "ilA5l",
+                                      "fill": "$text-secondary",
+                                      "content": "Deactivate",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -14716,7 +14780,7 @@
                               "id": "BxL4n",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "—",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -14738,7 +14802,7 @@
                               "id": "yhwNf",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "K 12,480,000",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14772,51 +14836,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "DsFjv",
+                              "id": "dITWX",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "r82QNM",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "o0zrLN",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "Ogp15",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "P6RKLx",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "B0Hgb0",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "AtTUn",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "p0nIM",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "xMstq",
+                                      "fill": "$text-secondary",
+                                      "content": "Deactivate",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -14885,7 +14953,7 @@
                               "id": "bl4Nk",
                               "fill": "$text-secondary",
                               "textGrowth": "fixed-width",
-                              "width": 150,
+                              "width": 120,
                               "content": "KBZ Bank",
                               "fontFamily": "$font",
                               "fontSize": 13,
@@ -14907,7 +14975,7 @@
                               "id": "CPup2",
                               "fill": "$text-primary",
                               "textGrowth": "fixed-width",
-                              "width": 180,
+                              "width": 160,
                               "content": "K 0",
                               "textAlign": "right",
                               "fontFamily": "$font",
@@ -14941,51 +15009,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "E7JAGd",
+                              "id": "zbdHq",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "Zu7GK",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "zp675",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "DtDqb",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "h0ILN8",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "v3lxr",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "tmygi",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "CL45A",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "power",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "r7cph",
+                                      "fill": "$text-secondary",
+                                      "content": "Reactivate",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -15556,7 +15628,7 @@
                       "type": "text",
                       "id": "dZJUn",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -15590,7 +15662,7 @@
                       "type": "text",
                       "id": "M8HunR",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -16061,7 +16133,7 @@
                             {
                               "type": "frame",
                               "id": "eXyOM",
-                              "width": 180,
+                              "width": 260,
                               "height": "fit_content(0)"
                             }
                           ]
@@ -16212,51 +16284,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "vrUM3",
+                              "id": "qOmTO",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "sqG97",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "S57It",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "Uzxlc",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "WPWxK",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "zHa18",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "fK5C8",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "G8Vi8",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "GBzUU",
+                                      "fill": "$text-secondary",
+                                      "content": "Disable",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -16410,51 +16486,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "Etgb4",
+                              "id": "JV1pJ",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "YUfXK",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "oAbUp",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "wtW3A",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "EMd2p",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "ck037",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "v34yf",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "ITXlJ",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "S4Qtc1",
+                                      "fill": "$text-secondary",
+                                      "content": "Disable",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -16608,51 +16688,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "RABLv",
+                              "id": "i9AnM",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "LGca5",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "p4HXfK",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "VIrZG",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "oG3ky",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "z32GQ",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "iFA28",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "IkoN0",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "ban",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "hMHZ2",
+                                      "fill": "$text-secondary",
+                                      "content": "Disable",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -16806,51 +16890,55 @@
                             },
                             {
                               "type": "frame",
-                              "id": "R0HbcO",
+                              "id": "SStmV",
                               "name": "Row Actions",
-                              "width": 60,
-                              "gap": 4,
+                              "width": 140,
+                              "gap": 6,
                               "justifyContent": "end",
                               "children": [
                                 {
                                   "type": "frame",
-                                  "id": "r0ZL0I",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "Z68EYr",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "QD5iA",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "pencil",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "CGwOq",
+                                      "fill": "$text-secondary",
+                                      "content": "Edit",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 },
                                 {
                                   "type": "frame",
-                                  "id": "d41ZrK",
-                                  "width": 26,
-                                  "height": 26,
+                                  "id": "L62mn",
                                   "cornerRadius": 6,
-                                  "layout": "vertical",
-                                  "justifyContent": "center",
+                                  "stroke": "$border",
+                                  "strokeWidth": 1,
+                                  "padding": [
+                                    5,
+                                    10
+                                  ],
                                   "alignItems": "center",
                                   "children": [
                                     {
-                                      "type": "icon",
-                                      "id": "f2eVij",
-                                      "width": 14,
-                                      "height": 14,
-                                      "icon": "power",
-                                      "library": "lucide",
-                                      "fill": "$text-secondary"
+                                      "type": "text",
+                                      "id": "qXdRQ",
+                                      "fill": "$text-secondary",
+                                      "content": "Enable",
+                                      "fontFamily": "$font",
+                                      "fontSize": 12,
+                                      "fontWeight": "600"
                                     }
                                   ]
                                 }
@@ -17440,7 +17528,7 @@
                       "type": "text",
                       "id": "Z5bQU",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -17474,7 +17562,7 @@
                       "type": "text",
                       "id": "U5VGvl",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -18027,7 +18115,7 @@
                               "type": "text",
                               "id": "D4kYuv",
                               "fill": "$text-secondary",
-                              "content": "Send Volume",
+                              "content": "Deposit Volume",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "500"
@@ -18092,7 +18180,7 @@
                               "type": "text",
                               "id": "O8mG3u",
                               "fill": "$text-secondary",
-                              "content": "Payout Volume",
+                              "content": "Withdrawal Volume",
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "500"
@@ -19637,7 +19725,7 @@
                       "type": "text",
                       "id": "zfpKJ",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -19671,7 +19759,7 @@
                       "type": "text",
                       "id": "Tmi2K",
                       "fill": "#FFFFFF99",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -20927,7 +21015,7 @@
       "id": "K9lyY",
       "x": 9780,
       "y": 8612,
-      "name": "Payout - New (No OCR Provider)",
+      "name": "Withdrawal - New (No OCR Provider)",
       "clip": true,
       "width": 1440,
       "height": 1400,
@@ -21061,7 +21149,7 @@
                       "type": "text",
                       "id": "BKmT7",
                       "fill": "#FFFFFF99",
-                      "content": "Send",
+                      "content": "Deposit",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "500"
@@ -21095,7 +21183,7 @@
                       "type": "text",
                       "id": "Yzlbw",
                       "fill": "#FFFFFF",
-                      "content": "Payout",
+                      "content": "Withdrawal",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "600"
@@ -21440,7 +21528,7 @@
                           "type": "text",
                           "id": "tUZjf",
                           "fill": "$text-primary",
-                          "content": "New Payout",
+                          "content": "New Withdrawal",
                           "fontFamily": "$font",
                           "fontSize": 24,
                           "fontWeight": "700"
@@ -21639,80 +21727,6 @@
                                       "fontFamily": "$font",
                                       "fontSize": 12,
                                       "fontWeight": "600"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "type": "frame",
-                          "id": "kzYPl",
-                          "name": "Sender Section",
-                          "width": "fill_container",
-                          "layout": "vertical",
-                          "gap": 14,
-                          "children": [
-                            {
-                              "type": "text",
-                              "id": "fG8An",
-                              "fill": "$text-primary",
-                              "content": "Sender",
-                              "fontFamily": "$font",
-                              "fontSize": 13,
-                              "fontWeight": "700"
-                            },
-                            {
-                              "type": "frame",
-                              "id": "hJv3p",
-                              "name": "Sender Name (from transfer) Field",
-                              "width": "fill_container",
-                              "layout": "vertical",
-                              "gap": 8,
-                              "children": [
-                                {
-                                  "type": "frame",
-                                  "id": "k43B8H",
-                                  "gap": 6,
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "Va9mx",
-                                      "fill": "$text-secondary",
-                                      "content": "Sender Name (from transfer)",
-                                      "fontFamily": "$font",
-                                      "fontSize": 12,
-                                      "fontWeight": "600"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "type": "frame",
-                                  "id": "mgmdq",
-                                  "width": "fill_container",
-                                  "height": 44,
-                                  "fill": "$bg",
-                                  "cornerRadius": 10,
-                                  "stroke": "$border",
-                                  "strokeWidth": 1,
-                                  "padding": [
-                                    0,
-                                    14
-                                  ],
-                                  "alignItems": "center",
-                                  "children": [
-                                    {
-                                      "type": "text",
-                                      "id": "Yz6ya",
-                                      "fill": "$text-tertiary",
-                                      "textGrowth": "fixed-width",
-                                      "width": "fill_container",
-                                      "content": "Full name",
-                                      "fontFamily": "$font",
-                                      "fontSize": 13,
-                                      "fontWeight": "500"
                                     }
                                   ]
                                 }

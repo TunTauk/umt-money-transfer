@@ -1,21 +1,21 @@
-# OCR & Payout Verification
+# OCR & Verification
 
 ## Why this exists
 
 The only mobile-specific requirement in the whole system: a teller
 photographs/uploads a screenshot of a transfer confirmation (from the KBZ or
-Wave app) so that key fields auto-fill on the Payout form instead of being
-typed by hand. This does **not** need a separate installable app — a
+Wave app) so that key fields auto-fill on the Withdrawal form instead of
+being typed by hand. This does **not** need a separate installable app — a
 mobile-responsive page in the same Next.js app, using a camera-capable file
 input, covers it. See [Tech Stack](08-tech-stack.md) for why a separate
 React Native/Capacitor app was ruled out.
 
-## Flow
+## Flow (Withdrawal)
 
-1. Teller starts a new Payout, selects the provider (**KBZ** or **Wave**)
-   from a dropdown before/after upload. Asking the teller to pick the
-   provider up front, rather than trying to auto-detect it from the image,
-   makes rule-matching far more reliable.
+1. Teller starts a new Withdrawal, selects the provider (**KBZ**, **Wave**,
+   or any other onboarded provider) from a dropdown before/after upload.
+   Asking the teller to pick the provider up front, rather than trying to
+   auto-detect it from the image, makes rule-matching far more reliable.
 2. Teller uploads/photographs the screenshot. File is stored in object
    storage and a `TransactionAttachment` row is created — see
    [Storage & attachments](#storage--attachments) below.
@@ -26,10 +26,11 @@ React Native/Capacitor app was ruled out.
    are laid out differently. Raw OCR text and the extracted fields are
    saved on the `TransactionAttachment` row (`ocr_raw_text`,
    `ocr_extracted_fields`) as a snapshot of what OCR actually produced.
-5. Extracted fields prefill the Payout form: amount, `external_reference_no`,
-   date/time. Sender name (often Burmese script) is prefilled best-effort
-   but expected to need manual correction — OCR accuracy on Burmese script
-   is weaker than on numerals/Latin text.
+5. Extracted fields prefill the Withdrawal form: amount, `external_reference_no`,
+   date/time. **No name is extracted here** — since [the transaction only
+   records the recipient's identity, not the remote sender's](01-overview.md#deposit-cash-in--recipients-account),
+   there's no person field left for OCR to fill on this screen; the
+   Recipient (walk-in) fields are always entered manually.
 6. Teller reviews every field against the actual screenshot before
    proceeding — **OCR output never auto-submits**.
 7. Transaction is saved as `PENDING`.
@@ -68,40 +69,44 @@ separate backup process. Only the OCR processing itself is self-hosted
   Burmese script. Acceptable because OCR is only ever prefilling a form a
   human reviews before confirming — never a source of truth on its own.
 
-## OCR on Send
+## OCR on Deposit
 
-[Send's create form](../draft-screens/12-send-new-screen.md#form-card-sections)
+[Deposit's create form](../draft-screens/12-deposit-new-screen.md#form-card-sections)
 uses the same OCR mechanism against its own (optional) screenshot of the
-outbound wire confirmation, with two differences from the Payout flow
+outbound wire confirmation, with two differences from the Withdrawal flow
 above:
 
-- **The extracted identity field flips.** Payout's screenshot is of
-  *someone else's* inbound transfer, so it shows the Sender's name — that
-  field gets OCR-prefilled. Send's screenshot is of *our own* outbound
-  confirmation, which shows who *we* sent to — so it's the **Recipient's**
-  name that gets OCR-prefilled instead, carrying the same Burmese-script
-  reliability caveat as step 5 above. Sender on Send is always the
-  walk-in customer at the counter and is never OCR-sourced.
+- **Deposit extracts a name; Withdrawal doesn't.** Deposit's screenshot is
+  of *our own* outbound confirmation, which shows who we sent to — so the
+  **Recipient's** name gets OCR-prefilled here (carrying the usual
+  Burmese-script reliability caveat: often needs manual correction, since
+  OCR accuracy on Burmese script is weaker than on numerals/Latin text).
+  This is the only place in the whole system OCR extracts a person's name
+  — Withdrawal has no name field left to fill, per step 5 above, since
+  only the recipient is recorded and the recipient never appears on an
+  *inbound* transfer's screenshot.
 - **No independent-verification step.** Steps 8–9 above (teller
   independently confirms the transfer landed, then pays cash) exist
-  because Payout is paying cash out against a claim we didn't perform
+  because Withdrawal is paying cash out against a claim we didn't perform
   ourselves — the core fraud exposure called out in
-  [Overview](01-overview.md#payout-elsewhere--customer). Send carries no
-  equivalent risk, since we execute the outbound wire ourselves rather
-  than trusting an external claim, so the flow ends after step 6 (teller
-  reviews the prefilled fields, then saves as `PENDING`). The duplicate-
-  reference guardrail below is likewise Payout-only — reusing an outbound
-  reference on Send doesn't let anyone claim money they haven't
-  transferred, unlike reusing an inbound reference on Payout.
+  [Overview](01-overview.md#withdrawal-money-already-with-us--cash-out).
+  Deposit carries no equivalent risk, since we execute the outbound wire
+  ourselves rather than trusting an external claim, so the flow ends after
+  step 6 (teller reviews the prefilled fields, then saves as `PENDING`).
 
 ## Fraud guardrail: duplicate reference number
 
-If a completed Payout already used the same `external_reference_no` as the
-one being entered, the system warns (does not block — see
-[Transactions & Lifecycle](04-transactions-lifecycle.md) for why this and
-the insufficient-balance check were deliberately left as warnings rather
-than hard blocks). This catches the same real transfer being used to claim
-a second payout.
+If a completed Deposit or Withdrawal already used the same
+`external_reference_no` as the one being entered, the system warns (does
+not block — see [Transactions & Lifecycle](04-transactions-lifecycle.md)
+for why this and the insufficient-balance check were deliberately left as
+warnings rather than hard blocks). For Withdrawal this catches the same
+real inbound transfer being used to claim a second withdrawal — the
+higher-stakes case, since it's the direction where cash actually goes out
+against an unverified claim. For Deposit it's a lighter-weight data-
+integrity check (catching an accidental duplicate entry of our own
+outbound reference) rather than a fraud guardrail, since reusing our own
+reference doesn't let anyone claim money they haven't received.
 
 ## OPEN
 

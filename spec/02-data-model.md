@@ -39,26 +39,36 @@ account's `LedgerEntry` rows. See [Ledger & Accounting](03-ledger-accounting.md)
 ## Transaction
 
 One customer or internal event. **Deliberately one table for both**
-customer transactions (`SEND`, `PAYOUT`) and internal ones
+customer transactions (`DEPOSIT`, `WITHDRAWAL`) and internal ones
 (`INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL`), not split —
 see [Design decision: single Transaction table](#design-decision-single-transaction-table)
 below.
 
+`DEPOSIT` (was "Send") and `WITHDRAWAL` (was "Payout") were renamed because
+the old names implied a peer-to-peer transfer between two named people. In
+reality only one party's identity is ever recorded: a `DEPOSIT` puts cash
+into one person's account elsewhere (the account holder — `recipient_*`
+below); a `WITHDRAWAL` pays cash out against money that already landed in
+one of ours (the walk-in collecting it — also `recipient_*`). Neither
+direction names or records the other party involved (the walk-in who
+handed over cash for a Deposit; the remote party whose transfer created
+the balance for a Withdrawal) — see
+[Overview](01-overview.md#deposit-cash-in--recipients-account) for the
+full reasoning.
+
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | |
-| reference_no | string | internal, human-shareable reference (e.g. for receipts) |
-| type | enum | `SEND`, `PAYOUT`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL` |
+| reference_no | string | internal, human-shareable reference (e.g. for receipts) — prefixed `DEP-`/`WDL-`/`TRF-`/`CAP-` by type |
+| type | enum | `DEPOSIT`, `WITHDRAWAL`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL` |
 | status | enum | `PENDING`, `COMPLETED`, `CANCELLED`, `VOIDED` |
 | amount | decimal | principal amount (MMK) |
 | fee | decimal | 0 for non-customer types |
 | source_account_id | uuid \| null | account/cash money comes from (type-dependent) |
 | destination_account_id | uuid \| null | account/cash money goes to (type-dependent) |
-| sender_name | string \| null | customer-facing types only |
-| sender_phone | string \| null | normalized format, see [Search & Filter](07-search-filter.md) |
-| recipient_name | string \| null | |
-| recipient_phone | string \| null | normalized format |
-| external_reference_no | string \| null | reference number extracted from a Payout screenshot (OCR) — see uniqueness note in [OCR & Payout Verification](06-ocr-payout-verification.md) |
+| recipient_name | string \| null | the one party recorded for `DEPOSIT`/`WITHDRAWAL` — see above |
+| recipient_phone | string \| null | normalized format, see [Search & Filter](07-search-filter.md) |
+| external_reference_no | string \| null | reference number extracted from a Deposit/Withdrawal screenshot (OCR) — see uniqueness note in [OCR & Verification](06-ocr-verification.md) |
 | note | string \| null | free text — also the catch-all for any compliance-relevant detail, since no fixed threshold rule exists yet (see [RBAC](05-rbac.md) open item) |
 | created_by | uuid (User) | |
 | created_at | timestamp | |
@@ -90,9 +100,9 @@ the first set.
 
 ### Design decision: single Transaction table
 
-Considered splitting customer transactions (Send/Payout) from internal ones
-(Internal Transfer, Capital Deposit/Withdrawal) into separate tables, since
-`sender_name`/`sender_phone`/`recipient_name`/`recipient_phone`/
+Considered splitting customer transactions (Deposit/Withdrawal) from
+internal ones (Internal Transfer, Capital Deposit/Withdrawal) into
+separate tables, since `recipient_name`/`recipient_phone`/
 `external_reference_no` are `NULL` for internal types. Kept as one table:
 
 - All types share the identical status state machine
@@ -106,22 +116,22 @@ Considered splitting customer transactions (Send/Payout) from internal ones
   ([Search & Filter](07-search-filter.md)) need to query across all types
   together — one table means a plain `WHERE`; two tables means a `UNION`
   everywhere those features touch.
-- The cost — 5 nullable columns on internal-type rows — is small enough to
+- The cost — 3 nullable columns on internal-type rows — is small enough to
   accept rather than design around.
 
 Contrast with `TransactionAttachment` below, which *is* split out: that
 data is one-to-many (multiple upload attempts) and a genuinely different
 concern (file storage + OCR metadata) from the financial fact a Transaction
-represents. Sender/recipient info is one-to-one and central to what a
-Send/Payout transaction *is* — pulling it into a joined table would only
-move the nullability from a column to a relation while adding a JOIN to
-every list/search query, without solving a real problem.
+represents. Recipient info is one-to-one and central to what a
+Deposit/Withdrawal transaction *is* — pulling it into a joined table would
+only move the nullability from a column to a relation while adding a JOIN
+to every list/search query, without solving a real problem.
 
 ## TransactionAttachment
 
-Supporting evidence for a transaction — currently: Payout verification
-screenshots. Deliberately a separate table from `Transaction` rather than a
-`file_url` column on it — see [OCR & Payout Verification](06-ocr-payout-verification.md#storage--attachments)
+Supporting evidence for a transaction — currently: Deposit/Withdrawal
+verification screenshots. Deliberately a separate table from `Transaction`
+rather than a `file_url` column on it — see [OCR & Verification](06-ocr-verification.md#storage--attachments)
 for why.
 
 | Field | Type | Notes |
@@ -141,6 +151,6 @@ followed by a clearer re-upload) — all are kept, not overwritten.
 ## FeeIncome
 
 Not a real money account — a reporting-only ledger for revenue. Every
-`COMPLETED` `SEND`/`PAYOUT` transaction with a nonzero fee posts one entry
-here (credit side), used for the profit summary in
+`COMPLETED` `DEPOSIT`/`WITHDRAWAL` transaction with a nonzero fee posts one
+entry here (credit side), used for the profit summary in
 [Ledger & Accounting](03-ledger-accounting.md).

@@ -9,10 +9,10 @@ page) — see
 
 ## Purpose
 
-Manage the `Account` records that hold money — Cash, Bank (KBZ), Wallet
-(Wave), per [Overview](../spec/01-overview.md#accounts-we-hold-money-in). This is
-the admin surface behind every account picker used on the Send, Payout,
-Internal Transfer, and Capital screens. Referenced from
+Manage the `Account` records that hold money — Cash or Bank (KBZ, Wave, or
+any other provider), per [Overview](../spec/01-overview.md#accounts-we-hold-money-in). This is
+the admin surface behind every account picker used on the Deposit,
+Withdrawal, Internal Transfer, and Capital screens. Referenced from
 [Dashboard](10-dashboard-screen.md#account-balances-panel) via its "View
 all accounts" link.
 
