@@ -27,17 +27,15 @@ Two-panel, full-bleed (1440×1024 desktop reference):
 | Element | Detail |
 |---|---|
 | Title | "Sign in" |
-| Subtitle | "Enter your phone number and password to continue." |
-| Phone number field | Label + input with leading phone icon, placeholder `09xxxxxxxxx` |
+| Subtitle | "Enter your email address and password to continue." |
+| Email address field | Label + input with leading mail icon, placeholder `name@example.com` |
 | Password field | Label + input with leading lock icon and trailing show/hide (`eye-off`) icon, masked placeholder |
 | Submit button | Full-width "Sign in", `$brand` fill |
 
-**Phone number, not email** — matches the data model
-([`User.phone`](../spec/02-data-model.md#user) is the login identifier; there is
-no email field), so password recovery is admin-mediated rather than a
-self-service email reset link. The screen no longer surfaces this path
-directly (the "Forgot your password? Contact your admin to reset it."
-help row was removed) — see Open Questions below.
+**Email is the login identifier** — matches
+[`User.email`](../spec/02-data-model.md#user). Account creation and password
+reset remain owner-managed for now; using email does not imply that a
+self-service recovery flow has been implemented.
 
 ## States
 
@@ -46,7 +44,7 @@ Empty fields, neutral borders, no messaging.
 
 ### Error — invalid credentials (`KgNAx`)
 - Red-bordered inputs (`$error` stroke) on both fields.
-- Error banner above the fields: "Incorrect phone number or password.
+- Error banner above the fields: "Incorrect email or password.
   Please try again." (`$error` text on `$error-bg`, `circle-alert` icon).
 - Field values are retained (not cleared) so the user can see what they
   typed.
@@ -56,7 +54,7 @@ Distinct from a bad password — reflects `User.active = false`
 ([Data Model](../spec/02-data-model.md#user): "disabled accounts can't log in").
 - Fields keep neutral (non-error) borders — the credentials themselves
   weren't wrong.
-- Banner copy: "This account has been disabled. Contact your admin to
+- Banner copy: "This account has been disabled. Contact your owner to
   restore access." (`ban` icon instead of `circle-alert`).
 - Submit button rendered in a muted/disabled visual state
   (`$text-tertiary` fill).
@@ -80,16 +78,11 @@ Distinct from a bad password — reflects `User.active = false`
 
 ## Open questions
 
-- **No visible password-recovery path.** The "Forgot your password?
-  Contact your admin to reset it." help row was removed from all three
-  states. Since there's no self-service reset (no email field, per
-  [Data Model](../spec/02-data-model.md#user)), a locked-out teller now
-  has no on-screen guidance at all — recovery relies entirely on knowing
-  to go find the owner, who resets it from the
+- **No visible password-recovery path.** A locked-out teller currently relies
+  on the owner to reset the password from the
   [User Management screen](21-user-management-screen.md#reset-password).
-  Confirm this is intentional, or that guidance exists elsewhere
-  (physical signage, onboarding, etc.).
-- Session mechanism (cookie vs. JWT) — not a design concern but affects
-  whether "remember me" belongs on this screen.
+  A self-service email reset can be added later if operationally useful.
+- Sessions are database-backed through Better Auth and referenced by a secure
+  cookie. There is no separate "remember me" option initially.
 - Rate limiting / lockout after repeated failed attempts is not yet
   reflected in any state — worth a fourth state if/when that's decided.

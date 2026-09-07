@@ -32,7 +32,7 @@ of tellers plus the owner), so filtering doesn't earn its space here.
 | Column | Content |
 |---|---|
 | Name | Avatar (initials, e.g. "AA") + name |
-| Phone | The login identifier — per [Data Model](../spec/02-data-model.md#user), there is no email field, phone is the only credential identity |
+| Email | The unique login identifier from [Data Model](../spec/02-data-model.md#user) |
 | Role | Badge — **Owner** (filled `$brand-dark`, white text) vs. **Teller** (outlined, neutral) — the filled treatment for Owner mirrors how few of these accounts should exist and makes them easy to spot in a longer list |
 | Status | Dot + "Active"/"Disabled" |
 | Created | Account creation date |
@@ -41,12 +41,9 @@ of tellers plus the owner), so filtering doesn't earn its space here.
 ### Reset password
 
 Shown as a standing text-link action on every row, not tucked into the
-overflow menu — reflects that this is the *only* password-recovery path
-in the whole system, since there's no self-service email reset (no email
-field exists on `User`). See
-[Login screen](09-login-screen.md#phone-number-not-email) for the
-front-door side of this: "Forgot your password? Contact your admin to
-reset it." This screen is where that contact actually resolves.
+overflow menu — reflects that this is currently the only implemented
+password-recovery path. Email is the login identifier, but self-service email
+reset is deliberately deferred. See the [Login screen](09-login-screen.md).
 
 ### Disabled accounts
 

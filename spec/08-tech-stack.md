@@ -13,7 +13,7 @@ real need for offline capture queuing or push notifications shows up later.
 
 - **Framework**: Next.js (App Router) — admin console + teller screens
   (responsive) + API routes, one codebase.
-- **Database**: Postgres.
+- **Database**: MySQL (InnoDB).
 - **ORM**: Prisma — a `Transaction` and its `LedgerEntry` rows must commit
   atomically, which a relational DB with real transactions gives for free.
 - **OCR**: Tesseract.js, self-hosted (see
@@ -22,13 +22,15 @@ real need for offline capture queuing or push notifications shows up later.
 - **File storage**: S3-compatible object storage (e.g. Cloudflare R2 or AWS
   S3) for uploaded Deposit/Withdrawal screenshots (`TransactionAttachment`), not local
   disk — durability for evidence tied to a financial record.
-- **Auth**: staff login (phone + password), role-based (`OWNER` / `TELLER`).
+- **Auth**: Better Auth with database sessions and staff login (email +
+  password), role-based (`OWNER` / `TELLER`).
 
 ## Deliberately not doing (for now)
 
 - No multi-branch/location support — single location only.
 - No multi-currency — MMK only.
-- No dedicated search engine — Postgres `ILIKE` is enough at this scale.
+- No dedicated search engine — MySQL `LIKE` with a case-insensitive collation is
+  enough at this scale.
 - No cloud OCR API — self-hosted Tesseract.js instead.
 - No granular permissions system — two hardcoded roles checked directly in
   route/API handlers.
