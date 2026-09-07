@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# UMT Money Transfer
 
-## Getting Started
+A server-first staff application built with Next.js 16, Better Auth, Prisma 7,
+MySQL, Tailwind CSS 4, and shadcn/ui.
 
-First, run the development server:
+## Architecture
+
+- `app/` contains only Next.js route entry points and the required global CSS;
+  route implementations live under `features/`.
+- Server Components perform reads directly through Prisma.
+- Server Actions handle mutations, validation, and authorization.
+- Better Auth stores sessions in MySQL and exposes only its required Route
+  Handler at `/api/auth/[...all]`.
+- Client Components are limited to browser interaction. There is no React
+  Query cache or client-side data hydration layer.
+- Every protected page and every future Server Action must validate its own
+  session. Layout protection is for navigation behavior, not authorization.
+- Financial mutations should use `prisma.$transaction` and should not use
+  optimistic UI.
+
+## Prerequisites
+
+- Node.js 20.19 or newer
+- pnpm 11
+- An existing MySQL database using InnoDB
+
+## Install Packages
+
+Run these commands from the repository root:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm add better-auth @better-auth/prisma-adapter @prisma/client@7 @prisma/adapter-mariadb mariadb dotenv zod lucide-react class-variance-authority clsx tailwind-merge @radix-ui/react-slot server-only
+pnpm add -D prisma@7 tsx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The shadcn configuration and initial `Button`, `Input`, `Label`, and `Card`
+components are already checked in. Do not run `shadcn init` over them. Add
+future components with:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dlx shadcn@latest add <component>
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment
 
-## Learn More
+Create your local environment file:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cp .env.example .env
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set `DATABASE_URL` to an existing MySQL database and replace every placeholder.
+Generate an authentication secret with:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+openssl rand -base64 32
+```
 
-## Deploy on Vercel
+The initial owner variables are read only by the explicit seed command. Staff
+sign in with their email address and password.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Database Setup
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Generate Prisma Client:
+
+```bash
+pnpm db:generate
+```
+
+Validate the schema:
+
+```bash
+pnpm db:validate
+```
+
+Push the Prisma schema directly to the database:
+
+```bash
+pnpm db:push
+```
+
+Create or restore the initial owner account:
+
+```bash
+pnpm db:seed
+```
+
+The seed is idempotent. If the configured email already exists, it restores
+that user to an active `OWNER` but does not replace the existing password.
+
+## Development
+
+Start the application:
+
+```bash
+pnpm dev
+```
+
+Then open [http://localhost:3000](http://localhost:3000) and sign in with the
+initial owner email and password from `.env`.
+
+## Checks
+
+Run these after installation and database setup:
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+No public sign-up endpoint is enabled. Additional staff accounts should later
+be created by owner-only Server Actions in the staff management feature.

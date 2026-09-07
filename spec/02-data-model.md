@@ -13,11 +13,14 @@ Staff account.
 |---|---|---|
 | id | uuid | |
 | name | string | |
-| phone | string | login identifier |
-| password_hash | string | |
+| email | string | unique login identifier |
+| password_hash | string | managed by Better Auth in its credential account table |
 | role | enum | `OWNER`, `TELLER` |
 | active | boolean | disabled accounts can't log in |
 | created_at | timestamp | |
+
+Better Auth manages the credential account and database-backed sessions. There
+is no public sign-up flow; owners provision staff accounts.
 
 ## Account
 
