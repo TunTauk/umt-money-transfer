@@ -39,11 +39,11 @@ Combine with each other and with the search box using AND logic.
   (`09xxxxxxxxx`, `9xxxxxxxxx`, `+959xxxxxxxx`, with/without dashes or
   spaces). Normalize to one canonical format on save so a search using any
   common format still finds the record.
-- **Search backend**: plain Postgres `ILIKE` across the relevant columns is
-  sufficient at this transaction volume (single shop). A dedicated search
-  engine (Elasticsearch/Algolia) would be over-engineering here. If fuzzy
-  name matching becomes necessary later, Postgres's `pg_trgm` extension is
-  the natural next step — not needed up front.
+- **Search backend**: plain MySQL `LIKE` using the database's case-insensitive
+  collation across the relevant columns is sufficient at this transaction
+  volume (single shop). A dedicated search engine (Elasticsearch/Algolia)
+  would be over-engineering here. If fuzzy name matching becomes necessary
+  later, evaluate a MySQL `FULLTEXT` index first.
 - **Pagination**: standard offset/cursor pagination on the filtered query;
   revisit if list sizes ever demand infinite scroll.
 

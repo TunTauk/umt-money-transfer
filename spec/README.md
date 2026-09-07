@@ -13,7 +13,7 @@ fee on every transaction.
 - **No separate mobile app.** The only mobile-specific need (photo upload +
   OCR autofill for Payout verification) is handled by a responsive page in
   the same app — see [OCR & Payout Verification](06-ocr-payout-verification.md).
-- **Single location**, single currency (MMK), Postgres + Prisma.
+- **Single location**, single currency (MMK), MySQL + Prisma.
 
 ## Documents
 
