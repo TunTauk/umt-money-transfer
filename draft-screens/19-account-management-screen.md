@@ -9,10 +9,10 @@ page) — see
 
 ## Purpose
 
-Manage the `Account` records that hold money — Cash, Bank (KBZ), Wallet
-(Wave), per [Overview](../spec/01-overview.md#accounts-we-hold-money-in). This is
-the admin surface behind every account picker used on the Send, Payout,
-Internal Transfer, and Capital screens. Referenced from
+Manage the `Account` records that hold money — Cash or Bank (KBZ, Wave, or
+any other provider), per [Overview](../spec/01-overview.md#accounts-we-hold-money-in). This is
+the admin surface behind every account picker used on the Deposit,
+Withdrawal, Internal Transfer, and Capital screens. Referenced from
 [Dashboard](10-dashboard-screen.md#account-balances-panel) via its "View
 all accounts" link.
 
@@ -33,9 +33,9 @@ Cash/Bank/Wallet entries), so filtering isn't needed yet.
 | Column | Content |
 |---|---|
 | Account Name | e.g. "KBZ - 09765112340", per the naming convention in [Data Model](../spec/02-data-model.md#account) |
-| Type | Badge — `CASH` (indigo), `BANK` (green), `WALLET` (amber) — same palette used on [Dashboard](10-dashboard-screen.md#account-balances-panel) |
+| Type | Badge — `CASH` (indigo) or `BANK` (green) — same palette used on [Dashboard](10-dashboard-screen.md#account-balances-panel). Wave/mobile-wallet accounts show `BANK` too, per [Data Model](../spec/02-data-model.md#account) |
 | Provider | "KBZ Bank", "Wave Money", or "—" for Cash |
-| Account No. | Masked (`•••• 2340`) — per [Data Model](../spec/02-data-model.md#account): "masked in UI where sensible" |
+| Account No. | Shown unmasked (e.g. `09765112340`) — an owner reviewing this list needs the full number to cross-check against a bank/wallet app |
 | Balance | Bold, live-derived from `LedgerEntry` rows, never a stored column (see [Ledger & Accounting](../spec/03-ledger-accounting.md)) |
 | Status | Dot + "Active"/"Inactive" |
 | — | Row actions (`ellipsis` menu) |
@@ -51,9 +51,10 @@ still fully present in the list for historical reference.
 
 ## Open questions
 
-- Row actions (`ellipsis` menu) aren't specified — presumably Edit and
-  Deactivate/Reactivate, but Deactivate needs a confirmation state since
-  it affects every screen with an account picker.
-- Whether unmasking the full account number (for an owner double-checking
-  a transfer) belongs on this screen or only on the underlying bank/wallet
-  app isn't decided — currently always shown masked.
+- ~~Row actions~~ — resolved: explicit Edit + Deactivate/Reactivate icon
+  buttons per row (no `ellipsis` menu — two actions is few enough to show
+  directly). Deactivate still needs a confirmation state before
+  implementation, since it affects every screen with an account picker.
+- ~~Unmasking the account number~~ — resolved: shown unmasked, since this
+  screen is Admin/Owner-only and they need the full number to cross-check
+  against a bank/wallet app.

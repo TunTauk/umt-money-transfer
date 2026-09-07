@@ -7,8 +7,6 @@ don't know in advance whether they're about to type a name or a phone
 number, they just want to find "that transaction." Matches with OR logic
 across:
 
-- Sender name
-- Sender phone
 - Recipient name
 - Recipient phone
 - `external_reference_no`
@@ -22,7 +20,7 @@ Combine with each other and with the search box using AND logic.
 | Filter | Values | Notes |
 |---|---|---|
 | Date range | Today, Yesterday, This week, This month, Custom range | |
-| Type | multi-select: Send, Payout, Internal Transfer, Capital Deposit, Capital Withdrawal | |
+| Type | multi-select: Deposit, Withdrawal, Internal Transfer, Capital Deposit, Capital Withdrawal | |
 | Status | multi-select: Pending, Completed, Cancelled, Voided | |
 | Account / provider | multi-select over `Account` | matches transactions where the account is source or destination |
 | Created by (staff) | single/multi-select over `User` | **Admin/Owner only** — also the mechanism for reviewing a specific teller's activity (see the pending-transaction monitoring note in [Transactions & Lifecycle](04-transactions-lifecycle.md)) |

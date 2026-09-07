@@ -8,18 +8,19 @@ Previously that button had nowhere to go — this screen fills that gap.
 
 ## Purpose
 
-Create form for an `Account` record — Cash, Bank (KBZ), or Wallet (Wave).
-Admin/Owner only, per the RBAC row "Manage accounts (add/edit/deactivate
-KBZ/Wave/Cash)" in [RBAC](../spec/05-rbac.md). See
+Create form for an `Account` record — Cash or Bank (KBZ, Wave, or any
+other provider). Admin/Owner only, per the RBAC row "Manage accounts
+(add/edit/deactivate KBZ/Wave/Cash)" in [RBAC](../spec/05-rbac.md). See
 [Data Model](../spec/02-data-model.md#account) for the underlying fields.
 
 Same modal pattern as
 [Internal Transfer](16-internal-transfer-new-screen.md#modal-contents) and
 [Capital](18-capital-new-screen.md#modal-contents) — few enough fields
-that a full page isn't warranted. The one new element this form needs
-that neither of those had: a **three-way** type toggle (Cash / Bank /
-Wallet) instead of a two-way one, since `Account.type` has three values,
-not two.
+that a full page isn't warranted. Type is a **two-way** toggle (Cash /
+Bank) — `Account.type` only has two values; mobile wallets like Wave are
+`BANK` too, distinguished from KBZ only by `provider` (see
+[Data Model](../spec/02-data-model.md#account)), not by a separate
+`WALLET` type.
 
 ## Modal contents
 
@@ -27,9 +28,9 @@ not two.
 |---|---|
 | Title | "Add Account", with a close (`x`) icon |
 | Account Name | Free text, e.g. "Wave - 09112445810" — matches the naming convention in [Data Model](../spec/02-data-model.md#account) |
-| Type | Three-way toggle: **Cash** / **Bank** / **Wallet**, active state filled `$brand-dark` (Wallet selected in the mock) |
-| Provider | Dropdown, e.g. "Wave Money" — conditional: only relevant for Bank/Wallet, `null` for Cash per the data model |
-| Account Number | Free text — stored full, masked on the list per [Account Management Screen — List](19-account-management-screen.md#table-columns) |
+| Type | Two-way toggle: **Cash** / **Bank**, active state filled `$brand-dark` (Bank selected in the mock, paired with a "Wave Money" provider — demonstrating that mobile wallets fall under `BANK`) |
+| Provider | Dropdown, e.g. "Wave Money" — conditional: only relevant for Bank, `null` for Cash per the data model |
+| Account Number | Free text, shown unmasked on the list per [Account Management Screen — List](19-account-management-screen.md#table-columns) |
 | Active | Toggle switch (on by default) + helper text "Visible in new-transaction account pickers" — directly explains what the switch controls, since [Data Model](../spec/02-data-model.md#account) notes "deactivated accounts are hidden from new-transaction pickers but keep history" |
 | Actions | Cancel / "Add Account" |
 

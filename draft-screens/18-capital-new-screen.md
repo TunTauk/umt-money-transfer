@@ -21,9 +21,13 @@ amount, admin-only, no fee). The one substantive change: Internal
 Transfer's From/To account pair + swap control is replaced here with a
 single **Account** field plus a **Deposit / Withdrawal** toggle, since a
 capital entry only ever touches one account, not two. The toggle itself
-reuses the visual pattern of the Provider toggle on the
-[Payout form](14-payout-new-screen.md#1-provider--screenshot) — two
-equal-width buttons, active state filled `$brand-dark`.
+reuses the visual pattern used elsewhere for two-way toggles (e.g. the
+Type toggle on the [Add Account form](20-account-new-screen.md#modal-contents))
+— two equal-width buttons, active state filled `$brand-dark`. Note the
+naming overlap with the customer-facing `Deposit`/`Withdrawal` transaction
+types (see [Overview](../spec/01-overview.md#deposit-cash-in--recipients-account))
+— this toggle's options are for `CAPITAL_DEPOSIT`/`CAPITAL_WITHDRAWAL`, a
+different, internal-only pair of enum values.
 
 ## Modal contents
 

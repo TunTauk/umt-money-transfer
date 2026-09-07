@@ -28,19 +28,19 @@ double-entry example in
 | Note (optional) | Free text |
 | Actions | Cancel / "Transfer" |
 
-Unlike Send and Payout, there's no summary/total card here — with a
+Unlike Deposit and Withdrawal, there's no summary/total card here — with a
 single amount and no fee, there's nothing to compute or reconcile before
 submit.
 
 ## Open questions
 
-- Whether "Transfer" should save as `PENDING` (matching Send/Payout, per
-  [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses)) or
+- Whether "Transfer" should save as `PENDING` (matching Deposit/Withdrawal,
+  per [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses)) or
   go straight to `COMPLETED` — the spec's state machine applies uniformly
   to all transaction types, but an internal transfer between our own
   accounts has no external counterparty to wait on, so a same-step
   complete may make more sense. Confirm before wiring this up; the modal
   currently doesn't commit to either in its copy.
 - No detail/edit view designed yet, same gap as
-  [Send](12-send-new-screen.md#open-questions) and
-  [Payout](14-payout-new-screen.md#open-questions).
+  [Deposit](12-deposit-new-screen.md#open-questions) and
+  [Withdrawal](14-withdrawal-new-screen.md#open-questions).

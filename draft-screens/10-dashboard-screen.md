@@ -41,12 +41,12 @@ closer look right now":
 | Lowest Balance | The `Account` with the smallest live balance, name + amount | Neutral card, red icon chip |
 | Oldest Pending | Age of the longest-waiting `PENDING` transaction, plus its type + party | Neutral card, red icon chip |
 
-Per-type sum cards (Bank Accounts, Wallet Accounts) were dropped — with
+Per-type sum cards (Cash, Bank) were dropped — with
 the full breakdown already one table down in the
 [Account Balances panel](#account-balances-panel), a same-page total by
 `type` didn't add a decision a teller or owner makes from the dashboard.
 **Lowest Balance** and **Oldest Pending** replace them: both are early
-warning signals — an account running low risks blocking the next Send
+warning signals — an account running low risks blocking the next Deposit
 before someone notices, and an aging `PENDING` transaction is the exact
 scenario the [Pending panel](#pending-panel-xudwl) below exists to catch
 ([Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#transitions--permissions)).
@@ -64,7 +64,7 @@ Full-width table, one row per `Account`:
 | Column | Content |
 |---|---|
 | Account | Name, e.g. "KBZ - 09765112340" |
-| Type | Badge — `CASH` (indigo), `BANK` (green), `WALLET` (amber) |
+| Type | Badge — `CASH` (indigo) or `BANK` (green). Wave/mobile-wallet accounts show `BANK` too — see [Data Model](../spec/02-data-model.md#account) |
 | Provider | "KBZ Bank", "Wave Money", or "—" for cash |
 | Status | Dot + "Active"/"Inactive" |
 | Balance | Right-aligned, bold |
@@ -89,7 +89,7 @@ Header includes a "View all accounts" link through to the
 ### Recent Activity panel (`cY2XQ`)
 - Neutral-bordered panel, no "View all" link — there's no longer a
   single cross-type screen for it to point at (see below).
-- Rows show name, transaction type (`SEND`, `PAYOUT`, `CAPITAL_DEPOSIT`,
+- Rows show name, transaction type (`DEPOSIT`, `WITHDRAWAL`, `CAPITAL_DEPOSIT`,
   `INTERNAL_TRANSFER`), amount, and a status badge.
 - Only completed activity shown here — pending items live in the Pending
   panel instead, not duplicated.
@@ -97,8 +97,8 @@ Header includes a "View all accounts" link through to the
 There is deliberately no unified Transactions screen in this design — a
 single cross-type list duplicated filters that are better scoped per
 type and risked being a second, confusing place to look for the same
-data. Instead, [Send](11-send-screen.md#filter-bar),
-[Payout](13-payout-screen.md#filter-bar),
+data. Instead, [Deposit](11-deposit-screen.md#filter-bar),
+[Withdrawal](13-withdrawal-screen.md#filter-bar),
 [Internal Transfer](15-internal-transfer-screen.md#filter-bar), and
 [Capital](17-capital-screen.md#filter-bar) each carry their own full
 search + filter bar (search box, Status, Date range, Account, Created

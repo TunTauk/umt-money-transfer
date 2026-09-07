@@ -21,7 +21,7 @@ Standard accounting convention used here:
 
 ## Worked examples
 
-### Send
+### Deposit
 
 Customer hands over K100,000 cash (K98,000 principal + K2,000 fee). We wire
 K98,000 out via KBZ #1 to the recipient's account.
@@ -34,7 +34,7 @@ K98,000 out via KBZ #1 to the recipient's account.
 
 Debits (100,000) = Credits (98,000 + 2,000). Balanced.
 
-### Payout
+### Withdrawal
 
 Someone wired K100,000 into Wave #2. We verify it landed, then pay the
 recipient K98,000 cash and keep K2,000 fee.
@@ -68,7 +68,7 @@ not real money, just tracks where capital came from/went for reporting.
 
 ### Void example
 
-A completed Send (above) turns out to be wrong and is voided. The reversal
+A completed Deposit (above) turns out to be wrong and is voided. The reversal
 posts the exact opposite entries — original entries are untouched:
 
 | Account | Side | Amount |
