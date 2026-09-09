@@ -28,13 +28,13 @@ double-entry example in
 | Note (optional) | Free text |
 | Actions | Cancel / "Transfer" |
 
-Unlike Deposit and Withdrawal, there's no summary/total card here — with a
+Unlike Cash In and Cash Out, there's no summary/total card here — with a
 single amount and no fee, there's nothing to compute or reconcile before
 submit.
 
 ## Open questions
 
-- Whether "Transfer" should save as `PENDING` (matching Deposit/Withdrawal,
+- Whether "Transfer" should save as `PENDING` (matching Cash In/Cash Out,
   per [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#statuses)) or
   go straight to `COMPLETED` — the spec's state machine applies uniformly
   to all transaction types, but an internal transfer between our own
@@ -42,5 +42,5 @@ submit.
   complete may make more sense. Confirm before wiring this up; the modal
   currently doesn't commit to either in its copy.
 - No detail/edit view designed yet, same gap as
-  [Deposit](12-deposit-new-screen.md#open-questions) and
-  [Withdrawal](14-withdrawal-new-screen.md#open-questions).
+  [Cash In](12-cash-in-new-screen.md#open-questions) and
+  [Cash Out](14-cash-out-new-screen.md#open-questions).

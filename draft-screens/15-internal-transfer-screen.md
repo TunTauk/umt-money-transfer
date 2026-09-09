@@ -22,7 +22,7 @@ double-entry example in
 - Primary button "New Transfer" → opens
   [Internal Transfer Screen — New](16-internal-transfer-new-screen.md)
   (`YWNBw`) as a modal overlay, not a full page — reflects how much
-  simpler this flow is than Deposit/Withdrawal.
+  simpler this flow is than Cash In/Cash Out.
 
 ## Filter bar
 Search box ("Search by account, reference...") plus five filter chips:
@@ -30,8 +30,8 @@ Search box ("Search by account, reference...") plus five filter chips:
 full filter set defined in
 [Search & Filter](../spec/07-search-filter.md#structured-filters), scoped
 implicitly to `type = INTERNAL_TRANSFER`, matching the pattern on
-[Deposit](11-deposit-screen.md#filter-bar) and
-[Withdrawal](13-withdrawal-screen.md#filter-bar).
+[Cash In](11-cash-in-screen.md#filter-bar) and
+[Cash Out](13-cash-out-screen.md#filter-bar).
 
 This screen previously had no filter bar at all, on the reasoning that
 internal transfer volume is low enough that filters aren't load-bearing.
@@ -61,5 +61,5 @@ so showing it would just be dead space on every row.
 ## Open questions
 
 - No detail/edit view designed yet, same gap as
-  [Deposit](11-deposit-screen.md#open-questions) and
-  [Withdrawal](13-withdrawal-screen.md#open-questions).
+  [Cash In](11-cash-in-screen.md#open-questions) and
+  [Cash Out](13-cash-out-screen.md#open-questions).

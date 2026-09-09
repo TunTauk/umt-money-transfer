@@ -4,23 +4,23 @@
 
 | Type | Who creates it | Fee | Involves customer identity |
 |---|---|---|---|
-| `DEPOSIT` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#deposit-cash-in--recipients-account) |
-| `WITHDRAWAL` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#withdrawal-money-already-with-us--cash-out) |
+| `CASH_IN` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#cash-in) |
+| `CASH_OUT` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#cash-out) |
 | `INTERNAL_TRANSFER` | Admin/Owner only | No | No |
 | `CAPITAL_DEPOSIT` | Admin/Owner only | No | No |
 | `CAPITAL_WITHDRAWAL` | Admin/Owner only | No | No |
 
-Note the naming overlap: `WITHDRAWAL` (customer-facing, has a fee, has a
+Note the naming overlap: `CASH_OUT` (customer-facing, has a fee, has a
 recipient) and `CAPITAL_WITHDRAWAL` (owner pulling their own money, no fee,
 no customer) are distinct enum values, but share a root word — same for
-`DEPOSIT`/`CAPITAL_DEPOSIT`. See the naming note in
-[Overview](01-overview.md#deposit-cash-in--recipients-account).
+`CASH_IN`/`CAPITAL_DEPOSIT`. See the naming note in
+[Overview](01-overview.md#cash-out).
 
 ## Statuses
 
 | Status | Meaning | Ledger impact |
 |---|---|---|
-| `PENDING` | Created but not finalized. For Withdrawal: awaiting confirmation the incoming transfer actually cleared. For Deposit: awaiting the outbound wire being sent. | None |
+| `PENDING` | Created but not finalized. For Cash Out: awaiting confirmation the incoming transfer actually cleared. For Cash In: awaiting the outbound wire being sent. | None |
 | `COMPLETED` | Money has actually moved both ways; receipt issued. | Ledger entries posted |
 | `CANCELLED` | Stopped before completion — never happened. | None (record kept for history) |
 | `VOIDED` | Was `COMPLETED`, later found wrong and reversed. | Reversing entries posted; original entries untouched |
@@ -31,7 +31,7 @@ a teller may be physically holding cash for a still-`PENDING` transaction
 that the system doesn't count yet — closes as soon as it's marked
 `COMPLETED`.
 
-## Why PENDING matters most for Withdrawal
+## Why PENDING matters most for Cash Out
 
 The dangerous moment: a customer claims a transfer was sent and shows a
 screenshot. If cash is paid out immediately and the screenshot is
@@ -46,7 +46,7 @@ fake/edited/reused, that cash is gone with no recourse. Flow:
 
 | Transition | Teller | Admin/Owner |
 |---|---|---|
-| Create → `PENDING` (Deposit/Withdrawal) | ✅ | ✅ |
+| Create → `PENDING` (Cash In/Cash Out) | ✅ | ✅ |
 | Create → `PENDING` (Internal Transfer, Capital Deposit/Withdrawal) | ❌ | ✅ |
 | Edit fields of own `PENDING` transaction | ✅ (own only) | ✅ (any) |
 | `PENDING` → `COMPLETED` | ✅ | ✅ |
@@ -76,7 +76,7 @@ of real edge cases:
 
 - **Insufficient balance**: completing a transaction that would take an
   account's recorded balance negative shows a warning but is still allowed.
-- **Duplicate external reference**: completing a Deposit or Withdrawal
+- **Duplicate external reference**: completing a Cash In or Cash Out
   whose OCR'd `external_reference_no` matches one already used on a
   completed transaction shows a warning but the teller can proceed at
   their own judgment.

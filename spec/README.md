@@ -1,8 +1,8 @@
 # UMT Money Transfer — Spec
 
-Internal system for a Myanmar money-transfer shop: customers deposit cash
-that gets wired to a recipient elsewhere ("Deposit"), or receive cash here
-against a transfer that landed in one of our accounts ("Withdrawal"). The
+Internal system for a Myanmar money-transfer shop: customers hand over cash
+that gets wired to a recipient elsewhere ("Cash In"), or receive cash here
+against a transfer that landed in one of our accounts ("Cash Out"). The
 system tracks every kyat across our bank/wallet accounts and cash drawer,
 and collects a fee on every transaction.
 
@@ -11,7 +11,7 @@ and collects a fee on every transaction.
 - **Next.js app** (single codebase): admin console + mobile-responsive
   teller screens + API routes.
 - **No separate mobile app.** The only mobile-specific need (photo upload +
-  OCR autofill for Withdrawal verification) is handled by a responsive page
+  OCR autofill for Cash Out verification) is handled by a responsive page
   in the same app — see [OCR & Verification](06-ocr-verification.md).
 - **Single location**, single currency (MMK), Postgres + Prisma.
 

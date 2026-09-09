@@ -34,10 +34,10 @@ chip + bold value), with the first card highlighted (`$brand-dark`):
 |---|---|---|
 | Total Balance (all accounts) | Live sum across every account | `LedgerEntry`-derived, per [Ledger & Accounting](../spec/03-ledger-accounting.md#why-double-entry) — not period-scoped, since a balance is a point-in-time fact, not a range total |
 | Fee Income (this month) | Sum of `FeeIncome` credits over the selected range | Implements "**Profit** — sum of `Fee Income` credits over a date range" from the Reports spec |
-| Deposit volume | Count of `DEPOSIT` transactions in range | Operational context alongside profit |
-| Withdrawal volume | Count of `WITHDRAWAL` transactions in range | Operational context alongside profit |
+| Cash In volume | Count of `CASH_IN` transactions in range | Operational context alongside profit |
+| Cash Out volume | Count of `CASH_OUT` transactions in range | Operational context alongside profit |
 
-Deposit/Withdrawal volume aren't explicitly called for in the Ledger &
+Cash In/Cash Out volume aren't explicitly called for in the Ledger &
 Accounting spec's Reports section, but support reading profit
 (Fee Income) against the activity that generated it.
 

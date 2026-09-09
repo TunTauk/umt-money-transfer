@@ -39,36 +39,38 @@ account's `LedgerEntry` rows. See [Ledger & Accounting](03-ledger-accounting.md)
 ## Transaction
 
 One customer or internal event. **Deliberately one table for both**
-customer transactions (`DEPOSIT`, `WITHDRAWAL`) and internal ones
+customer transactions (`CASH_IN`, `CASH_OUT`) and internal ones
 (`INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL`), not split —
 see [Design decision: single Transaction table](#design-decision-single-transaction-table)
 below.
 
-`DEPOSIT` (was "Send") and `WITHDRAWAL` (was "Payout") were renamed because
-the old names implied a peer-to-peer transfer between two named people. In
-reality only one party's identity is ever recorded: a `DEPOSIT` puts cash
-into one person's account elsewhere (the account holder — `recipient_*`
-below); a `WITHDRAWAL` pays cash out against money that already landed in
-one of ours (the walk-in collecting it — also `recipient_*`). Neither
-direction names or records the other party involved (the walk-in who
-handed over cash for a Deposit; the remote party whose transfer created
-the balance for a Withdrawal) — see
-[Overview](01-overview.md#deposit-cash-in--recipients-account) for the
-full reasoning.
+`CASH_IN` (was "Send," then briefly "Deposit") and `CASH_OUT` (was
+"Payout," then briefly "Withdrawal") were renamed because the old names
+implied a peer-to-peer transfer between two named people. In reality only
+one party's identity is ever recorded: a `CASH_IN` puts cash into one
+person's account elsewhere (the account holder — `recipient_*` below); a
+`CASH_OUT` pays cash out against money that already landed in one of ours
+(the walk-in collecting it — also `recipient_*`). Neither direction names
+or records the other party involved (the walk-in who handed over cash for
+a Cash In; the remote party whose transfer created the balance for a Cash
+Out) — see [Overview](01-overview.md#cash-in) for the full reasoning,
+including why `DEPOSIT`/`WITHDRAWAL` were rejected as the final names too
+(they collided with the unrelated `CAPITAL_DEPOSIT`/`CAPITAL_WITHDRAWAL`
+type).
 
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | |
-| reference_no | string | internal, human-shareable reference (e.g. for receipts) — prefixed `DEP-`/`WDL-`/`TRF-`/`CAP-` by type |
-| type | enum | `DEPOSIT`, `WITHDRAWAL`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL` |
+| reference_no | string | internal, human-shareable reference (e.g. for receipts) — prefixed `CI-`/`CO-`/`TRF-`/`CAP-` by type |
+| type | enum | `CASH_IN`, `CASH_OUT`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL` |
 | status | enum | `PENDING`, `COMPLETED`, `CANCELLED`, `VOIDED` |
 | amount | decimal | principal amount (MMK) |
 | fee | decimal | 0 for non-customer types |
 | source_account_id | uuid \| null | account/cash money comes from (type-dependent) |
 | destination_account_id | uuid \| null | account/cash money goes to (type-dependent) |
-| recipient_name | string \| null | the one party recorded for `DEPOSIT`/`WITHDRAWAL` — see above |
+| recipient_name | string \| null | the one party recorded for `CASH_IN`/`CASH_OUT` — see above |
 | recipient_phone | string \| null | normalized format, see [Search & Filter](07-search-filter.md) |
-| external_reference_no | string \| null | reference number extracted from a Deposit/Withdrawal screenshot (OCR) — see uniqueness note in [OCR & Verification](06-ocr-verification.md) |
+| external_reference_no | string \| null | reference number extracted from a Cash In/Cash Out screenshot (OCR) — see uniqueness note in [OCR & Verification](06-ocr-verification.md) |
 | note | string \| null | free text — also the catch-all for any compliance-relevant detail, since no fixed threshold rule exists yet (see [RBAC](05-rbac.md) open item) |
 | created_by | uuid (User) | |
 | created_at | timestamp | |
@@ -100,7 +102,7 @@ the first set.
 
 ### Design decision: single Transaction table
 
-Considered splitting customer transactions (Deposit/Withdrawal) from
+Considered splitting customer transactions (Cash In/Cash Out) from
 internal ones (Internal Transfer, Capital Deposit/Withdrawal) into
 separate tables, since `recipient_name`/`recipient_phone`/
 `external_reference_no` are `NULL` for internal types. Kept as one table:
@@ -123,13 +125,13 @@ Contrast with `TransactionAttachment` below, which *is* split out: that
 data is one-to-many (multiple upload attempts) and a genuinely different
 concern (file storage + OCR metadata) from the financial fact a Transaction
 represents. Recipient info is one-to-one and central to what a
-Deposit/Withdrawal transaction *is* — pulling it into a joined table would
+Cash In/Cash Out transaction *is* — pulling it into a joined table would
 only move the nullability from a column to a relation while adding a JOIN
 to every list/search query, without solving a real problem.
 
 ## TransactionAttachment
 
-Supporting evidence for a transaction — currently: Deposit/Withdrawal
+Supporting evidence for a transaction — currently: Cash In/Cash Out
 verification screenshots. Deliberately a separate table from `Transaction`
 rather than a `file_url` column on it — see [OCR & Verification](06-ocr-verification.md#storage--attachments)
 for why.
@@ -151,6 +153,6 @@ followed by a clearer re-upload) — all are kept, not overwritten.
 ## FeeIncome
 
 Not a real money account — a reporting-only ledger for revenue. Every
-`COMPLETED` `DEPOSIT`/`WITHDRAWAL` transaction with a nonzero fee posts one
+`COMPLETED` `CASH_IN`/`CASH_OUT` transaction with a nonzero fee posts one
 entry here (credit side), used for the profit summary in
 [Ledger & Accounting](03-ledger-accounting.md).

@@ -19,13 +19,13 @@ Adapted directly from the
 — structurally the closest existing pattern (single account picker +
 amount, admin-only, no fee). The one substantive change: Internal
 Transfer's From/To account pair + swap control is replaced here with a
-single **Account** field plus a **Deposit / Withdrawal** toggle, since a
+single **Account** field plus a **Cash In / Cash Out** toggle, since a
 capital entry only ever touches one account, not two. The toggle itself
 reuses the visual pattern used elsewhere for two-way toggles (e.g. the
 Type toggle on the [Add Account form](20-account-new-screen.md#modal-contents))
 — two equal-width buttons, active state filled `$brand-dark`. Note the
-naming overlap with the customer-facing `Deposit`/`Withdrawal` transaction
-types (see [Overview](../spec/01-overview.md#deposit-cash-in--recipients-account))
+naming overlap with the customer-facing `Cash In`/`Cash Out` transaction
+types (see [Overview](../spec/01-overview.md#cash-in))
 — this toggle's options are for `CAPITAL_DEPOSIT`/`CAPITAL_WITHDRAWAL`, a
 different, internal-only pair of enum values.
 
@@ -34,7 +34,7 @@ different, internal-only pair of enum values.
 | Element | Detail |
 |---|---|
 | Title | "New Capital Entry", with a close (`x`) icon |
-| Type toggle | **Deposit** (`arrow-down-left`, active/filled by default) / **Withdrawal** (`arrow-up-right`, outlined) |
+| Type toggle | **Cash In** (`arrow-down-left`, active/filled by default) / **Cash Out** (`arrow-up-right`, outlined) |
 | Account | Dropdown over active `Account` records |
 | Amount (MMK) | Single amount field |
 | Note (optional) | Free text |

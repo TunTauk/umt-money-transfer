@@ -50,7 +50,7 @@ type-specific list — including this one — needs its own complete search.
 | Column | Content |
 |---|---|
 | Reference | Internal `reference_no`, e.g. `CAP-115` (brand-colored) |
-| Type | **Deposit** / **Withdrawal** tag — green with `arrow-down-left` icon for Deposit, red with `arrow-up-right` icon for Withdrawal. Arrow direction reflects money's direction relative to the account, not a judgment of good/bad |
+| Type | **Cash In** / **Cash Out** tag — green with `arrow-down-left` icon for Cash In, red with `arrow-up-right` icon for Cash Out. Arrow direction reflects money's direction relative to the account, not a judgment of good/bad |
 | Account | The account or Cash Drawer affected |
 | Amount | Bold |
 | Status | Badge — same `PENDING → COMPLETED` state machine as every other transaction type, per the single-`Transaction`-table design in [Data Model](../spec/02-data-model.md#design-decision-single-transaction-table) |
@@ -66,8 +66,8 @@ is always 0 for this type per
 
 | Type | Background | Text/Icon | Icon |
 |---|---|---|---|
-| Deposit | `#EAF7EF` | `$brand` (`#0F6D4E`) | `arrow-down-left` |
-| Withdrawal | `#FCEEEC` | `$error` (`#C4331F`) | `arrow-up-right` |
+| Cash In | `#EAF7EF` | `$brand` (`#0F6D4E`) | `arrow-down-left` |
+| Cash Out | `#FCEEEC` | `$error` (`#C4331F`) | `arrow-up-right` |
 
 Distinct from the transaction-status badge palette (Pending/Completed/
 Cancelled/Voided) defined in the

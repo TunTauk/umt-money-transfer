@@ -4,7 +4,7 @@
 
 Originally scoped as Next.js (API + admin console) + a React Native/Capacitor
 mobile app. The mobile app's only real purpose turned out to be a single
-screen: photo upload + OCR autofill for Withdrawal verification (see
+screen: photo upload + OCR autofill for Cash Out verification (see
 [OCR & Verification](06-ocr-verification.md)). That doesn't
 justify a second codebase/deployment target — a mobile-responsive page in
 the same Next.js app (camera-capable file input works fine in mobile
@@ -20,7 +20,7 @@ real need for offline capture queuing or push notifications shows up later.
   [OCR & Verification](06-ocr-verification.md) for why — free,
   keeps customer PII off third-party servers).
 - **File storage**: S3-compatible object storage (e.g. Cloudflare R2 or AWS
-  S3) for uploaded Deposit/Withdrawal screenshots (`TransactionAttachment`), not local
+  S3) for uploaded Cash In/Cash Out screenshots (`TransactionAttachment`), not local
   disk — durability for evidence tied to a financial record.
 - **Auth**: staff login (phone + password), role-based (`OWNER` / `TELLER`).
 

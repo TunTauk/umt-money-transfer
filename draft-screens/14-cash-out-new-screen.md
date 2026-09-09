@@ -1,24 +1,24 @@
-# Withdrawal Screen — New
+# Cash Out Screen — New
 
 Design reference: [`design/design.pen`](../design/design.pen), node
-`CfAa1` ("Withdrawal - New"). A separate top-level screen (not a modal,
-not a section nested inside the list) — reached via the "New Withdrawal"
-button on [Withdrawal Screen — List](13-withdrawal-screen.md). Uses the
-shared Sidebar/Topbar shell, instanced with the "Withdrawal" nav item
-active. A second variant, "Withdrawal - New (No OCR Provider)", shows the
+`CfAa1` ("Cash Out - New"). A separate top-level screen (not a modal,
+not a section nested inside the list) — reached via the "New Cash Out"
+button on [Cash Out Screen — List](13-cash-out-screen.md). Uses the
+shared Sidebar/Topbar shell, instanced with the "Cash Out" nav item
+active. A second variant, "Cash Out - New (No OCR Provider)", shows the
 fallback state when the selected provider has no OCR support yet — see
 [Providers](19-account-management-screen.md) and the note under
 [Section 1](#1-provider--screenshot).
 
 ## Purpose
 
-Create/verify form for a `WITHDRAWAL` transaction — someone has already
+Create/verify form for a `CASH_OUT` transaction — someone has already
 transferred money into one of our accounts; the teller uploads the
 transfer screenshot, OCR prefills the form, and every field is reviewed
 before the cash goes out. See
 [OCR & Verification](../spec/06-ocr-verification.md#flow) for the full
 procedure this screen implements, and
-[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#why-pending-matters-most-for-withdrawal)
+[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#why-pending-matters-most-for-cash-out)
 for why this is the highest-risk flow in the business. Creatable by
 Teller or Admin/Owner.
 
@@ -27,23 +27,23 @@ Whoever originally sent the money in isn't a tracked party on the
 transaction; the transaction's link to reality is the transfer's own
 reference number and amount (verified against the screenshot), not a
 person's name. See
-[Overview](../spec/01-overview.md#withdrawal-money-already-with-us--cash-out)
+[Overview](../spec/01-overview.md#cash-out)
 for the full reasoning.
 
-The form mirrors [Deposit's](12-deposit-new-screen.md#form-card-sections)
+The form mirrors [Cash In's](12-cash-in-new-screen.md#form-card-sections)
 section order (screenshot, recipient identity, reference/time, our
 account, amount) so a teller who knows one form knows most of the other.
 The two still diverge where the underlying flows genuinely differ:
-Withdrawal's transaction-fact fields are OCR-prefilled and it carries the
+Cash Out's transaction-fact fields are OCR-prefilled and it carries the
 verification checklist + duplicate-reference guardrail, since it's the
-higher-risk direction (cash goes out); Deposit's screenshot is optional
+higher-risk direction (cash goes out); Cash In's screenshot is optional
 supporting evidence with OCR as a convenience, not a verification
 requirement.
 
 ## Page header
 
-- Back arrow → returns to [Withdrawal Screen — List](13-withdrawal-screen.md).
-- Title "New Withdrawal", subtitle: "Upload the transfer screenshot to
+- Back arrow → returns to [Cash Out Screen — List](13-cash-out-screen.md).
+- Title "New Cash Out", subtitle: "Upload the transfer screenshot to
   prefill the form, then verify before paying out."
 
 ## Layout
@@ -66,11 +66,8 @@ Two-column layout: form card (flexible width) + a 320px side column.
   complete" status) with a "Replace" action for re-upload. **When the
   selected provider has `has_ocr_feature = false`** (the "No OCR
   Provider" variant of this screen), the status instead reads "Uploaded ·
-  Manual entry required," every field below that would otherwise be
-  OCR-sourced renders as a plain empty field with no badge, and the
-  duplicate-reference warning in the side column is replaced with an
-  "OCR not available" notice — there's no extracted reference number to
-  check for reuse.
+  Manual entry required," and every field below that would otherwise be
+  OCR-sourced renders as a plain empty field with no badge.
 
 ### 2. Recipient (walk-in customer)
 
@@ -108,7 +105,7 @@ than one cash drawer/register exists.
 the Reference & Transfer Time fields. **Fee (MMK)** — always manual, never
 shown on a transfer confirmation. A **Fee kept in** dropdown sits alongside
 (any active account, not limited to the two already selected — see the
-open note on this on [Deposit's](12-deposit-new-screen.md#open-questions)
+open note on this on [Cash In's](12-cash-in-new-screen.md#open-questions)
 equivalent field) so the teller states explicitly which account actually
 retains the fee.
 
@@ -119,30 +116,31 @@ actually landed." This encodes step 8 of the OCR spec's flow — the
 independent verification step that exists specifically because a
 screenshot alone is not trustworthy evidence.
 
-**Actions**: Cancel / "Save as Pending" — same as Deposit, this always
+**Actions**: Cancel / "Save as Pending" — same as Cash In, this always
 lands as `PENDING` first (awaiting the independent verification above),
 then transitions to `COMPLETED` once cash is paid out.
 
 ## Side column
 
 **Summary card** (`$brand-dark`, matches
-[Deposit's](12-deposit-new-screen.md#summary-card) card style and
+[Cash In's](12-cash-in-new-screen.md#summary-card) card style and
 position): Amount received, Fee, and Cash to pay out — added so both
 create forms have the same always-visible running total, even though
-Withdrawal doesn't collect money from a customer the way Deposit does.
+Cash Out doesn't collect money from a customer the way Cash In does. This
+is currently the only card in the side column.
 
-**Duplicate Warning** (`$error` bordered, shown conditionally): "Possible
-duplicate reference — WM2408241 was already used on a completed
-withdrawal (WDL-8790, 12 Aug). You can still proceed at your judgment."
-Implements the **duplicate external reference guardrail** from
+**Removed**: this side column previously also carried a red-bordered
+Duplicate Warning card ("Possible duplicate reference — WM2408241 was
+already used on a completed Cash Out...") and a numbered 3-step Guide
+Card (upload → verify → pay & complete). Both were dropped per design
+review. The **duplicate external reference guardrail** they implemented
+is still documented in
 [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#fraud/data-integrity-guardrails-non-blocking-by-design)
-— non-blocking by design, teller judgment overrides. Replaced with an
-"OCR not available" notice when the selected provider has no OCR support
-(see [Section 1](#1-provider--screenshot)).
-
-**Guide Card**: a numbered 3-step reminder of the withdrawal flow (upload
-→ verify → pay & complete), reinforcing the procedure without requiring
-the teller to leave the form.
+and still applies at the data/business-logic level — it just doesn't have
+a dedicated UI element on this screen anymore. Worth deciding where that
+warning should surface instead (e.g. inline on the External Reference No.
+field itself) before implementation, so the guardrail isn't silently
+unrepresented in the UI.
 
 ## Open questions
 
@@ -156,6 +154,6 @@ the teller to leave the form.
   aren't represented in the Dropzone — it currently shows only the latest
   upload. Worth a "view all attachments" affordance once that matters.
 - On Cancel or successful save, does the flow return to the
-  [Withdrawal list](13-withdrawal-screen.md), or somewhere else (e.g. the
+  [Cash Out list](13-cash-out-screen.md), or somewhere else (e.g. the
   new transaction's detail view once that exists)? Same open question as
-  [Deposit](12-deposit-new-screen.md#open-questions).
+  [Cash In](12-cash-in-new-screen.md#open-questions).

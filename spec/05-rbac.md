@@ -6,7 +6,7 @@ in route/API handlers rather than building a general permissions system.
 
 | Capability | Teller | Admin/Owner |
 |---|---|---|
-| Create Deposit / Withdrawal | ✅ | ✅ |
+| Create Cash In / Cash Out | ✅ | ✅ |
 | Edit own `PENDING` transaction | ✅ (own only) | ✅ (any) |
 | `PENDING` → `COMPLETED` | ✅ | ✅ |
 | View account balances | ✅ | ✅ |
