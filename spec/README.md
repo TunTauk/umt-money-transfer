@@ -11,9 +11,9 @@ and collects a fee on every transaction.
 - **Next.js app** (single codebase): admin console + mobile-responsive
   teller screens + API routes.
 - **No separate mobile app.** The only mobile-specific need (photo upload +
-  OCR autofill for Cash Out verification) is handled by a responsive page
-  in the same app — see [OCR & Verification](06-ocr-verification.md).
-- **Single location**, single currency (MMK), Postgres + Prisma.
+  OCR autofill for Payout verification) is handled by a responsive page in
+  the same app — see [OCR & Payout Verification](06-ocr-payout-verification.md).
+- **Single location**, single currency (MMK), MySQL + Prisma.
 
 ## Documents
 

@@ -26,18 +26,18 @@ that a full page isn't warranted.
 |---|---|
 | Title | "Add Staff", with a close (`x`) icon |
 | Full Name | Free text |
-| Phone Number | Free text, phone icon — this is the login identifier per [Data Model](../spec/02-data-model.md#user); there is no email field anywhere on `User` |
+| Email Address | Email input with mail icon — the unique login identifier from [Data Model](../spec/02-data-model.md#user) |
 | Role | Two-way toggle: **Teller** (active by default) / **Owner** — Teller is the default selection since it's expected to be the far more common case; owner accounts should be rare |
 | Initial Password | Text field with a **Generate** action — since there's no self-service signup, the owner sets (or generates) the starting password directly |
-| Note | Informational banner: "Share this password with the staff member directly — there's no email to send it to." — makes explicit, at the moment of creation, that password delivery is entirely manual |
+| Note | Informational banner: "Share this password securely with the staff member." — initial password delivery remains owner-managed until a self-service setup flow exists |
 | Actions | Cancel / "Add Staff" |
 
 The password field and its note directly address the gap flagged on the
-[Login screen](09-login-screen.md#open-questions): since there's no
-self-service reset, this modal is where a new teller's very first
+[Login screen](09-login-screen.md#open-questions): since there is no
+self-service account setup, this modal is where a new teller's first
 password actually originates, and the note exists so the owner doesn't
 create the account and forget the teller still needs the password handed
-to them some other way (in person, over the phone, etc.).
+to them securely.
 
 ## Open questions
 
