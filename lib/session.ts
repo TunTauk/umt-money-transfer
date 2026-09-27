@@ -26,7 +26,7 @@ export async function requireOwner() {
   const session = await requireSession();
 
   if (session.user.role !== "OWNER") {
-    throw new Error("Forbidden");
+    redirect("/login");
   }
 
   return session;

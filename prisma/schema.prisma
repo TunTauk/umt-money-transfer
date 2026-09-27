@@ -12,6 +12,60 @@ enum StaffRole {
   TELLER
 }
 
+enum FinancialAccountType {
+  BANK
+  CASH
+}
+
+enum FinancialAccountKind {
+  MAIN
+  CHILD
+}
+
+enum FinancialTransactionType {
+  CASH_IN
+  CASH_OUT
+  INTERNAL_TRANSFER
+  CAPITAL_DEPOSIT
+  CAPITAL_WITHDRAWAL
+}
+
+enum FinancialTransactionStatus {
+  POSTED
+  DELETED
+}
+
+enum FeeMode {
+  DEDUCTED
+  SEPARATE
+}
+
+enum TransferDirection {
+  MAIN_TO_CHILD
+  CHILD_TO_MAIN
+}
+
+enum LedgerSide {
+  DEBIT
+  CREDIT
+}
+
+enum SystemLedgerAccount {
+  CUSTOMER_CLEARING
+  FEE_INCOME
+  OWNER_EQUITY
+}
+
+enum LedgerEntryKind {
+  POSTING
+  REVERSAL
+}
+
+enum TransactionRevisionAction {
+  EDIT
+  DELETE
+}
+
 model User {
   id            String        @id
   name          String
@@ -24,6 +78,11 @@ model User {
   updatedAt     DateTime      @updatedAt
   sessions      AuthSession[]
   authAccounts  AuthAccount[]
+  financialAccountAssignments StaffAccountAssignment[] @relation("AssignedStaff")
+  financialAssignmentsCreated StaffAccountAssignment[] @relation("AssignmentCreator")
+  financialTransactionsCreated FinancialTransaction[]  @relation("TransactionCreator")
+  financialTransactionsDeleted FinancialTransaction[]  @relation("TransactionDeleter")
+  transactionRevisions          TransactionRevision[]   @relation("RevisionActor")
 
   @@map("user")
 }
@@ -75,4 +134,156 @@ model AuthVerification {
 
   @@index([identifier])
   @@map("auth_verification")
+}
+
+model Provider {
+  id           String                 @id @default(cuid())
+  code         String                 @unique
+  name         String
+  active       Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  accounts     FinancialAccount[]
+  transactions FinancialTransaction[]
+
+  @@map("provider")
+}
+
+model FinancialAccount {
+  id                    String                    @id @default(cuid())
+  providerId            String?
+  provider              Provider?                 @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  code                  String                    @unique
+  name                  String
+  type                  FinancialAccountType
+  kind                  FinancialAccountKind
+  // Set to BANK or CASH only on global main accounts.
+  mainSlot              FinancialAccountType?     @unique
+  parentId              String?
+  parent                FinancialAccount?         @relation("AccountHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children              FinancialAccount[]        @relation("AccountHierarchy")
+  active                Boolean                   @default(true)
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  assignments           StaffAccountAssignment[]
+  cashTransactions      FinancialTransaction[]    @relation("CashSettlementAccount")
+  transfersFrom         FinancialTransaction[]    @relation("TransferSource")
+  transfersTo           FinancialTransaction[]    @relation("TransferDestination")
+  capitalTransactions   FinancialTransaction[]    @relation("CapitalAccount")
+  feeAccountTransactions FinancialTransaction[]  @relation("FeeAccount")
+  ledgerEntries         LedgerEntry[]
+
+  @@index([providerId, type, kind])
+  @@index([parentId])
+  @@map("financial_account")
+}
+
+model StaffAccountAssignment {
+  id                 String               @id @default(cuid())
+  userId             String
+  user               User                 @relation("AssignedStaff", fields: [userId], references: [id], onDelete: Restrict)
+  financialAccountId String
+  financialAccount   FinancialAccount     @relation(fields: [financialAccountId], references: [id], onDelete: Restrict)
+  accountType        FinancialAccountType
+  createdById        String
+  createdBy          User                 @relation("AssignmentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@unique([userId, accountType])
+  @@unique([userId, financialAccountId])
+  @@index([financialAccountId])
+  @@map("staff_account_assignment")
+}
+
+model FinancialTransaction {
+  id                 String                     @id @default(cuid())
+  reference          String                     @unique
+  systemReference    String                     @unique
+  requestFingerprint String
+  type               FinancialTransactionType
+  status             FinancialTransactionStatus @default(POSTED)
+  providerId         String?
+  provider           Provider?                  @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  accountId          String?
+  account            FinancialAccount?           @relation("CashSettlementAccount", fields: [accountId], references: [id], onDelete: Restrict)
+  feeMode            FeeMode?
+  feeAccountId       String?
+  feeAccount         FinancialAccount?           @relation("FeeAccount", fields: [feeAccountId], references: [id], onDelete: Restrict)
+  feeAmount          BigInt?
+  customerName       String?
+  customerPhone      String?
+  accountType        FinancialAccountType?
+  transferDirection  TransferDirection?
+  sourceAccountId    String?
+  sourceAccount      FinancialAccount?           @relation("TransferSource", fields: [sourceAccountId], references: [id], onDelete: Restrict)
+  destinationAccountId String?
+  destinationAccount FinancialAccount?           @relation("TransferDestination", fields: [destinationAccountId], references: [id], onDelete: Restrict)
+  capitalAccountId   String?
+  capitalAccount     FinancialAccount?            @relation("CapitalAccount", fields: [capitalAccountId], references: [id], onDelete: Restrict)
+  amount             BigInt?
+  note               String?                     @db.Text
+  postingVersion     Int                         @default(1)
+  createdById        String
+  createdBy          User                        @relation("TransactionCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
+  deletedAt          DateTime?
+  deletedById        String?
+  deletedBy          User?                       @relation("TransactionDeleter", fields: [deletedById], references: [id], onDelete: Restrict)
+  revisions          TransactionRevision[]
+  ledgerEntries      LedgerEntry[]
+
+  @@index([createdAt])
+  @@index([providerId, createdAt])
+  @@index([accountId, createdAt])
+  @@index([sourceAccountId, createdAt])
+  @@index([destinationAccountId, createdAt])
+  @@index([capitalAccountId, createdAt])
+  @@index([feeAccountId, createdAt])
+  @@index([status, createdAt])
+  @@map("financial_transaction")
+}
+
+model TransactionRevision {
+  id            String                    @id @default(cuid())
+  transactionId String
+  transaction   FinancialTransaction      @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  revision      Int
+  action        TransactionRevisionAction
+  before        Json
+  after         Json?
+  actorId       String
+  actor         User                      @relation("RevisionActor", fields: [actorId], references: [id], onDelete: Restrict)
+  createdAt     DateTime                  @default(now())
+  ledgerEntries LedgerEntry[]
+
+  @@unique([transactionId, revision])
+  @@map("transaction_revision")
+}
+
+model LedgerEntry {
+  id                 String                @id @default(cuid())
+  transactionId      String
+  transaction        FinancialTransaction  @relation(fields: [transactionId], references: [id], onDelete: Restrict)
+  revisionId         String?
+  revision           TransactionRevision?  @relation(fields: [revisionId], references: [id], onDelete: Restrict)
+  postingVersion     Int
+  kind               LedgerEntryKind       @default(POSTING)
+  sequence           Int
+  financialAccountId String?
+  financialAccount   FinancialAccount?     @relation(fields: [financialAccountId], references: [id], onDelete: Restrict)
+  systemAccount      SystemLedgerAccount?
+  side               LedgerSide
+  amount             BigInt
+  memo               String?
+  reversalOfId       String?               @unique
+  reversalOf         LedgerEntry?           @relation("LedgerReversal", fields: [reversalOfId], references: [id], onDelete: Restrict)
+  reversedBy         LedgerEntry?           @relation("LedgerReversal")
+  createdAt          DateTime               @default(now())
+
+  @@unique([transactionId, postingVersion, kind, sequence])
+  @@index([financialAccountId, createdAt])
+  @@index([systemAccount, createdAt])
+  @@map("ledger_entry")
 }

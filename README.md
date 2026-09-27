@@ -13,7 +13,7 @@ MySQL, Tailwind CSS 4, and shadcn/ui.
   Handler at `/api/auth/[...all]`.
 - Client Components are limited to browser interaction. There is no React
   Query cache or client-side data hydration layer.
-- Every protected page and every future Server Action must validate its own
+- Every protected page and every Server Action validates its own
   session. Layout protection is for navigation behavior, not authorization.
 - Financial mutations should use `prisma.$transaction` and should not use
   optimistic UI.
@@ -79,7 +79,8 @@ Push the Prisma schema directly to the database:
 pnpm db:push
 ```
 
-Create or restore the initial owner account:
+Create or restore the initial owner account and seed the Main Bank, Main Cash,
+and initial child accounts:
 
 ```bash
 pnpm db:seed
@@ -106,8 +107,10 @@ Run these after installation and database setup:
 ```bash
 pnpm typecheck
 pnpm lint
+pnpm test
 pnpm build
 ```
 
-No public sign-up endpoint is enabled. Additional staff accounts should later
-be created by owner-only Server Actions in the staff management feature.
+No public sign-up endpoint is enabled. Owners provision teller accounts from
+the protected staff management screen and assign their Bank and Cash accounts
+from Account management.

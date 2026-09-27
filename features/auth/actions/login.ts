@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { isValidEmail, normalizeEmail } from "@/lib/email";
+import { prisma } from "@/lib/prisma";
 
 const loginSchema = z.object({
   email: z
@@ -46,13 +47,28 @@ export async function login(
   }
 
   try {
-    await auth.api.signInEmail({
+    const response = await auth.api.signInEmail({
       body: {
         email: result.data.email,
         password: result.data.password,
       },
       headers: await headers(),
     });
+
+    if (response.user.role !== "OWNER") {
+      if (!response.token) {
+        throw new Error("Missing session token for rejected staff login");
+      }
+
+      await prisma.authSession.deleteMany({
+        where: { token: response.token },
+      });
+      return {
+        status: "error",
+        message: "Staff accounts must use the mobile app.",
+        fields,
+      };
+    }
   } catch (error) {
     if (error instanceof APIError && error.message === "ACCOUNT_DISABLED") {
       return {
