@@ -1,66 +1,39 @@
-# Deposit Screen — List
+# Cash In Screen - List
 
-Design reference: [`design/design.pen`](../design/design.pen), node
-`FNQQT` ("Deposit - List"). Uses the shared Sidebar/Topbar shell,
-instanced with the "Deposit" nav item active. The create form is a
-separate top-level screen — see [Deposit Screen — New](12-deposit-new-screen.md).
+Legacy filename: `11-deposit-screen.md`. Design reference:
+[`design/design.pen`](../design/design.pen), node `FNQQT`. Use **Cash In** in
+the product UI.
 
 ## Purpose
 
-List/search surface for `DEPOSIT` transactions — a walk-in hands over cash
-(principal + fee), we wire the principal into the recipient's account
-elsewhere via one of our own accounts. See
-[Overview](../spec/01-overview.md#deposit-cash-in--recipients-account) for
-the business definition and
-[Ledger & Accounting](../spec/03-ledger-accounting.md#deposit) for the
-double-entry posting. Creatable by Teller or Admin/Owner (see
-[Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#types)).
+Lists immediately posted Cash In records. Teller visibility is based on the
+single selected assigned account, so staff sharing it see its records. Owners
+see all records.
 
-## Page header
-- Title "Deposit Transactions", subtitle describing the flow.
-- Primary button "New Deposit" → navigates to
-  [Deposit Screen — New](12-deposit-new-screen.md), a separate top-level
-  screen rather than a modal or an inline panel — matches how
-  Withdrawal's create flow is also its own screen, given both need real
-  space for form + summary/verification content.
+## Controls
 
-### Filter bar
-Search box ("Search by name, phone, reference...") plus five filter
-chips: **Status**, **Date range**, **Account**, **Created by**,
-**Amount** — the full filter set defined in
-[Search & Filter](../spec/07-search-filter.md#structured-filters), scoped
-implicitly to `type = DEPOSIT` since this is the type-specific list. Note
-per that spec, **Created by** is Admin/Owner only.
+- **New Cash In** opens the create screen.
+- Search matches customer name/phone, compact ID, system reference, and note.
+- Filters: date, account, amount, and Owner-only creator filter.
+- There is no status filter.
 
-This is Deposit's dedicated search — there's no separate cross-type
-Transactions screen in this design (see
-[Dashboard](10-dashboard-screen.md#recent-activity-panel-cy2xq) for why
-that was removed in favor of per-screen search).
+## Columns
 
-### Table columns
+Keep the original visible columns: Reference, Customer, Phone (ဖုန်းနံပါတ်),
+Destination, Fee, Created by, Date, and row actions. Do not show a status
+column.
 
-| Column | Content |
-|---|---|
-| Reference | Internal `reference_no`, e.g. `DEP-10231` (brand-colored, links to detail) |
-| Customer | `recipient_name` only — there is no second party to show. Earlier drafts of this screen showed `"{sender_name} → {recipient_name}"`; that format was dropped along with the `sender_*` fields themselves, since [only the recipient's identity is recorded](../spec/02-data-model.md#transaction) |
-| Destination | The account money was wired out through |
-| Fee | Bold, right-weighted visually |
-| Status | Badge — Pending / Completed / Cancelled / Voided (see color table in [Dashboard spec](10-dashboard-screen.md#status-badge-colors-shared-pattern)) |
-| Created by | Staff name |
-| Date | Created timestamp |
-| — | Row actions — labeled buttons ("Edit"/"Cancel" for `PENDING` rows, "Void" for `COMPLETED` rows, none for terminal `CANCELLED`/`VOIDED` rows), not an icon-only `ellipsis` menu — end users aren't assumed to recognize icon meaning, and the action count per row is small enough (at most two) that a menu adds a click without saving space |
+- Reference shows only the compact system-generated `CI-...` ID.
+- Phone (ဖုန်းနံပါတ်) is a dedicated column after Customer showing the
+  required customer phone.
+- Destination shows the selected account name.
+- Fee is rendered as the fee amount plus a mode pill: ဖျတ် for `DEDUCTED`, or
+  the fee account type (`BANK` or `CASH`) for `SEPARATE`.
+- Date shows the compact system posting date.
+- A closed row uses a chevron-down. Expanding it changes to chevron-up and
+  shows the separate system reference, optional note, and full system posting
+  timestamp. In `SEPARATE` mode it also shows the fee account name.
 
-Amount (principal) is deliberately not a separate column here — Fee is
-the number a teller scans for; principal detail lives in the row/detail
-view. Revisit if usage shows principal is needed at a glance too.
-
-## Open questions
-
-- Row-level detail/edit view (clicking a reference or the "Edit" action)
-  isn't designed yet — needed for "Edit fields of own `PENDING`
-  transaction" and the `PENDING → COMPLETED` / `CANCELLED` transitions
-  from [Transactions & Lifecycle](../spec/04-transactions-lifecycle.md#transitions--permissions).
-- No amount-range or type-specific sort control shown on the list beyond
-  the shared filter chips — confirm whether Deposit needs its own sort
-  beyond the global "Newest first / Amount high→low" from
-  [Search & Filter](../spec/07-search-filter.md#sort).
+Owners get **Edit** and **Delete** actions. Edit performs an audited reversal
+plus corrected repost; Delete performs a reversal plus soft delete. Tellers can
+create and view permitted records but cannot edit or delete them.

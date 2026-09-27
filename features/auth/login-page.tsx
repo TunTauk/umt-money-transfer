@@ -14,7 +14,7 @@ import { getSession } from "@/lib/session";
 export async function LoginPage() {
   const session = await getSession();
 
-  if (session?.user.active) {
+  if (session?.user.active && session.user.role === "OWNER") {
     redirect("/dashboard");
   }
 
@@ -38,14 +38,14 @@ export async function LoginPage() {
             Send and receive with confidence.
           </h1>
           <p className="mt-6 max-w-sm text-base leading-7 text-emerald-50/70">
-            One secure workspace for staff, transfers, payouts, and accountable
-            cash movement.
+            One secure owner workspace for staff oversight, transfers, payouts,
+            and accountable cash movement.
           </p>
         </div>
 
         <div className="relative flex items-center gap-2 text-sm text-emerald-50/65">
           <ShieldCheck className="size-4" aria-hidden="true" />
-          Staff access only <span aria-hidden="true">&middot;</span> MMK
+          Owner access only <span aria-hidden="true">&middot;</span> MMK
         </div>
       </section>
 
@@ -67,7 +67,7 @@ export async function LoginPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <LoginForm />
+              <LoginForm staffOnlyMessage={session?.user.role === "TELLER"} />
             </CardContent>
           </Card>
         </div>

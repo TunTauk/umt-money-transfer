@@ -1,92 +1,64 @@
 # Overview & Terminology
 
-## The business
+## Business
 
-A single-location Myanmar money-transfer shop. Two customer-facing services,
-both charging a transaction fee:
+UMT is a single-location Myanmar money-transfer shop with two customer flows.
+Both record the customer's name, required phone, one amount, a fee and its
+mode, an optional note, and one selected `BANK` or `CASH` account. The system
+generates the compact Cash In/Out ID, a separate reference, and the posting
+timestamp.
 
-### Deposit (cash in → recipient's account)
+### Cash In
 
-A walk-in hands over cash (principal + fee); we put the principal into the
-**recipient's** bank/wallet account elsewhere, using one of our own accounts
-(e.g. KBZ, Wave) to send it. We keep the fee.
+The selected account decreases by the amount. Posting credits the selected
+account by the amount and debits Customer Clearing. The fee uses one of two
+modes: **DEDUCTED** (ပမာဏမှ ဖျတ်မည်) is netted inside the transfer;
+**SEPARATE** (သီးသန့်ပေးမည်) is collected from a fee account. Either way Fee
+Income is credited by the fee.
 
-This isn't framed as a transfer between two named people — only the
-recipient (whose account receives the money) is recorded as a party on the
-transaction. Whoever physically handed over the cash isn't tracked as a
-formal identity; see [Why "Deposit"/"Withdrawal"](#why-deposit--withdrawal-and-not-send--payout)
-below for the reasoning.
+### Cash Out
 
-- Burmese: ငွေပို့
-- Money movement: Cash in (principal + fee) → one of our accounts out (principal)
+The selected account increases by the amount in `SEPARATE` mode and by amount +
+fee in `DEDUCTED` mode. Posting debits the selected account and credits Customer
+Clearing; fee handling uses the same two modes as Cash In.
 
-### Withdrawal (money already with us → cash out)
+Screens and business language use **Cash In** and **Cash Out**. Legacy file
+names may still contain "deposit" or "withdrawal" only to preserve links.
 
-Someone has already transferred money into one of our accounts. A recipient
-comes to our location; after we verify the transfer actually landed, we pay
-them cash (principal minus fee, or principal with fee collected separately —
-either way we keep the fee).
+## Access Channels
 
-As with Deposit, only one party is recorded: the recipient collecting cash.
-Whoever originally sent the money in isn't tracked as a formal identity —
-the transaction's link to reality is the transfer's own reference number
-and amount, verified against the screenshot, not a person's name.
+- Owners use the website. The website rejects Teller sign-in and protects all
+  dashboard routes with the Owner role.
+- Tellers use the mobile experience. It is limited to assigned-account
+  balances, Cash In/Out creation and viewing, an operational summary, and the
+  Teller's profile.
 
-- Burmese: ငွေထုတ်
-- Money movement: One of our accounts in (principal) → cash out (principal − fee)
-- **Highest-risk flow**: paying out cash against a claimed transfer that
-  turns out to be fake/already-used is the main fraud exposure in this
-  business. See [OCR & Verification](06-ocr-verification.md)
-  and the PENDING status in [Transactions & Lifecycle](04-transactions-lifecycle.md).
+## Financial Accounts
 
-**Naming note**: `DEPOSIT`/`WITHDRAWAL` are also used below for
-[Capital Deposit / Withdrawal](#capital-deposit--withdrawal), a completely
-different, internal-only transaction type. The two aren't the same enum
-value (`DEPOSIT` vs `CAPITAL_DEPOSIT`) and shouldn't collide in code, but
-the shared vocabulary is worth flagging — worth double-checking that staff
-don't confuse "a Deposit" (customer-facing, has a fee, has a recipient)
-with "a Capital Deposit" (owner injecting their own money, no fee, no
-customer) in conversation or training material.
+UMT has exactly two independent real main accounts:
 
-### Internal Transfer
+- **Main Bank** (`BANK`)
+- **Main Cash** (`CASH`)
 
-Moving money between our own accounts (e.g. KBZ #1 → Wave #2), no customer
-involved, no fee. Admin/owner only.
+Each type initially has four child accounts and can gain more. A main balance
+is its own ledger balance; it does not include child balances. Child Bank total
+and child Cash total are separately aggregated from active and historical
+child account ledger balances as applicable to the report.
 
-### Capital Deposit / Withdrawal
+The dashboard shows the independent main balance, child total, and category
+total for Bank and Cash, plus a grand total across both categories.
 
-Owner injecting or pulling money from an account or cash drawer (e.g.
-funding an account at the start of the day, or withdrawing profit).
-Admin/owner only.
+Each Teller has exactly one active child Bank assignment and exactly one
+active child Cash assignment. A child account can be assigned to at most two
+staff. Owners manage assignments from Account management. Main accounts cannot
+be assigned.
 
-## Accounts we hold money in
+## Internal Operations
 
-- **Cash** — the physical cash drawer
-- **Bank** — multiple KBZ Bank accounts, Wave Money accounts, and
-  potentially other banks or mobile wallets. Mobile wallets aren't a
-  separate `Account.type` — they're `BANK` too, distinguished only by
-  `provider` (e.g. "Wave Money" vs "KBZ Bank"), since the two behave
-  identically in every flow (Deposit, Withdrawal, ledger posting, account
-  pickers).
+- **Internal Transfer:** owner-only movement within one type, either Main to
+  Child or Child to Main. Bank and Cash are never mixed by this operation.
+- **Capital:** owner-only deposit to or withdrawal from the main account that
+  matches the selected Bank or Cash tab.
 
-Each is tracked as an `Account` record with a live, derived balance — see
-[Ledger & Accounting](03-ledger-accounting.md).
-
-## Why "Deposit" / "Withdrawal" and not "Send" / "Payout"
-
-Originally named "Send"/"Payout," matching how customers hear about the
-service and how it's phrased on real money-transfer shop signage in Myanmar
-(ပို့ငွေ / ထုတ်ငွေ). Renamed because "Send" implies a transfer *between two
-named people* ("this person sends to that person"), which doesn't match
-what the system actually records: only one party's identity is ever
-captured (the recipient — see [Deposit](#deposit-cash-in--recipients-account)
-and [Withdrawal](#withdrawal-money-already-with-us--cash-out) above), not
-two. "Deposit" (money going into one recipient's account) and "Withdrawal"
-(cash coming out against money already with us) describe a one-party
-movement accurately, where "Send"/"Payout" implied a second party that was
-never actually tracked.
-
-"Cash-in/cash-out" was considered and rejected for the same reason it was
-originally: those words are also used for moving cash into/out of your own
-bank accounts (a different concept, e.g. Capital Deposit/Withdrawal), so
-reusing them here would be ambiguous.
+All financial operations post immediately and atomically. Corrections preserve
+the original ledger history through reversal entries.
