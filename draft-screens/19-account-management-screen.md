@@ -1,60 +1,29 @@
-# Account Management Screen — List
+# Account Management Screen
 
-Design reference: [`design/design.pen`](../design/design.pen), node
-`QU5zW` ("Accounts - List"). Uses the shared shell components `MYYNH`
-("Sidebar") and `MwM47` ("Topbar"), instanced with the "Accounts" nav
-item active. The create form is a separate screen (a modal, not a full
-page) — see
-[Account Management Screen — New](20-account-new-screen.md).
+Design reference: [`design/design.pen`](../design/design.pen), node `QU5zW`.
 
-## Purpose
+## Access
 
-Manage the `Account` records that hold money — Cash or Bank (KBZ, Wave, or
-any other provider), per [Overview](../spec/01-overview.md#accounts-we-hold-money-in). This is
-the admin surface behind every account picker used on the Deposit,
-Withdrawal, Internal Transfer, and Capital screens. Referenced from
-[Dashboard](10-dashboard-screen.md#account-balances-panel) via its "View
-all accounts" link.
+Owner only. Tellers cannot navigate to or query Accounts.
 
-## Page header
-- Title "Accounts", subtitle: "Cash, bank, and wallet accounts we hold
-  money in."
-- Primary button "Add Account" → opens
-  [Account Management Screen — New](20-account-new-screen.md) (`wwO0x`)
-  as a modal overlay, matching the
-  [Internal Transfer](16-internal-transfer-new-screen.md) /
-  [Capital](18-capital-new-screen.md) pattern.
+## Layout
 
-No filter bar — account count is expected to stay small (a handful of
-Cash/Bank/Wallet entries), so filtering isn't needed yet.
+The screen has **BANK** and **CASH** tabs. Within each tab:
 
-### Table columns
+1. Show the single real main account first, with its independent live balance.
+2. Show child accounts below, with each independent balance and active state.
+3. Show active staff assignments on each child.
 
-| Column | Content |
-|---|---|
-| Account Name | e.g. "KBZ - 09765112340", per the naming convention in [Data Model](../spec/02-data-model.md#account) |
-| Type | Badge — `CASH` (indigo) or `BANK` (green) — same palette used on [Dashboard](10-dashboard-screen.md#account-balances-panel). Wave/mobile-wallet accounts show `BANK` too, per [Data Model](../spec/02-data-model.md#account) |
-| Provider | "KBZ Bank", "Wave Money", or "—" for Cash |
-| Account No. | Shown unmasked (e.g. `09765112340`) — an owner reviewing this list needs the full number to cross-check against a bank/wallet app |
-| Balance | Bold, live-derived from `LedgerEntry` rows, never a stored column (see [Ledger & Accounting](../spec/03-ledger-accounting.md)) |
-| Status | Dot + "Active"/"Inactive" |
-| — | Row actions (`ellipsis` menu) |
+The UI must not present a main balance as including child balances. A separate
+child total may be shown. Each type starts with four children, and the Owner can
+add more.
 
-### Inactive accounts
+## Assignments
 
-Deactivated accounts are shown at reduced opacity (0.55) rather than
-hidden — matches the data model's explicit intent: "deactivated accounts
-are hidden from new-transaction pickers but keep history"
-([Data Model](../spec/02-data-model.md#account)). The example row ("KBZ -
-09112223334 (old)") shows a `K 0` balance with an "Inactive" status dot,
-still fully present in the list for historical reference.
+The Owner assigns staff from this screen. Every active Teller must have exactly
+one active child Bank and one active child Cash assignment. A child can have at
+most two active staff. Main accounts cannot show or accept assignments.
 
-## Open questions
-
-- ~~Row actions~~ — resolved: explicit Edit + Deactivate/Reactivate icon
-  buttons per row (no `ellipsis` menu — two actions is few enough to show
-  directly). Deactivate still needs a confirmation state before
-  implementation, since it affects every screen with an account picker.
-- ~~Unmasking the account number~~ — resolved: shown unmasked, since this
-  screen is Admin/Owner-only and they need the full number to cross-check
-  against a bank/wallet app.
+Assignment controls must prevent violating those limits and retain historical
+assignment records when reassigned. Account edit/deactivation controls must
+also prevent leaving an active Teller without the required pair.

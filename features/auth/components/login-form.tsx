@@ -19,13 +19,26 @@ import { cn } from "@/lib/utils";
 
 const initialState: LoginState = { status: "idle" };
 
-export function LoginForm() {
+export function LoginForm({
+  staffOnlyMessage = false,
+}: {
+  staffOnlyMessage?: boolean;
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [state, formAction, pending] = useActionState(login, initialState);
   const hasError = state.status === "error";
 
   return (
     <form action={formAction} className="space-y-5">
+      {staffOnlyMessage && !state.message ? (
+        <div
+          role="alert"
+          className="flex gap-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900"
+        >
+          <Ban className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+          <span>Staff accounts must use the mobile app.</span>
+        </div>
+      ) : null}
       {state.message ? (
         <div
           role="alert"

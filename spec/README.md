@@ -1,32 +1,26 @@
-# UMT Money Transfer — Spec
+# UMT Money Transfer - Specification
 
-Internal system for a Myanmar money-transfer shop: customers deposit cash
-that gets wired to a recipient elsewhere ("Deposit"), or receive cash here
-against a transfer that landed in one of our accounts ("Withdrawal"). The
-system tracks every kyat across our bank/wallet accounts and cash drawer,
-and collects a fee on every transaction.
+Internal, single-location MMK money-transfer system for Cash In and Cash Out
+services. This directory is the authoritative source for business rules.
 
 ## Scope
 
-- **Next.js app** (single codebase): admin console + mobile-responsive
-  teller screens + API routes.
-- **No separate mobile app.** The only mobile-specific need (photo upload +
-  OCR autofill for Payout verification) is handled by a responsive page in
-  the same app — see [OCR & Payout Verification](06-ocr-payout-verification.md).
-- **Single location**, single currency (MMK), MySQL + Prisma.
+- One responsive Next.js application for owners and tellers.
+- Email/password staff login. Customer phone numbers remain transaction data.
+- Two independent real main accounts: one `BANK` and one `CASH`.
+- Cash In/Out selects one account and one amount; IDs, references, and posting
+  timestamps are system-generated.
+- Immediate, atomic ledger posting. There is no user-facing transaction status
+  workflow.
+- Single location and single currency (MMK).
 
 ## Documents
 
-1. [Overview & Terminology](01-overview.md) — business flows, keyword choices
-2. [Data Model](02-data-model.md) — entities and fields
-3. [Ledger & Accounting](03-ledger-accounting.md) — double-entry model, worked examples
-4. [Transactions & Lifecycle](04-transactions-lifecycle.md) — types, statuses, transitions
-5. [RBAC](05-rbac.md) — roles and permission matrix
-6. [OCR & Verification](06-ocr-verification.md) — upload/OCR flow
-7. [Search & Filter](07-search-filter.md) — transaction list search/filter spec
-8. [Tech Stack](08-tech-stack.md) — architecture decisions
-
-## Status
-
-This is a requirements/design spec from a brainstorming pass — not yet
-implemented. Open items are marked **OPEN** in the relevant document.
+1. [Overview & Terminology](01-overview.md)
+2. [Data Model](02-data-model.md)
+3. [Ledger & Accounting](03-ledger-accounting.md)
+4. [Transactions & Lifecycle](04-transactions-lifecycle.md)
+5. [RBAC](05-rbac.md)
+6. [Manual Entry; OCR Out of Scope](06-ocr-verification.md)
+7. [Search & Filter](07-search-filter.md)
+8. [Tech Stack](08-tech-stack.md)

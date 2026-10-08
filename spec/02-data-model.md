@@ -1,159 +1,102 @@
 # Data Model
 
-Entities only — see [Ledger & Accounting](03-ledger-accounting.md) for how
-`LedgerEntry` rows are derived from a `Transaction`, and
-[Transactions & Lifecycle](04-transactions-lifecycle.md) for the status
-state machine.
+This is a business-level model. Exact implementation names may vary, but the
+relationships and constraints are required.
 
 ## User
 
-Staff account.
-
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | |
-| name | string | |
-| email | string | unique login identifier |
-| password_hash | string | managed by Better Auth in its credential account table |
+| name | string | Staff display name |
+| email | string | Unique login identifier |
+| password_hash | string | Credential-managed |
 | role | enum | `OWNER`, `TELLER` |
-| active | boolean | disabled accounts can't log in |
+| active | boolean | Inactive users cannot log in or create records |
 | created_at | timestamp | |
 
-Better Auth manages the credential account and database-backed sessions. There
-is no public sign-up flow; owners provision staff accounts.
+Customers do not log in. Their phone number remains on Cash In and Cash Out
+records.
 
 ## Account
 
-A real place money sits.
+| Field | Type | Notes |
+|---|---|---|
+| id | uuid | |
+| name | string | Human-readable account name |
+| type | enum | `BANK`, `CASH` |
+| level | enum | `MAIN`, `CHILD` |
+| parent_id | uuid \| null | Required for a child; null for a main |
+| provider | string \| null | Optional Bank provider |
+| account_number | string \| null | Optional external account identifier |
+| active | boolean | Inactive accounts cannot be used for new records |
+| created_at | timestamp | |
+
+Required invariants:
+
+- There is one Main Bank and one Main Cash account. They are real, independent
+  ledger accounts.
+- A child has the same type as its parent main account.
+- Each type starts with four child accounts and supports additional children.
+- Main balances never include child balances. Child totals are separate sums.
+
+## AccountAssignment
 
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | |
-| name | string | e.g. "KBZ - 09xxxxxxx", "Wave - 09xxxxxxx", "Cash Drawer" |
-| type | enum | `CASH`, `BANK` — mobile wallets (Wave) are `BANK` too, distinguished only by `provider`; `WALLET` was dropped as its own type since the two behave identically in every flow |
-| provider | string \| null | e.g. "KBZ Bank", "Wave Money" — null for `CASH` |
-| account_number | string \| null | shown unmasked in the admin account list |
-| active | boolean | deactivated accounts are hidden from new-transaction pickers but keep history |
-| created_at | timestamp | |
+| user_id | uuid | Teller only |
+| account_id | uuid | Active child account only |
+| active | boolean | Preserves assignment history |
+| assigned_by | uuid | Owner |
+| assigned_at | timestamp | |
+| ended_at | timestamp \| null | |
 
-Balance is **not** a stored column — it's derived live as the sum of the
-account's `LedgerEntry` rows. See [Ledger & Accounting](03-ledger-accounting.md).
+Every active Teller must have exactly one active child `BANK` assignment and
+one active child `CASH` assignment. A child account supports at most two active
+staff assignments. Main accounts cannot be assigned.
 
 ## Transaction
 
-One customer or internal event. **Deliberately one table for both**
-customer transactions (`DEPOSIT`, `WITHDRAWAL`) and internal ones
-(`INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL`), not split —
-see [Design decision: single Transaction table](#design-decision-single-transaction-table)
-below.
-
-`DEPOSIT` (was "Send") and `WITHDRAWAL` (was "Payout") were renamed because
-the old names implied a peer-to-peer transfer between two named people. In
-reality only one party's identity is ever recorded: a `DEPOSIT` puts cash
-into one person's account elsewhere (the account holder — `recipient_*`
-below); a `WITHDRAWAL` pays cash out against money that already landed in
-one of ours (the walk-in collecting it — also `recipient_*`). Neither
-direction names or records the other party involved (the walk-in who
-handed over cash for a Deposit; the remote party whose transfer created
-the balance for a Withdrawal) — see
-[Overview](01-overview.md#deposit-cash-in--recipients-account) for the
-full reasoning.
+One immediately posted business event.
 
 | Field | Type | Notes |
 |---|---|---|
 | id | uuid | |
-| reference_no | string | internal, human-shareable reference (e.g. for receipts) — prefixed `DEP-`/`WDL-`/`TRF-`/`CAP-` by type |
-| type | enum | `DEPOSIT`, `WITHDRAWAL`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL` |
-| status | enum | `PENDING`, `COMPLETED`, `CANCELLED`, `VOIDED` |
-| amount | decimal | principal amount (MMK) |
-| fee | decimal | 0 for non-customer types |
-| source_account_id | uuid \| null | account/cash money comes from (type-dependent) |
-| destination_account_id | uuid \| null | account/cash money goes to (type-dependent) |
-| recipient_name | string \| null | the one party recorded for `DEPOSIT`/`WITHDRAWAL` — see above |
-| recipient_phone | string \| null | normalized format, see [Search & Filter](07-search-filter.md) |
-| external_reference_no | string \| null | reference number extracted from a Deposit/Withdrawal screenshot (OCR) — see uniqueness note in [OCR & Verification](06-ocr-verification.md) |
-| note | string \| null | free text — also the catch-all for any compliance-relevant detail, since no fixed threshold rule exists yet (see [RBAC](05-rbac.md) open item) |
-| created_by | uuid (User) | |
-| created_at | timestamp | |
-| completed_at | timestamp \| null | |
-| voided_by | uuid (User) \| null | |
-| voided_at | timestamp \| null | |
-| void_reason | string \| null | |
-| cancelled_by | uuid (User) \| null | |
-| cancelled_at | timestamp \| null | |
-| cancel_reason | string \| null | |
+| compact_id | string | System-generated display ID; `CI-...` or `CO-...` for Cash In/Out |
+| reference_no | string | Separate system-generated reference |
+| type | enum | `CASH_IN`, `CASH_OUT`, `INTERNAL_TRANSFER`, `CAPITAL_DEPOSIT`, `CAPITAL_WITHDRAWAL`, `REVERSAL` |
+| selected_account_id | uuid \| null | One active `BANK` or `CASH` main/child account; required for Cash In/Out |
+| amount | decimal \| null | Actual transfer value; one positive amount; required for Cash In/Out |
+| fee | decimal | Non-negative; zero for internal and capital operations |
+| fee_mode | enum \| null | `DEDUCTED` or `SEPARATE`; Cash In/Out only |
+| fee_account_id | uuid \| null | Fee account; required only when `SEPARATE` and fee > 0 |
+| customer_name | string \| null | Cash In/Out only |
+| customer_phone | string \| null | Required for Cash In/Out; normalized for search |
+| note | string \| null | |
+| created_by | uuid | |
+| created_at | timestamp | System-generated posting time |
+| reverses_transaction_id | uuid \| null | Links an audited reversal |
+| replacement_for_id | uuid \| null | Links an owner's corrected repost |
+| deleted_at | timestamp \| null | Soft deletion after reversal |
+| deleted_by | uuid \| null | Owner who deleted it |
+
+There is no user-facing transaction status field. Records post at creation.
+Owner Edit creates a reversal and corrected repost; Owner Delete creates a
+reversal and soft-deletes the original business record.
+
+For Cash In/Out, `selected_account_id` must match the chosen account type. An
+Owner may use any active main or child account. A Teller must use the active
+assigned child account for the chosen type.
+
+In `SEPARATE` mode with a positive fee, `fee_account_id` must reference an
+active account of the chosen type. An Owner may use any active account of that
+type; a Teller's fee account is the active assigned child account of that type,
+enforced by the server. `DEDUCTED` mode uses no fee account.
 
 ## LedgerEntry
 
-Immutable. Never edited or deleted — corrections happen via a reversing
-transaction (`VOIDED` status), not by mutating history.
-
-| Field | Type | Notes |
-|---|---|---|
-| id | uuid | |
-| transaction_id | uuid | |
-| account_id | uuid | |
-| side | enum | `DEBIT`, `CREDIT` |
-| amount | decimal | always positive; `side` determines direction |
-| created_at | timestamp | |
-
-Only `COMPLETED` transactions produce `LedgerEntry` rows. A `VOIDED`
-transaction gets a second set of entries (the reversal) rather than deleting
-the first set.
-
-### Design decision: single Transaction table
-
-Considered splitting customer transactions (Deposit/Withdrawal) from
-internal ones (Internal Transfer, Capital Deposit/Withdrawal) into
-separate tables, since `recipient_name`/`recipient_phone`/
-`external_reference_no` are `NULL` for internal types. Kept as one table:
-
-- All types share the identical status state machine
-  (`PENDING`/`COMPLETED`/`CANCELLED`/`VOIDED`) and audit fields
-  (`created_by`/`voided_by`/`cancelled_by`) — splitting duplicates this.
-- `LedgerEntry.transaction_id` stays a single, non-polymorphic FK. Splitting
-  the source table would force `LedgerEntry` to reference either of two
-  tables depending on type — added complexity in exactly the part of the
-  system (debit/credit integrity) that most needs to stay simple.
-- Account history and the transaction search/filter screen
-  ([Search & Filter](07-search-filter.md)) need to query across all types
-  together — one table means a plain `WHERE`; two tables means a `UNION`
-  everywhere those features touch.
-- The cost — 3 nullable columns on internal-type rows — is small enough to
-  accept rather than design around.
-
-Contrast with `TransactionAttachment` below, which *is* split out: that
-data is one-to-many (multiple upload attempts) and a genuinely different
-concern (file storage + OCR metadata) from the financial fact a Transaction
-represents. Recipient info is one-to-one and central to what a
-Deposit/Withdrawal transaction *is* — pulling it into a joined table would
-only move the nullability from a column to a relation while adding a JOIN
-to every list/search query, without solving a real problem.
-
-## TransactionAttachment
-
-Supporting evidence for a transaction — currently: Deposit/Withdrawal
-verification screenshots. Deliberately a separate table from `Transaction`
-rather than a `file_url` column on it — see [OCR & Verification](06-ocr-verification.md#storage--attachments)
-for why.
-
-| Field | Type | Notes |
-|---|---|---|
-| id | uuid | |
-| transaction_id | uuid | FK → Transaction |
-| file_url | string | path in object storage (S3-compatible) |
-| file_type | string | mime type |
-| uploaded_by | uuid (User) | |
-| uploaded_at | timestamp | |
-| ocr_raw_text | text \| null | raw OCR output — kept for debugging/improving provider rules later |
-| ocr_extracted_fields | json \| null | structured fields OCR extracted at upload time (amount, reference, date) — a snapshot, kept separate from whatever the teller ultimately entered on the Transaction, so the two can be compared later |
-
-A transaction can have more than one attachment (e.g. a blurry first upload
-followed by a clearer re-upload) — all are kept, not overwritten.
-
-## FeeIncome
-
-Not a real money account — a reporting-only ledger for revenue. Every
-`COMPLETED` `DEPOSIT`/`WITHDRAWAL` transaction with a nonzero fee posts one
-entry here (credit side), used for the profit summary in
-[Ledger & Accounting](03-ledger-accounting.md).
+Immutable entry linked to a transaction and ledger account. Amounts are
+positive and debit/credit determines direction. All entries for a creation,
+edit, or deletion commit in one database transaction. Balances are derived
+from ledger entries, never stored on `Account`.

@@ -1,88 +1,41 @@
 # Transactions & Lifecycle
 
-## Types
+## Creation
 
-| Type | Who creates it | Fee | Involves customer identity |
-|---|---|---|---|
-| `DEPOSIT` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#deposit-cash-in--recipients-account) |
-| `WITHDRAWAL` | Teller or Admin/Owner | Yes | Yes — recipient only, see [Overview](01-overview.md#withdrawal-money-already-with-us--cash-out) |
-| `INTERNAL_TRANSFER` | Admin/Owner only | No | No |
-| `CAPITAL_DEPOSIT` | Admin/Owner only | No | No |
-| `CAPITAL_WITHDRAWAL` | Admin/Owner only | No | No |
-
-Note the naming overlap: `WITHDRAWAL` (customer-facing, has a fee, has a
-recipient) and `CAPITAL_WITHDRAWAL` (owner pulling their own money, no fee,
-no customer) are distinct enum values, but share a root word — same for
-`DEPOSIT`/`CAPITAL_DEPOSIT`. See the naming note in
-[Overview](01-overview.md#deposit-cash-in--recipients-account).
-
-## Statuses
-
-| Status | Meaning | Ledger impact |
+| Type | Creator | Posting |
 |---|---|---|
-| `PENDING` | Created but not finalized. For Withdrawal: awaiting confirmation the incoming transfer actually cleared. For Deposit: awaiting the outbound wire being sent. | None |
-| `COMPLETED` | Money has actually moved both ways; receipt issued. | Ledger entries posted |
-| `CANCELLED` | Stopped before completion — never happened. | None (record kept for history) |
-| `VOIDED` | Was `COMPLETED`, later found wrong and reversed. | Reversing entries posted; original entries untouched |
+| Cash In | Teller or Owner | Immediate and atomic |
+| Cash Out | Teller or Owner | Immediate and atomic |
+| Internal Transfer | Owner only | Immediate and atomic |
+| Capital Deposit / Withdrawal | Owner only | Immediate and atomic |
 
-Only `COMPLETED` transactions post to the ledger. This keeps balance math
-simple (no partial/two-phase postings), at the cost of a small window where
-a teller may be physically holding cash for a still-`PENDING` transaction
-that the system doesn't count yet — closes as soon as it's marked
-`COMPLETED`.
+There is no user-facing `PENDING`, `COMPLETED`, or `CANCELLED` workflow.
+Screens must not expose status filters, status columns, Complete actions, or
+pending monitoring. A create form has one **Create** action; leaving the form
+is ordinary navigation, not a transaction cancellation state.
 
-## Why PENDING matters most for Withdrawal
+## Cash In And Cash Out
 
-The dangerous moment: a customer claims a transfer was sent and shows a
-screenshot. If cash is paid out immediately and the screenshot is
-fake/edited/reused, that cash is gone with no recourse. Flow:
+- Customer phone is required; note is optional.
+- The system generates a compact `CI`/`CO` ID, a separate reference, and the
+  posting timestamp. There is no external-reference or manual date/time input.
+- No screenshot upload, OCR, or verification checkbox is used.
+- Each record has one positive amount, a non-negative fee, and one selected
+  account. There is no `fee <= amount` rule.
+- The fee mode is `DEDUCTED` (ပမာဏမှ ဖျတ်မည်) or `SEPARATE`
+  (သီးသန့်ပေးမည်). A fee account is required only for `SEPARATE` with
+  fee > 0: Owners pick any active account of the chosen type; the server forces
+  a Teller's assigned account of that type.
+- Owners choose `BANK` or `CASH`, then one active matching main/child account.
+- Tellers choose `BANK` or `CASH`; the matching active assigned child account
+  is displayed read-only.
 
-1. Teller uploads screenshot → OCR prefills the form → saved as `PENDING`.
-2. Teller actually checks the account (bank app / SMS notification) and
-   confirms the money is really there.
-3. Teller pays cash, marks `COMPLETED`.
+## Visibility And Corrections
 
-## Transitions & permissions
+Tellers create and view records involving their assigned accounts. If two staff
+share a child account, each can view records involving that shared account,
+regardless of creator. Tellers cannot edit or delete any posted record.
 
-| Transition | Teller | Admin/Owner |
-|---|---|---|
-| Create → `PENDING` (Deposit/Withdrawal) | ✅ | ✅ |
-| Create → `PENDING` (Internal Transfer, Capital Deposit/Withdrawal) | ❌ | ✅ |
-| Edit fields of own `PENDING` transaction | ✅ (own only) | ✅ (any) |
-| `PENDING` → `COMPLETED` | ✅ | ✅ |
-| `PENDING` → `CANCELLED` | ❌ | ✅ |
-| `COMPLETED` → `VOIDED` | ❌ | ✅ |
-
-**Why cancel is admin/owner only, not just at PENDING→COMPLETED:** a teller
-who could freely cancel their own pending transaction could also collect
-real cash from a customer, then cancel the transaction to erase the record
-and keep the cash — no ledger trace exists for a `PENDING` transaction, so
-cancelling it removes the only record that it ever happened. Restricting
-cancel to admin/owner closes that hole. Editing a `PENDING` transaction's
-*fields* (not its status) is still allowed for tellers, since that's about
-fixing their own mistake on the way to completing it, not making it
-disappear.
-
-**Operational implication:** since this control only works if someone
-actually looks, the admin console should surface a **pending transactions
-view sorted by age**, so a stale `PENDING` transaction (possible sign of
-cash collected but not reported) gets noticed.
-
-## Fraud/data-integrity guardrails (non-blocking, by design)
-
-Two checks were deliberately made **warnings, not hard blocks** — the team
-preferred trusting staff judgment over rigid rules that could get in the way
-of real edge cases:
-
-- **Insufficient balance**: completing a transaction that would take an
-  account's recorded balance negative shows a warning but is still allowed.
-- **Duplicate external reference**: completing a Deposit or Withdrawal
-  whose OCR'd `external_reference_no` matches one already used on a
-  completed transaction shows a warning but the teller can proceed at
-  their own judgment.
-
-## OPEN
-
-- No fixed compliance/KYC amount threshold is enforced (e.g. "require NRC
-  above X kyat"). Use the transaction `note` field for anything relevant
-  until/unless a specific rule needs to be encoded.
+Owners can view all records. Owner **Edit** means audited reversal plus an
+immediate corrected repost. Owner **Delete** means audited reversal plus soft
+delete. Both operations are atomic and preserve ledger history.

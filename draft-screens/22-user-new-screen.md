@@ -1,54 +1,19 @@
-# User Management Screen — New
+# Staff Management Screen - New
 
-Design reference: [`design/design.pen`](../design/design.pen), node
-`vz3nM` ("Add Staff (Modal)"). A centered modal (460px) over a dimmed
-backdrop, opened from the "Add Staff" button on
-[User Management Screen — List](21-user-management-screen.md). Previously
-that button had nowhere to go — this screen fills that gap.
+Design reference: [`design/design.pen`](../design/design.pen), node `vz3nM`.
 
-## Purpose
+## Access And Fields
 
-Create form for a `User` (staff account) — Owner or Teller. Owner only,
-per the "Manage staff logins (create/disable teller, reset password)" row
-in [RBAC](../spec/05-rbac.md), which is Owner-exclusive with no Teller
-access at all. See [Data Model](../spec/02-data-model.md#user) for the
-underlying fields.
+Owner only.
 
-Same modal pattern as
-[Internal Transfer](16-internal-transfer-new-screen.md#modal-contents),
-[Capital](18-capital-new-screen.md#modal-contents), and
-[Account](20-account-new-screen.md#modal-contents) — few enough fields
-that a full page isn't warranted.
-
-## Modal contents
-
-| Element | Detail |
+| Field | Rule |
 |---|---|
-| Title | "Add Staff", with a close (`x`) icon |
-| Full Name | Free text |
-| Email Address | Email input with mail icon — the unique login identifier from [Data Model](../spec/02-data-model.md#user) |
-| Role | Two-way toggle: **Teller** (active by default) / **Owner** — Teller is the default selection since it's expected to be the far more common case; owner accounts should be rare |
-| Initial Password | Text field with a **Generate** action — since there's no self-service signup, the owner sets (or generates) the starting password directly |
-| Note | Informational banner: "Share this password securely with the staff member." — initial password delivery remains owner-managed until a self-service setup flow exists |
-| Actions | Cancel / "Add Staff" |
+| Full name | Required |
+| Email | Required unique login identifier |
+| Role | Teller or Owner |
+| Initial password | Owner-set or generated credential |
 
-The password field and its note directly address the gap flagged on the
-[Login screen](09-login-screen.md#open-questions): since there is no
-self-service account setup, this modal is where a new teller's first
-password actually originates, and the note exists so the owner doesn't
-create the account and forget the teller still needs the password handed
-to them securely.
-
-## Open questions
-
-- Whether this same modal serves **Edit** (presumably from the list's
-  `ellipsis` menu) is unconfirmed — an edit flow wouldn't show the
-  Initial Password field (that's what "Reset password" on the list is
-  for, per
-  [User Management Screen — List](21-user-management-screen.md#open-questions)),
-  so Edit likely needs a lighter variant of this same modal rather than
-  reusing it outright.
-- Whether role can be changed after creation (promote/demote) isn't
-  decided — same open question carried over from the list doc.
-- Password generation behavior (character set, length, whether it's
-  guaranteed to satisfy any future password policy) isn't specified.
+Customer phone is not a staff login field. Account assignments are not selected
+here: the Owner assigns Teller child accounts from Account management. A Teller
+cannot be active until exactly one child Bank and one child Cash assignment are
+in place.
