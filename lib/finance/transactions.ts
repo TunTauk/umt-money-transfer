@@ -83,26 +83,26 @@ async function serializable<T>(operation: (tx: DbTransaction) => Promise<T>): Pr
   }
 }
 
-async function resolveCashAccounts(
+async function resolveCashAccount(
   tx: DbTransaction,
   actor: FinanceActor,
-  input: CashTransactionInput,
+  submittedAccountId: string,
+  field: string,
+  expectedType?: "BANK" | "CASH",
 ) {
-  let accountId = input.accountId;
+  const accountId = requiredText(submittedAccountId, field);
+  const account = await tx.financialAccount.findUnique({ where: { id: accountId } });
+  financeInvariant(account, `${field} account not found`, "NOT_FOUND");
+  assertCashAccountSelection(actor.role, expectedType ?? account.type, account);
 
   if (actor.role === "TELLER") {
     const assignment = await tx.staffAccountAssignment.findUnique({
-      where: { userId_accountType: { userId: actor.id, accountType: input.accountType } },
+      where: { userId_accountType: { userId: actor.id, accountType: account.type } },
       select: { financialAccountId: true },
     });
-    financeInvariant(assignment, `Teller requires an assigned ${input.accountType} account`, "FORBIDDEN");
-    accountId = assignment.financialAccountId;
-  } else {
-    financeInvariant(accountId, "accountId is required");
+    financeInvariant(assignment?.financialAccountId === account.id, `Teller must be assigned the submitted ${field}`, "FORBIDDEN");
   }
 
-  const account = await tx.financialAccount.findUnique({ where: { id: accountId } });
-  assertCashAccountSelection(actor.role, input.accountType, account);
   return account;
 }
 
@@ -114,30 +114,9 @@ async function resolveFeeAccount(
 ): Promise<string | null> {
   if (input.feeMode !== "SEPARATE" || feeAmount <= 0n) return null;
 
-  if (actor.role === "TELLER") {
-    const feeAccountType = input.feeAccountType ?? input.accountType;
-    const assignment = await tx.staffAccountAssignment.findUnique({
-      where: { userId_accountType: { userId: actor.id, accountType: feeAccountType } },
-      select: { financialAccount: { select: { id: true, active: true } } },
-    });
-    financeInvariant(
-      assignment?.financialAccount?.active,
-      `Teller requires an active assigned ${feeAccountType} fee account`,
-      "FORBIDDEN",
-    );
-    return assignment.financialAccount.id;
-  }
-
-  const feeAccountId = input.feeAccountId?.trim() ?? "";
-  financeInvariant(feeAccountId.length > 0, "feeAccountId is required for separate fee mode");
-  const feeAccount = await tx.financialAccount.findUnique({ where: { id: feeAccountId } });
-  const expectedType = input.feeAccountType ?? input.accountType;
-  financeInvariant(feeAccount?.active, "Active fee account not found", "NOT_FOUND");
-  financeInvariant(
-    feeAccount.type === expectedType,
-    `Fee account must be a ${expectedType} account`,
-    "INVALID_INPUT",
-  );
+  const feeAccountId = optionalText(input.feeAccountId);
+  financeInvariant(feeAccountId, "feeAccountId is required for separate fee mode");
+  const feeAccount = await resolveCashAccount(tx, actor, feeAccountId, "feeAccountId");
   return feeAccount.id;
 }
 
@@ -178,6 +157,8 @@ function cashSnapshot(input: {
   providerId: string | null;
   accountType: "BANK" | "CASH";
   accountId: string;
+  sourceAccountId: string | null;
+  destinationAccountId: string | null;
   amount: bigint;
   feeAmount: bigint;
   feeMode: FeeMode | null;
@@ -193,6 +174,8 @@ function cashSnapshot(input: {
     providerId: input.providerId,
     accountType: input.accountType,
     accountId: input.accountId,
+    sourceAccountId: input.sourceAccountId,
+    destinationAccountId: input.destinationAccountId,
     amount: input.amount.toString(),
     feeAmount: input.feeAmount.toString(),
     feeMode: input.feeMode,
@@ -207,12 +190,16 @@ export async function createCashTransaction(actor: FinanceActor, input: CashTran
   assertCanCreateCashTransaction(actor);
 
   return serializable(async (tx) => {
-    const account = await resolveCashAccounts(tx, actor, input);
+    const receiving = await resolveCashAccount(tx, actor, input.receivingAccountId, "receivingAccountId", input.type === "CASH_IN" ? "CASH" : "BANK");
+    const paying = await resolveCashAccount(tx, actor, input.payingAccountId, "payingAccountId", input.type === "CASH_IN" ? "BANK" : "CASH");
+    // Retain the primary settlement fields for existing downstream consumers.
+    const account = input.type === "CASH_IN" ? paying : receiving;
     const feeAmount = toNonNegativeMmk(input.feeAmount, "feeAmount");
     const feeAccountId = await resolveFeeAccount(tx, actor, input, feeAmount);
     const plan = planCashTransaction({
       type: input.type,
-      accountId: account.id,
+      receivingAccountId: receiving.id,
+      payingAccountId: paying.id,
       amount: input.amount,
       feeAmount,
       feeMode: input.feeMode,
@@ -222,8 +209,10 @@ export async function createCashTransaction(actor: FinanceActor, input: CashTran
       reference: requiredText(input.reference, "reference"),
       type: input.type,
       providerId: account.providerId,
-      accountType: input.accountType,
+      accountType: account.type,
       accountId: account.id,
+      sourceAccountId: paying.id,
+      destinationAccountId: receiving.id,
       amount: plan.amount.toString(),
       feeAmount: plan.feeAmount.toString(),
       feeMode: input.feeMode,
@@ -354,12 +343,15 @@ export async function editCashTransaction(
     if (input.reference !== undefined) {
       financeInvariant(input.reference.trim() === existing.reference, "Transaction reference cannot be changed");
     }
-    const account = await resolveCashAccounts(tx, actor, input);
+    const receiving = await resolveCashAccount(tx, actor, input.receivingAccountId, "receivingAccountId", input.type === "CASH_IN" ? "CASH" : "BANK");
+    const paying = await resolveCashAccount(tx, actor, input.payingAccountId, "payingAccountId", input.type === "CASH_IN" ? "BANK" : "CASH");
+    const account = input.type === "CASH_IN" ? paying : receiving;
     const feeAmount = toNonNegativeMmk(input.feeAmount, "feeAmount");
     const feeAccountId = await resolveFeeAccount(tx, actor, input, feeAmount);
     const plan = planCashTransaction({
       type: input.type,
-      accountId: account.id,
+      receivingAccountId: receiving.id,
+      payingAccountId: paying.id,
       amount: input.amount,
       feeAmount,
       feeMode: input.feeMode,
@@ -370,8 +362,10 @@ export async function editCashTransaction(
       systemReference: existing.systemReference,
       type: input.type,
       providerId: account.providerId,
-      accountType: input.accountType,
+      accountType: account.type,
       accountId: account.id,
+      sourceAccountId: paying.id,
+      destinationAccountId: receiving.id,
       amount: plan.amount,
       feeAmount: plan.feeAmount,
       feeMode: input.feeMode,
@@ -386,6 +380,8 @@ export async function editCashTransaction(
       providerId: after.providerId,
       accountType: after.accountType,
       accountId: after.accountId,
+      sourceAccountId: after.sourceAccountId,
+      destinationAccountId: after.destinationAccountId,
       amount: after.amount,
       feeAmount: after.feeAmount,
       feeMode: after.feeMode,
@@ -406,6 +402,8 @@ export async function editCashTransaction(
       providerId: existing.providerId,
       accountType: existing.accountType!,
       accountId: existing.accountId!,
+      sourceAccountId: existing.sourceAccountId,
+      destinationAccountId: existing.destinationAccountId,
       amount: existing.amount!,
       feeAmount: existing.feeAmount!,
       feeMode: existing.feeMode,
@@ -439,8 +437,10 @@ export async function editCashTransaction(
       data: {
         type: input.type,
         providerId: account.providerId,
-        accountType: input.accountType,
+        accountType: account.type,
         accountId: account.id,
+        sourceAccountId: paying.id,
+        destinationAccountId: receiving.id,
         amount: plan.amount,
         feeAmount: plan.feeAmount,
         feeMode: input.feeMode,

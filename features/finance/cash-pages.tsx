@@ -19,6 +19,11 @@ function title(type: "CASH_IN" | "CASH_OUT") { return type === "CASH_IN" ? "Cash
 function dateTime(value: Date) { return value.toLocaleString("en-GB", { timeZone: "Asia/Yangon" }); }
 function feeModeLabel(feeMode: string | null) { return feeMode === "SEPARATE" ? "သီးသန့်ပေးမည် (Separate)" : "ပမာဏမှ ဖျတ်မည် (Deducted)"; }
 
+function AccountMovement({ item }: { item: { account: { name: string } | null; destinationAccount: { name: string } | null; sourceAccount: { name: string } | null } }) {
+  if (!item.destinationAccount && !item.sourceAccount) return <p className="truncate text-sm">{item.account?.name}</p>;
+  return <div className="space-y-1 text-sm"><p className="truncate" title={item.destinationAccount?.name}><span className="text-xs text-muted-foreground">Receive: </span>{item.destinationAccount?.name ?? "Not recorded"}</p><p className="truncate" title={item.sourceAccount?.name}><span className="text-xs text-muted-foreground">Pay: </span>{item.sourceAccount?.name ?? "Not recorded"}</p></div>;
+}
+
 function FeePill({ feeMode, feeAccountType }: { feeMode: string | null; feeAccountType?: string | null }) {
   const separate = feeMode === "SEPARATE";
   const cls = separate
@@ -54,11 +59,11 @@ export async function CashListPage({ type, filters = {} }: { type: "CASH_IN" | "
           <div><span className="text-xs text-muted-foreground md:hidden">Reference</span><p className="font-mono text-sm font-semibold text-primary">{item.reference}</p></div>
           <div className="hidden min-w-0 md:block"><p className="truncate font-medium">{item.customerName}</p></div>
           <div className="hidden min-w-0 md:block"><p className="truncate font-mono text-sm">{item.customerPhone}</p></div>
-          <div className="hidden min-w-0 md:block"><p className="truncate text-sm">{item.account?.name}</p></div>
+           <div className="hidden min-w-0 md:block"><AccountMovement item={item} /></div>
           <div className="hidden md:block"><TransactionAmount value={item.amount} /></div>
           <div className="hidden items-center gap-2 md:flex"><strong className="font-mono text-sm">{new Intl.NumberFormat("en-US").format(item.feeAmount ?? 0n)} MMK</strong><FeePill feeMode={item.feeMode} feeAccountType={item.feeAccount?.type} /></div>
           <ChevronDown className="size-5 text-muted-foreground transition-transform group-open:rotate-180" aria-hidden="true" />
-          <div className="col-span-2 grid grid-cols-2 gap-3 border-t pt-3 md:hidden"><div><p className="text-xs text-muted-foreground">Customer</p><p className="truncate text-sm font-medium">{item.customerName}</p></div><div><p className="text-xs text-muted-foreground">Phone</p><p className="truncate font-mono text-sm">{item.customerPhone}</p></div><div><p className="text-xs text-muted-foreground">Account</p><p className="truncate text-sm">{item.account?.name}</p></div><div><p className="text-xs text-muted-foreground">Amount</p><TransactionAmount value={item.amount} /></div><div className="col-span-2"><p className="text-xs text-muted-foreground">Fee / Location</p><p className="flex items-center gap-2"><strong className="font-mono text-sm">{new Intl.NumberFormat("en-US").format(item.feeAmount ?? 0n)} MMK</strong><FeePill feeMode={item.feeMode} feeAccountType={item.feeAccount?.type} /></p></div></div>
+           <div className="col-span-2 grid grid-cols-2 gap-3 border-t pt-3 md:hidden"><div><p className="text-xs text-muted-foreground">Customer</p><p className="truncate text-sm font-medium">{item.customerName}</p></div><div><p className="text-xs text-muted-foreground">Phone</p><p className="truncate font-mono text-sm">{item.customerPhone}</p></div><div className="min-w-0"><p className="text-xs text-muted-foreground">Accounts</p><AccountMovement item={item} /></div><div><p className="text-xs text-muted-foreground">Amount</p><TransactionAmount value={item.amount} /></div><div className="col-span-2"><p className="text-xs text-muted-foreground">Fee / Location</p><p className="flex items-center gap-2"><strong className="font-mono text-sm">{new Intl.NumberFormat("en-US").format(item.feeAmount ?? 0n)} MMK</strong><FeePill feeMode={item.feeMode} feeAccountType={item.feeAccount?.type} /></p></div></div>
         </summary>
         <div className="border-t bg-muted/30 px-5 py-5"><dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5"><div><dt className="text-xs font-medium text-muted-foreground">ကိုးကား</dt><dd className="mt-1 break-all text-sm font-medium">{item.systemReference}</dd></div><div><dt className="text-xs font-medium text-muted-foreground">Created</dt><dd className="mt-1 text-sm">{dateTime(item.createdAt)}</dd></div><div><dt className="text-xs font-medium text-muted-foreground">Creator</dt><dd className="mt-1 truncate text-sm">{item.createdBy.email}</dd></div><div><dt className="text-xs font-medium text-muted-foreground">Fee mode</dt><dd className="mt-1 text-sm">{feeModeLabel(item.feeMode)}</dd></div>{item.feeMode === "SEPARATE" ? <div><dt className="text-xs font-medium text-muted-foreground">Fee account</dt><dd className="mt-1 text-sm">{item.feeAccount?.name ?? "—"}</dd></div> : null}<div><dt className="text-xs font-medium text-muted-foreground">Note</dt><dd className="mt-1 text-sm">{item.note || "None"}</dd></div></dl>{session.user.role === "OWNER" ? <div className="mt-5 flex gap-2 border-t pt-4"><Button asChild variant="outline" size="sm"><Link href={`${base}/${item.id}/edit`}><Pencil className="size-4" />Edit</Link></Button><form action={removeTransaction}><input type="hidden" name="id" value={item.id} /><input type="hidden" name="returnTo" value={base} /><Button variant="ghost" size="sm" className="text-destructive"><Trash2 className="size-4" />Delete</Button></form></div> : null}</div>
       </details>)}
@@ -69,7 +74,7 @@ export async function CashListPage({ type, filters = {} }: { type: "CASH_IN" | "
 export async function CashCreatePage({ type }: { type: "CASH_IN" | "CASH_OUT" }) {
   const session = await requireSession();
   const accounts = await getCashFormAccounts(actor(session));
-  return <Page><PageHeader title={`New ${title(type)}`} description="Post the transaction immediately to the ledger." /><Panel className="p-5 sm:p-6"><CashForm type={type} accounts={accounts} teller={session.user.role === "TELLER"} /></Panel></Page>;
+  return <Page><PageHeader title={`New ${title(type)}`} /><Panel className="p-5 sm:p-6"><CashForm type={type} accounts={accounts} /></Panel></Page>;
 }
 
 export async function CashDetailPage({ type, id }: { type: "CASH_IN" | "CASH_OUT"; id: string }) {
@@ -79,7 +84,10 @@ export async function CashDetailPage({ type, id }: { type: "CASH_IN" | "CASH_OUT
   const base = route(type);
   const rows = [
     ["Customer", item.customerName], ["Phone", item.customerPhone], ["ကိုးကား", item.systemReference],
-    ["Created", dateTime(item.createdAt)], ["Account type", item.accountType], ["Account", item.account?.name],
+    ["Created", dateTime(item.createdAt)],
+    ...(item.sourceAccountId || item.destinationAccountId
+      ? [["Receive Into", item.destinationAccount?.name ?? "Not recorded"], ["Pay From", item.sourceAccount?.name ?? "Not recorded"]]
+      : [["Account type", item.accountType], ["Account", item.account?.name]]),
     ["Amount", `${item.amount?.toString()} MMK`], ["Fee", `${item.feeAmount?.toString()} MMK`], ["Fee mode", feeModeLabel(item.feeMode)],
     ...(item.feeMode === "SEPARATE" ? [["Fee account", item.feeAccount?.name ?? "—"] as [string, string | null | undefined]] : []),
     ["Created by", item.createdBy.email], ["Note", item.note || "None"],
@@ -92,5 +100,5 @@ export async function CashEditPage({ type, id }: { type: "CASH_IN" | "CASH_OUT";
   if (session.user.role !== "OWNER") notFound();
   const [item, accounts] = await Promise.all([getCashTransaction(actor(session), id), getCashFormAccounts(actor(session))]);
   if (!item || item.type !== type) notFound();
-  return <Page><PageHeader title={`Edit ${item.reference}`} description="Saving reverses the current posting and creates a new ledger version." /><Panel className="p-5 sm:p-6"><CashForm type={type} accounts={accounts} teller={false} transaction={item} /></Panel></Page>;
+  return <Page><PageHeader title={`Edit ${item.reference}`} description="Saving reverses the current posting and creates a new ledger version." /><Panel className="p-5 sm:p-6"><CashForm type={type} accounts={accounts} transaction={item} /></Panel></Page>;
 }

@@ -26,13 +26,12 @@ export type LedgerPlanEntry = LedgerTarget & {
 export interface CashTransactionInput {
   reference?: string;
   type: CashTransactionType;
-  accountType: AccountType;
-  accountId?: string;
+  receivingAccountId: string;
+  payingAccountId: string;
   amount: MoneyInput;
   feeAmount: MoneyInput;
   feeMode: FeeMode;
   feeAccountId?: string;
-  feeAccountType?: AccountType;
   customerName?: string | null;
   customerPhone: string;
   note?: string | null;

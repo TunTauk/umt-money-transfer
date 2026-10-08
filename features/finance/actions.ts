@@ -68,19 +68,15 @@ export async function saveCashTransaction(
     const customerPhone = field(formData, "customerPhone").trim();
     if (!customerName) throw new FinanceError("Customer name is required", "INVALID_INPUT");
     if (!customerPhone.replace(/\D/g, "")) throw new FinanceError("Customer phone is required", "INVALID_INPUT");
-    const feeAccountTypeRaw = field(formData, "feeAccountType");
     const input = {
       reference: field(formData, "reference") || cashReference(type === "CASH_IN" ? "CI" : "CO"),
       type,
-      accountType: oneOf(field(formData, "accountType"), ["BANK", "CASH"] as const, "Account type"),
-      accountId: field(formData, "accountId"),
+      receivingAccountId: field(formData, "receivingAccountId"),
+      payingAccountId: field(formData, "payingAccountId"),
       amount: field(formData, "amount"),
       feeAmount: field(formData, "feeAmount"),
       feeMode: oneOf(field(formData, "feeMode") || "DEDUCTED", ["DEDUCTED", "SEPARATE"] as const, "Fee mode"),
       feeAccountId: field(formData, "feeAccountId") || undefined,
-      feeAccountType: feeAccountTypeRaw
-        ? oneOf(feeAccountTypeRaw, ["BANK", "CASH"] as const, "Fee account type")
-        : undefined,
       customerName,
       customerPhone,
       note: field(formData, "note"),

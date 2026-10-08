@@ -143,7 +143,12 @@ export async function getCashTransactions(actor: FinanceActor, type: "CASH_IN" |
   if (dateFrom || dateTo) structured.push({
     createdAt: { ...(dateFrom ? { gte: dateFrom } : {}), ...(dateTo ? { lt: dateTo } : {}) },
   });
-  if (filters.accountId) structured.push({ accountId: filters.accountId });
+  if (filters.accountId) structured.push({ OR: [
+    { accountId: filters.accountId },
+    { destinationAccountId: filters.accountId },
+    { sourceAccountId: filters.accountId },
+    { feeAccountId: filters.accountId },
+  ] });
   if (actor.role === "OWNER" && filters.createdById) structured.push({ createdById: filters.createdById });
   if (minAmount !== undefined || maxAmount !== undefined) structured.push({
     amount: amountRange,
@@ -152,7 +157,7 @@ export async function getCashTransactions(actor: FinanceActor, type: "CASH_IN" |
     where: { AND: [{ type, status: "POSTED" }, visibility, searchWhere, ...structured] },
     orderBy: { createdAt: "desc" },
     take: 100,
-    include: { account: true, feeAccount: true, createdBy: true },
+    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, createdBy: true },
   });
 }
 
@@ -170,7 +175,7 @@ export async function getCashTransaction(actor: FinanceActor, id: string) {
   const visibility = await financialTransactionVisibilityWhere(actor);
   return prisma.financialTransaction.findFirst({
     where: { AND: [{ id, status: "POSTED", type: { in: ["CASH_IN", "CASH_OUT"] } }, visibility] },
-    include: { account: true, feeAccount: true, provider: true, createdBy: true, revisions: true },
+    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, provider: true, createdBy: true, revisions: true },
   });
 }
 
@@ -180,10 +185,10 @@ export async function getCashFormAccounts(actor: FinanceActor) {
       where: { userId: actor.id },
       include: { financialAccount: true },
     });
-    return assignments.map((item) => item.financialAccount);
+    return assignments.map((item) => item.financialAccount).filter((account) => account.active && account.kind === "CHILD");
   }
   return prisma.financialAccount.findMany({
-    where: { active: true },
+    where: { active: true, kind: "CHILD" },
     orderBy: [{ type: "asc" }, { kind: "asc" }, { name: "asc" }],
   });
 }

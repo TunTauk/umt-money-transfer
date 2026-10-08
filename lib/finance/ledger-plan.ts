@@ -58,7 +58,7 @@ export function assertBalanced(entries: readonly LedgerPlanEntry[]): void {
 
 function requireSeparateFeeAccount(feeAccountId: string | null | undefined): string {
   financeInvariant(
-    typeof feeAccountId === "string" && feeAccountId.length > 0,
+    typeof feeAccountId === "string" && feeAccountId.trim().length > 0,
     "Separate fee requires a fee account",
   );
   return feeAccountId;
@@ -66,48 +66,30 @@ function requireSeparateFeeAccount(feeAccountId: string | null | undefined): str
 
 export function planCashTransaction(input: {
   type: CashTransactionType;
-  accountId: string;
+  receivingAccountId: string;
+  payingAccountId: string;
   amount: MoneyInput;
   feeAmount: MoneyInput;
   feeMode: FeeMode;
   feeAccountId?: string | null;
 }): { amount: bigint; feeAmount: bigint; entries: LedgerPlanEntry[] } {
+  financeInvariant(input.type === "CASH_IN" || input.type === "CASH_OUT", "Invalid cash transaction type");
+  financeInvariant(input.feeMode === "DEDUCTED" || input.feeMode === "SEPARATE", "Invalid fee mode");
+  financeInvariant(typeof input.receivingAccountId === "string" && input.receivingAccountId.trim().length > 0, "receivingAccountId is required");
+  financeInvariant(typeof input.payingAccountId === "string" && input.payingAccountId.trim().length > 0, "payingAccountId is required");
   const amount = toMmk(input.amount);
   const feeAmount = toNonNegativeMmk(input.feeAmount, "feeAmount");
-  const entries: LedgerPlanEntry[] = [];
+  const entries: LedgerPlanEntry[] = [
+    { financialAccountId: input.receivingAccountId, side: "DEBIT", amount: amount + (input.feeMode === "DEDUCTED" ? feeAmount : 0n), memo: "Customer funds received" },
+    { financialAccountId: input.payingAccountId, side: "CREDIT", amount, memo: "Customer funds paid" },
+  ];
 
   if (input.feeMode === "SEPARATE" && feeAmount > 0n) {
     const feeAccountId = requireSeparateFeeAccount(input.feeAccountId);
-    if (input.type === "CASH_IN") {
-      entries.push(
-        { systemAccount: "CUSTOMER_CLEARING", side: "DEBIT", amount, memo: "Customer funds received" },
-        { financialAccountId: input.accountId, side: "CREDIT", amount, memo: "Cash In settled" },
-        { financialAccountId: feeAccountId, side: "DEBIT", amount: feeAmount, memo: "Cash In fee received" },
-        { systemAccount: "FEE_INCOME", side: "CREDIT", amount: feeAmount, memo: "Fee earned" },
-      );
-    } else {
-      entries.push(
-        { financialAccountId: input.accountId, side: "DEBIT", amount, memo: "Cash Out settled" },
-        { systemAccount: "CUSTOMER_CLEARING", side: "CREDIT", amount, memo: "Customer funds paid" },
-        { financialAccountId: feeAccountId, side: "DEBIT", amount: feeAmount, memo: "Cash Out fee received" },
-        { systemAccount: "FEE_INCOME", side: "CREDIT", amount: feeAmount, memo: "Fee earned" },
-      );
-    }
-  } else {
-    if (input.type === "CASH_IN") {
-      entries.push(
-        { systemAccount: "CUSTOMER_CLEARING", side: "DEBIT", amount: amount + feeAmount, memo: "Customer funds received" },
-        { financialAccountId: input.accountId, side: "CREDIT", amount, memo: "Cash In settled" },
-      );
-    } else {
-      entries.push(
-        { financialAccountId: input.accountId, side: "DEBIT", amount: amount + feeAmount, memo: "Cash Out settled" },
-        { systemAccount: "CUSTOMER_CLEARING", side: "CREDIT", amount, memo: "Customer funds paid" },
-      );
-    }
-    if (feeAmount > 0n) {
-      entries.push({ systemAccount: "FEE_INCOME", side: "CREDIT", amount: feeAmount, memo: "Fee earned" });
-    }
+    entries.push({ financialAccountId: feeAccountId, side: "DEBIT", amount: feeAmount, memo: "Fee received separately" });
+  }
+  if (feeAmount > 0n) {
+    entries.push({ systemAccount: "FEE_INCOME", side: "CREDIT", amount: feeAmount, memo: "Fee earned" });
   }
 
   assertBalanced(entries);

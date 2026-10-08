@@ -33,11 +33,11 @@ test("children can only be attached directly to the matching global main", () =>
   assert.throws(() => assertValidChildParent("BANK", { ...base, mainSlot: "CASH" }), /main slot/);
 });
 
-test("owners may select any active matching account while tellers require children", () => {
+test("cash selections require active matching children for owners and tellers", () => {
   const mainBank = { type: "BANK" as const, kind: "MAIN" as const, active: true, providerId: null, parentId: null, mainSlot: "BANK" as const };
   const childBank = { type: "BANK" as const, kind: "CHILD" as const, active: true, providerId: "provider", parentId: "main", mainSlot: null };
 
-  assert.doesNotThrow(() => assertCashAccountSelection("OWNER", "BANK", mainBank));
+  assert.throws(() => assertCashAccountSelection("OWNER", "BANK", mainBank), /must be a child account/);
   assert.doesNotThrow(() => assertCashAccountSelection("OWNER", "BANK", childBank));
   assert.doesNotThrow(() => assertCashAccountSelection("TELLER", "BANK", childBank));
   assert.throws(
@@ -52,4 +52,9 @@ test("owners may select any active matching account while tellers require childr
     () => assertCashAccountSelection("OWNER", "BANK", { ...childBank, active: false }),
     /active bank account not found/i,
   );
+  for (const role of ["OWNER", "TELLER"] as const) {
+    assert.doesNotThrow(() => assertCashAccountSelection(role, "CASH", { ...childBank, type: "CASH" }));
+    assert.throws(() => assertCashAccountSelection(role, "BANK", null), /not found/i);
+    assert.throws(() => assertCashAccountSelection(role, "BANK", { ...childBank, active: false }), /not found/i);
+  }
 });

@@ -28,7 +28,5 @@ export function assertCashAccountSelection(
   account: AccountRuleInput | null | undefined,
 ): asserts account is AccountRuleInput {
   financeInvariant(account?.active && account.type === expectedType, `Active ${expectedType.toLowerCase()} account not found`);
-  if (role === "TELLER") {
-    financeInvariant(account.kind === "CHILD", `Teller ${expectedType.toLowerCase()} assignment must be a child account`, "FORBIDDEN");
-  }
+  financeInvariant(account.kind === "CHILD", `${role === "TELLER" ? "Teller assignment" : "Cash selection"} must be a child account`, "FORBIDDEN");
 }
