@@ -21,8 +21,13 @@ import {
   type FinanceActor,
 } from "@/lib/finance";
 import { requireOwner, requireSession } from "@/lib/session";
+import { TransferConfirmationRequired } from "@/lib/finance/errors";
 
-export type FinanceFormState = { status: "idle" | "error"; message?: string };
+export type FinanceFormState = {
+  status: "idle" | "error" | "warning";
+  message?: string;
+  confirmation?: { key: string; reference: string };
+};
 
 function actorFrom(session: Awaited<ReturnType<typeof requireSession>>): FinanceActor {
   return { id: session.user.id, role: session.user.role, active: session.user.active };
@@ -92,27 +97,36 @@ export async function saveCashTransaction(
   redirect(route);
 }
 
-export async function saveInternalTransfer(_state: FinanceFormState, formData: FormData): Promise<FinanceFormState> {
+export async function saveInternalTransfer(state: FinanceFormState, formData: FormData): Promise<FinanceFormState> {
   const session = await requireOwner();
   const actor = actorFrom(session);
   const id = field(formData, "id");
+  let savedReference: string;
   try {
     const input = {
-      reference: field(formData, "reference") || reference("TR"),
+      reference: field(formData, "reference") || state.confirmation?.reference || reference("TR"),
       accountType: oneOf(field(formData, "accountType"), ["BANK", "CASH"] as const, "Account type"),
       direction: oneOf(field(formData, "direction"), ["MAIN_TO_CHILD", "CHILD_TO_MAIN"] as const, "Direction"),
       childAccountId: field(formData, "childAccountId"),
       amount: field(formData, "amount"),
       note: field(formData, "note"),
+      confirmationKey: field(formData, "confirmationKey") || undefined,
     };
     if (id) await editInternalTransfer(actor, id, input);
     else await createInternalTransfer(actor, input);
+    savedReference = input.reference;
   } catch (error) {
+    if (error instanceof TransferConfirmationRequired) {
+      return {
+        status: "warning", message: error.message,
+        confirmation: { key: error.confirmationKey, reference: error.reference },
+      };
+    }
     return { status: "error", message: message(error) };
   }
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/transfers");
-  redirect(`/dashboard/transfers?type=${field(formData, "accountType")}`);
+  redirect(`/dashboard/transfers?type=${field(formData, "accountType")}&saved=${id ? "updated" : "created"}&reference=${encodeURIComponent(savedReference)}`);
 }
 
 export async function saveCapitalTransaction(_state: FinanceFormState, formData: FormData): Promise<FinanceFormState> {

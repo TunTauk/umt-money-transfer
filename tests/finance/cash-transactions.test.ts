@@ -102,6 +102,20 @@ for (const type of ["CASH_IN", "CASH_OUT"] as const) {
   const receivingAccountId = type === "CASH_IN" ? "cash" : "bank";
   const payingAccountId = type === "CASH_IN" ? "bank" : "cash";
   const validInput = { ...input, type, receivingAccountId, payingAccountId };
+  test(`${type} rejects invalid phones on create and edit without financial changes`, async () => {
+    for (const customerPhone of ["09abccd", "09", "09123456789abc"]) {
+      db = fixture();
+      await assert.rejects(createCashTransaction(owner, { ...validInput, customerPhone }), /complete Myanmar mobile number/);
+      assert.equal(db.creates.length, 0);
+      const original = await createCashTransaction(owner, validInput);
+      await assert.rejects(editCashTransaction(owner, "transaction", { ...validInput, customerPhone }), /complete Myanmar mobile number/);
+      assert.equal(db.creates.length, 1);
+      assert.equal(db.updates.length, 0);
+      assert.equal(db.revisions.length, 0);
+      assert.equal(db.ledgerWrites.length, 0);
+      assert.strictEqual(await db.tx.financialTransaction.findUnique({ where: { id: "transaction" } }), original);
+    }
+  });
   for (const actor of [owner, teller]) {
     test(`${actor.role} creates ${type} using independent submitted accounts`, async () => {
       db = fixture();

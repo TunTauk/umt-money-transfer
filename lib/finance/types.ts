@@ -44,6 +44,7 @@ export interface InternalTransferInput {
   childAccountId: string;
   amount: MoneyInput;
   note?: string | null;
+  confirmationKey?: string;
 }
 
 export interface CapitalTransactionInput {

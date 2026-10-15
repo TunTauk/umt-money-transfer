@@ -1,9 +1,11 @@
 import { financeInvariant } from "./errors";
 
 export function normalizeCustomerPhone(value: string | null | undefined): string {
-  const digits = value?.replace(/\D/g, "") ?? "";
-  financeInvariant(digits.length > 0, "customerPhone is required");
-  if (digits.startsWith("00959")) return `09${digits.slice(5)}`;
-  if (digits.startsWith("959")) return `09${digits.slice(3)}`;
-  return digits;
+  const phone = value?.trim() ?? "";
+  financeInvariant(phone.length > 0, "customerPhone is required");
+  const message = "Customer phone must be a complete Myanmar mobile number (09..., +959...).";
+  financeInvariant(/^\+?[0-9\s()-]+$/.test(phone), message);
+  const normalized = phone.replace(/[\s()-]/g, "").replace(/^(?:\+959|00959|959)/, "09");
+  financeInvariant(/^09[0-9]{7,9}$/.test(normalized), message);
+  return normalized;
 }
