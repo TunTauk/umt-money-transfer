@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 
-import type { Prisma } from "@/generated/prisma/client";
+import type { LedgerEntry, Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import { assertCashAccountSelection } from "./account-rules";
-import { financeInvariant } from "./errors";
+import { financeInvariant, TransferConfirmationRequired } from "./errors";
 import { normalizeCustomerPhone } from "./phone";
 import {
   planCapitalTransaction,
@@ -246,6 +246,48 @@ export async function createCashTransaction(actor: FinanceActor, input: CashTran
   });
 }
 
+async function confirmTransferBalance(
+  tx: DbTransaction,
+  actor: FinanceActor,
+  input: InternalTransferInput,
+  source: { id: string; name: string },
+  normalized: Record<string, string | null> & { reference: string; amount: string },
+  existing?: { id: string; postingVersion: number },
+  currentEntries: readonly LedgerEntry[] = [],
+) {
+  const totals = await tx.ledgerEntry.groupBy({
+    by: ["side"],
+    where: { financialAccountId: source.id },
+    _sum: { amount: true },
+  });
+  const balance = totals.reduce((net, entry) =>
+    net + (entry.side === "DEBIT" ? 1n : -1n) * (entry._sum.amount ?? 0n), 0n);
+  // Undo the current posting's effect on the new source before testing an edit.
+  const originalNet = currentEntries.reduce((net, entry) =>
+    entry.financialAccountId === source.id
+      ? net + (entry.side === "DEBIT" ? entry.amount : -entry.amount)
+      : net, 0n);
+  const available = balance - originalNet;
+  const amount = BigInt(normalized.amount);
+  if (amount <= available) return;
+
+  const confirmationKey = fingerprint({
+    ...normalized,
+    actorId: actor.id,
+    sourceBalance: balance.toString(),
+    availableBalance: available.toString(),
+    transactionId: existing?.id ?? null,
+    postingVersion: existing?.postingVersion.toString() ?? null,
+  });
+  if (input.confirmationKey !== confirmationKey) {
+    throw new TransferConfirmationRequired(
+      `Source account "${source.name}" has an available balance of ${available} MMK. Transferring ${amount} MMK will result in a negative balance of ${available - amount} MMK. Confirm to proceed.`,
+      confirmationKey,
+      normalized.reference,
+    );
+  }
+}
+
 export async function createInternalTransfer(actor: FinanceActor, input: InternalTransferInput) {
   assertCanCreateInternalTransfer(actor);
   return serializable(async (tx) => {
@@ -271,6 +313,7 @@ export async function createInternalTransfer(actor: FinanceActor, input: Interna
       financeInvariant(existing.requestFingerprint === requestFingerprint, "Transaction reference is already used by different input", "CONFLICT");
       return existing;
     }
+    await confirmTransferBalance(tx, actor, input, source, normalized);
     return tx.financialTransaction.create({
       data: {
         ...normalized,
@@ -511,8 +554,9 @@ async function appendReversal(
   transactionId: string,
   postingVersion: number,
   revisionId: string,
+  entries?: readonly LedgerEntry[],
 ) {
-  const currentEntries = await tx.ledgerEntry.findMany({
+  const currentEntries = entries ?? await tx.ledgerEntry.findMany({
     where: { transactionId, postingVersion, kind: "POSTING" },
     orderBy: { sequence: "asc" },
   });
@@ -566,6 +610,12 @@ export async function editInternalTransfer(
       postingVersion: existing.postingVersion + 1,
     };
     const requestFingerprint = fingerprint(normalized);
+    const currentEntries = await tx.ledgerEntry.findMany({
+      where: { transactionId, postingVersion: existing.postingVersion, kind: "POSTING" },
+      orderBy: { sequence: "asc" },
+    });
+    financeInvariant(currentEntries.length >= 2, "Current ledger posting is missing", "CONFLICT");
+    await confirmTransferBalance(tx, actor, input, source, normalized, existing, currentEntries);
     const revision = await tx.transactionRevision.create({
       data: {
         transactionId,
@@ -576,7 +626,7 @@ export async function editInternalTransfer(
         actorId: actor.id,
       },
     });
-    await appendReversal(tx, transactionId, existing.postingVersion, revision.id);
+    await appendReversal(tx, transactionId, existing.postingVersion, revision.id, currentEntries);
     const nextVersion = existing.postingVersion + 1;
     await tx.financialTransaction.update({
       where: { id: transactionId },

@@ -71,48 +71,53 @@ export async function createFinancialAccount(
 
 export async function assignTellerAccounts(
   actor: FinanceActor,
-  input: { userId: string; bankAccountId: string; cashAccountId: string },
+  input: { userId: string; bankAccountId?: string; cashAccountId?: string },
 ) {
   assertCanManageStaffAssignments(actor);
+  const bankAccountId = input.bankAccountId?.trim();
+  const cashAccountId = input.cashAccountId?.trim();
+  financeInvariant(bankAccountId || cashAccountId, "At least one account is required");
+  const selected = [
+    { accountType: "BANK" as const, financialAccountId: bankAccountId },
+    { accountType: "CASH" as const, financialAccountId: cashAccountId },
+  ];
 
   return prisma.$transaction(async (tx) => {
-    const [user, bank, cash] = await Promise.all([
-      tx.user.findUnique({ where: { id: input.userId } }),
-      tx.financialAccount.findUnique({ where: { id: input.bankAccountId } }),
-      tx.financialAccount.findUnique({ where: { id: input.cashAccountId } }),
-    ]);
+    const user = await tx.user.findUnique({ where: { id: input.userId } });
     financeInvariant(user?.active && user.role === "TELLER", "Active teller not found", "NOT_FOUND");
-    financeInvariant(bank?.active && bank.kind === "CHILD" && bank.type === "BANK", "Assignable bank child not found");
-    financeInvariant(cash?.active && cash.kind === "CHILD" && cash.type === "CASH", "Assignable cash child not found");
-    for (const accountId of [bank.id, cash.id]) {
+    for (const { accountType, financialAccountId } of selected) {
+      if (!financialAccountId) continue;
+      const account = await tx.financialAccount.findUnique({ where: { id: financialAccountId } });
+      financeInvariant(
+        account?.active && account.kind === "CHILD" && account.type === accountType,
+        `Assignable ${accountType.toLowerCase()} child not found`,
+      );
       const otherStaffCount = await tx.staffAccountAssignment.count({
-        where: { financialAccountId: accountId, userId: { not: user.id } },
+        where: { financialAccountId, userId: { not: user.id } },
       });
       financeInvariant(otherStaffCount < 2, "A child account can be assigned to at most two staff", "CONFLICT");
     }
 
-    const assignments = await Promise.all([
-      tx.staffAccountAssignment.upsert({
-        where: { userId_accountType: { userId: user.id, accountType: "BANK" } },
+    const assignments = [];
+    for (const { accountType, financialAccountId } of selected) {
+      if (!financialAccountId) continue;
+      assignments.push(await tx.staffAccountAssignment.upsert({
+        where: { userId_accountType: { userId: user.id, accountType } },
         create: {
           userId: user.id,
-          accountType: "BANK",
-          financialAccountId: bank.id,
+          accountType,
+          financialAccountId,
           createdById: actor.id,
         },
-        update: { financialAccountId: bank.id, createdById: actor.id },
-      }),
-      tx.staffAccountAssignment.upsert({
-        where: { userId_accountType: { userId: user.id, accountType: "CASH" } },
-        create: {
-          userId: user.id,
-          accountType: "CASH",
-          financialAccountId: cash.id,
-          createdById: actor.id,
-        },
-        update: { financialAccountId: cash.id, createdById: actor.id },
-      }),
-    ]);
+        update: { financialAccountId, createdById: actor.id },
+      }));
+    }
+    const omittedTypes = selected.filter(({ financialAccountId }) => !financialAccountId).map(({ accountType }) => accountType);
+    if (omittedTypes.length) {
+      await tx.staffAccountAssignment.deleteMany({
+        where: { userId: user.id, accountType: { in: omittedTypes } },
+      });
+    }
 
     return assignments;
   }, { isolationLevel: "Serializable" satisfies Prisma.TransactionIsolationLevel });

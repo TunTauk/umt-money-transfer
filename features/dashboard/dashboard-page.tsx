@@ -25,7 +25,11 @@ export async function DashboardPage() {
     </section>
     <Panel>
       <div className="flex items-center justify-between border-b px-5 py-4"><div><h2 className="font-semibold">Recent activity</h2><p className="text-sm text-muted-foreground">Latest posted ledger activity</p></div></div>
-      {recent.length ? <div className="divide-y">{recent.map((item) => <div key={item.id} className="flex items-center gap-4 px-5 py-4"><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{labels[item.type]}</p><p className="truncate text-xs text-muted-foreground">{item.reference} · {item.account?.name ?? item.sourceAccount?.name ?? item.destinationAccount?.name ?? "Main account"} · {item.createdAt.toLocaleString("en-GB", { timeZone: "Asia/Yangon" })}</p></div><TransactionAmount value={item.amount} /></div>)}</div> : <Empty>No posted activity yet.</Empty>}
+      {recent.length ? <div className="divide-y">{recent.map((item) => {
+        const account = item.account ?? item.sourceAccount ?? item.destinationAccount;
+        const accountType = account?.type ?? item.accountType;
+        return <div key={item.id} className="flex items-center gap-4 px-5 py-4"><div className="min-w-0 flex-1"><p className="truncate text-sm font-medium">{labels[item.type]}</p><p className="truncate text-xs text-muted-foreground">{item.reference} · {account?.name ?? "Main account"}{accountType ? ` (${accountType === "BANK" ? "Bank" : "Cash"})` : ""} · {item.createdAt.toLocaleString("en-GB", { timeZone: "Asia/Yangon" })}</p></div><TransactionAmount value={item.amount} /></div>;
+      })}</div> : <Empty>No posted activity yet.</Empty>}
     </Panel>
   </Page>;
 }

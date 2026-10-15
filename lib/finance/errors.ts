@@ -12,6 +12,17 @@ export class FinanceError extends Error {
   }
 }
 
+export class TransferConfirmationRequired extends FinanceError {
+  constructor(
+    message: string,
+    readonly confirmationKey: string,
+    readonly reference: string,
+  ) {
+    super(message, "CONFLICT");
+    this.name = "TransferConfirmationRequired";
+  }
+}
+
 export function financeInvariant(
   condition: unknown,
   message: string,
