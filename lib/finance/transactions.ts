@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import type { LedgerEntry, Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import { assertCashAccountSelection } from "./account-rules";
@@ -16,8 +16,7 @@ import {
   assertCanCreateCapitalTransaction,
   assertCanCreateCashTransaction,
   assertCanCreateInternalTransfer,
-  assertCanDeleteTransaction,
-  assertCanEditTransaction,
+  assertCanCancelTransaction,
 } from "./permissions";
 import { generateSystemReference } from "./reference";
 import type {
@@ -150,42 +149,6 @@ async function resolveTransferAccounts(
   return { child, main };
 }
 
-function cashSnapshot(input: {
-  reference: string;
-  systemReference: string;
-  type: "CASH_IN" | "CASH_OUT";
-  providerId: string | null;
-  accountType: "BANK" | "CASH";
-  accountId: string;
-  sourceAccountId: string | null;
-  destinationAccountId: string | null;
-  amount: bigint;
-  feeAmount: bigint;
-  feeMode: FeeMode | null;
-  feeAccountId: string | null;
-  customerName: string | null;
-  customerPhone: string;
-  note: string | null;
-}) {
-  return {
-    reference: input.reference,
-    systemReference: input.systemReference,
-    type: input.type,
-    providerId: input.providerId,
-    accountType: input.accountType,
-    accountId: input.accountId,
-    sourceAccountId: input.sourceAccountId,
-    destinationAccountId: input.destinationAccountId,
-    amount: input.amount.toString(),
-    feeAmount: input.feeAmount.toString(),
-    feeMode: input.feeMode,
-    feeAccountId: input.feeAccountId,
-    customerName: input.customerName,
-    customerPhone: input.customerPhone,
-    note: input.note,
-  };
-}
-
 export async function createCashTransaction(actor: FinanceActor, input: CashTransactionInput) {
   assertCanCreateCashTransaction(actor);
 
@@ -252,8 +215,6 @@ async function confirmTransferBalance(
   input: InternalTransferInput,
   source: { id: string; name: string },
   normalized: Record<string, string | null> & { reference: string; amount: string },
-  existing?: { id: string; postingVersion: number },
-  currentEntries: readonly LedgerEntry[] = [],
 ) {
   const totals = await tx.ledgerEntry.groupBy({
     by: ["side"],
@@ -262,12 +223,7 @@ async function confirmTransferBalance(
   });
   const balance = totals.reduce((net, entry) =>
     net + (entry.side === "DEBIT" ? 1n : -1n) * (entry._sum.amount ?? 0n), 0n);
-  // Undo the current posting's effect on the new source before testing an edit.
-  const originalNet = currentEntries.reduce((net, entry) =>
-    entry.financialAccountId === source.id
-      ? net + (entry.side === "DEBIT" ? entry.amount : -entry.amount)
-      : net, 0n);
-  const available = balance - originalNet;
+  const available = balance;
   const amount = BigInt(normalized.amount);
   if (amount <= available) return;
 
@@ -276,8 +232,6 @@ async function confirmTransferBalance(
     actorId: actor.id,
     sourceBalance: balance.toString(),
     availableBalance: available.toString(),
-    transactionId: existing?.id ?? null,
-    postingVersion: existing?.postingVersion.toString() ?? null,
   });
   if (input.confirmationKey !== confirmationKey) {
     throw new TransferConfirmationRequired(
@@ -372,139 +326,6 @@ export async function createCapitalTransaction(actor: FinanceActor, input: Capit
   });
 }
 
-export async function editCashTransaction(
-  actor: FinanceActor,
-  transactionId: string,
-  input: CashTransactionInput,
-) {
-  assertCanEditTransaction(actor);
-  return serializable(async (tx) => {
-    const existing = await tx.financialTransaction.findUnique({ where: { id: transactionId } });
-    financeInvariant(existing, "Transaction not found", "NOT_FOUND");
-    financeInvariant(existing.status === "POSTED", "Deleted transactions cannot be edited", "CONFLICT");
-    financeInvariant(existing.type === "CASH_IN" || existing.type === "CASH_OUT", "Transaction is not a cash transaction");
-    if (input.reference !== undefined) {
-      financeInvariant(input.reference.trim() === existing.reference, "Transaction reference cannot be changed");
-    }
-    const receiving = await resolveCashAccount(tx, actor, input.receivingAccountId, "receivingAccountId", input.type === "CASH_IN" ? "CASH" : "BANK");
-    const paying = await resolveCashAccount(tx, actor, input.payingAccountId, "payingAccountId", input.type === "CASH_IN" ? "BANK" : "CASH");
-    const account = input.type === "CASH_IN" ? paying : receiving;
-    const feeAmount = toNonNegativeMmk(input.feeAmount, "feeAmount");
-    const feeAccountId = await resolveFeeAccount(tx, actor, input, feeAmount);
-    const plan = planCashTransaction({
-      type: input.type,
-      receivingAccountId: receiving.id,
-      payingAccountId: paying.id,
-      amount: input.amount,
-      feeAmount,
-      feeMode: input.feeMode,
-      feeAccountId,
-    });
-    const after = cashSnapshot({
-      reference: existing.reference,
-      systemReference: existing.systemReference,
-      type: input.type,
-      providerId: account.providerId,
-      accountType: account.type,
-      accountId: account.id,
-      sourceAccountId: paying.id,
-      destinationAccountId: receiving.id,
-      amount: plan.amount,
-      feeAmount: plan.feeAmount,
-      feeMode: input.feeMode,
-      feeAccountId,
-      customerName: optionalText(input.customerName),
-      customerPhone: normalizeCustomerPhone(input.customerPhone),
-      note: optionalText(input.note),
-    });
-    const requestFingerprint = fingerprint({
-      reference: after.reference,
-      type: after.type,
-      providerId: after.providerId,
-      accountType: after.accountType,
-      accountId: after.accountId,
-      sourceAccountId: after.sourceAccountId,
-      destinationAccountId: after.destinationAccountId,
-      amount: after.amount,
-      feeAmount: after.feeAmount,
-      feeMode: after.feeMode,
-      feeAccountId: after.feeAccountId,
-      customerName: after.customerName,
-      customerPhone: after.customerPhone,
-      note: after.note,
-    });
-    const currentEntries = await tx.ledgerEntry.findMany({
-      where: { transactionId, postingVersion: existing.postingVersion, kind: "POSTING" },
-      orderBy: { sequence: "asc" },
-    });
-    financeInvariant(currentEntries.length >= 2, "Current ledger posting is missing", "CONFLICT");
-    const before = cashSnapshot({
-      reference: existing.reference,
-      systemReference: existing.systemReference,
-      type: existing.type,
-      providerId: existing.providerId,
-      accountType: existing.accountType!,
-      accountId: existing.accountId!,
-      sourceAccountId: existing.sourceAccountId,
-      destinationAccountId: existing.destinationAccountId,
-      amount: existing.amount!,
-      feeAmount: existing.feeAmount!,
-      feeMode: existing.feeMode,
-      feeAccountId: existing.feeAccountId,
-      customerName: existing.customerName,
-      customerPhone: existing.customerPhone!,
-      note: existing.note,
-    });
-    const revision = await tx.transactionRevision.create({
-      data: { transactionId, revision: existing.postingVersion, action: "EDIT", before, after, actorId: actor.id },
-    });
-
-    await tx.ledgerEntry.createMany({
-      data: currentEntries.map((entry, sequence) => ({
-        transactionId,
-        revisionId: revision.id,
-        postingVersion: existing.postingVersion,
-        kind: "REVERSAL" as const,
-        sequence,
-        financialAccountId: entry.financialAccountId,
-        systemAccount: entry.systemAccount,
-        side: entry.side === "DEBIT" ? "CREDIT" as const : "DEBIT" as const,
-        amount: entry.amount,
-        memo: `Reversal: ${entry.memo ?? "ledger entry"}`,
-        reversalOfId: entry.id,
-      })),
-    });
-    const nextVersion = existing.postingVersion + 1;
-    await tx.financialTransaction.update({
-      where: { id: transactionId },
-      data: {
-        type: input.type,
-        providerId: account.providerId,
-        accountType: account.type,
-        accountId: account.id,
-        sourceAccountId: paying.id,
-        destinationAccountId: receiving.id,
-        amount: plan.amount,
-        feeAmount: plan.feeAmount,
-        feeMode: input.feeMode,
-        feeAccountId,
-        customerName: after.customerName,
-        customerPhone: after.customerPhone,
-        note: after.note,
-        requestFingerprint,
-        postingVersion: nextVersion,
-      },
-    });
-    await tx.ledgerEntry.createMany({
-      data: ledgerData(plan.entries, nextVersion, "POSTING", revision.id).map((entry) => ({ ...entry, transactionId })),
-    });
-    return tx.financialTransaction.findUniqueOrThrow({
-      where: { id: transactionId },
-      include: { ledgerEntries: true, revisions: true },
-    });
-  });
-}
-
 function auditSnapshot(transaction: {
   reference: string;
   systemReference: string;
@@ -549,194 +370,20 @@ function auditSnapshot(transaction: {
   };
 }
 
-async function appendReversal(
-  tx: DbTransaction,
-  transactionId: string,
-  postingVersion: number,
-  revisionId: string,
-  entries?: readonly LedgerEntry[],
-) {
-  const currentEntries = entries ?? await tx.ledgerEntry.findMany({
-    where: { transactionId, postingVersion, kind: "POSTING" },
-    orderBy: { sequence: "asc" },
-  });
-  financeInvariant(currentEntries.length >= 2, "Current ledger posting is missing", "CONFLICT");
-  await tx.ledgerEntry.createMany({
-    data: currentEntries.map((entry, sequence) => ({
-      transactionId,
-      revisionId,
-      postingVersion,
-      kind: "REVERSAL" as const,
-      sequence,
-      financialAccountId: entry.financialAccountId,
-      systemAccount: entry.systemAccount,
-      side: entry.side === "DEBIT" ? "CREDIT" as const : "DEBIT" as const,
-      amount: entry.amount,
-      memo: `Reversal: ${entry.memo ?? "ledger entry"}`,
-      reversalOfId: entry.id,
-    })),
-  });
-}
-
-export async function editInternalTransfer(
-  actor: FinanceActor,
-  transactionId: string,
-  input: InternalTransferInput,
-) {
-  assertCanEditTransaction(actor);
+export async function cancelCashTransaction(actor: FinanceActor, transactionId: string) {
+  assertCanCancelTransaction(actor);
   return serializable(async (tx) => {
     const existing = await tx.financialTransaction.findUnique({ where: { id: transactionId } });
     financeInvariant(existing, "Transaction not found", "NOT_FOUND");
-    financeInvariant(existing.status === "POSTED", "Deleted transactions cannot be edited", "CONFLICT");
-    financeInvariant(existing.type === "INTERNAL_TRANSFER", "Transaction is not an internal transfer");
-    financeInvariant(input.reference.trim() === existing.reference, "Transaction reference cannot be changed");
-    const { child, main } = await resolveTransferAccounts(tx, input);
-    const source = input.direction === "MAIN_TO_CHILD" ? main : child;
-    const destination = input.direction === "MAIN_TO_CHILD" ? child : main;
-    const plan = planInternalTransfer({ sourceAccountId: source.id, destinationAccountId: destination.id, amount: input.amount });
-    const normalized = {
-      reference: existing.reference,
-      accountType: input.accountType,
-      transferDirection: input.direction,
-      sourceAccountId: source.id,
-      destinationAccountId: destination.id,
-      amount: plan.amount.toString(),
-      note: optionalText(input.note),
-    };
-    const after = {
-      ...auditSnapshot(existing),
-      ...normalized,
-      providerId: null,
-      postingVersion: existing.postingVersion + 1,
-    };
-    const requestFingerprint = fingerprint(normalized);
-    const currentEntries = await tx.ledgerEntry.findMany({
-      where: { transactionId, postingVersion: existing.postingVersion, kind: "POSTING" },
-      orderBy: { sequence: "asc" },
-    });
-    financeInvariant(currentEntries.length >= 2, "Current ledger posting is missing", "CONFLICT");
-    await confirmTransferBalance(tx, actor, input, source, normalized, existing, currentEntries);
-    const revision = await tx.transactionRevision.create({
-      data: {
-        transactionId,
-        revision: existing.postingVersion,
-        action: "EDIT",
-        before: auditSnapshot(existing),
-        after,
-        actorId: actor.id,
-      },
-    });
-    await appendReversal(tx, transactionId, existing.postingVersion, revision.id, currentEntries);
-    const nextVersion = existing.postingVersion + 1;
-    await tx.financialTransaction.update({
-      where: { id: transactionId },
-      data: {
-        providerId: null,
-        accountType: input.accountType,
-        transferDirection: input.direction,
-        sourceAccountId: source.id,
-        destinationAccountId: destination.id,
-        amount: plan.amount,
-        note: after.note,
-        requestFingerprint,
-        postingVersion: nextVersion,
-      },
-    });
-    await tx.ledgerEntry.createMany({
-      data: ledgerData(plan.entries, nextVersion, "POSTING", revision.id).map((entry) => ({ ...entry, transactionId })),
-    });
-    return tx.financialTransaction.findUniqueOrThrow({
-      where: { id: transactionId },
-      include: { ledgerEntries: true, revisions: true },
-    });
-  });
-}
-
-export async function editCapitalTransaction(
-  actor: FinanceActor,
-  transactionId: string,
-  input: CapitalTransactionInput,
-) {
-  assertCanEditTransaction(actor);
-  return serializable(async (tx) => {
-    const existing = await tx.financialTransaction.findUnique({ where: { id: transactionId } });
-    financeInvariant(existing, "Transaction not found", "NOT_FOUND");
-    financeInvariant(existing.status === "POSTED", "Deleted transactions cannot be edited", "CONFLICT");
-    financeInvariant(
-      existing.type === "CAPITAL_DEPOSIT" || existing.type === "CAPITAL_WITHDRAWAL",
-      "Transaction is not a capital transaction",
-    );
-    financeInvariant(input.reference.trim() === existing.reference, "Transaction reference cannot be changed");
-    const main = await tx.financialAccount.findUnique({
-      where: { mainSlot: input.accountType },
-    });
-    financeInvariant(
-      main?.active && main.kind === "MAIN" && main.type === input.accountType && !main.providerId,
-      "Active global main account not found",
-      "NOT_FOUND",
-    );
-    const plan = planCapitalTransaction({ type: input.type, mainAccountId: main.id, amount: input.amount });
-    const normalized = {
-      reference: existing.reference,
-      accountType: input.accountType,
-      capitalAccountId: main.id,
-      amount: plan.amount.toString(),
-      note: optionalText(input.note),
-      type: input.type,
-    };
-    const after = {
-      ...auditSnapshot(existing),
-      ...normalized,
-      providerId: null,
-      postingVersion: existing.postingVersion + 1,
-    };
-    const requestFingerprint = fingerprint(normalized);
-    const revision = await tx.transactionRevision.create({
-      data: {
-        transactionId,
-        revision: existing.postingVersion,
-        action: "EDIT",
-        before: auditSnapshot(existing),
-        after,
-        actorId: actor.id,
-      },
-    });
-    await appendReversal(tx, transactionId, existing.postingVersion, revision.id);
-    const nextVersion = existing.postingVersion + 1;
-    await tx.financialTransaction.update({
-      where: { id: transactionId },
-      data: {
-        type: input.type,
-        providerId: null,
-        accountType: input.accountType,
-        capitalAccountId: main.id,
-        amount: plan.amount,
-        note: after.note,
-        requestFingerprint,
-        postingVersion: nextVersion,
-      },
-    });
-    await tx.ledgerEntry.createMany({
-      data: ledgerData(plan.entries, nextVersion, "POSTING", revision.id).map((entry) => ({ ...entry, transactionId })),
-    });
-    return tx.financialTransaction.findUniqueOrThrow({
-      where: { id: transactionId },
-      include: { ledgerEntries: true, revisions: true },
-    });
-  });
-}
-
-export async function deleteFinancialTransaction(actor: FinanceActor, transactionId: string) {
-  assertCanDeleteTransaction(actor);
-  return serializable(async (tx) => {
-    const existing = await tx.financialTransaction.findUnique({ where: { id: transactionId } });
-    financeInvariant(existing, "Transaction not found", "NOT_FOUND");
+    financeInvariant(existing.type === "CASH_IN" || existing.type === "CASH_OUT", "Only cash transactions can be cancelled. Reverse capital entries and transfers with an opposite transaction.", "FORBIDDEN");
     if (existing.status === "DELETED") return existing;
     const currentEntries = await tx.ledgerEntry.findMany({
       where: { transactionId, postingVersion: existing.postingVersion, kind: "POSTING" },
       orderBy: { sequence: "asc" },
     });
     financeInvariant(currentEntries.length >= 2, "Current ledger posting is missing", "CONFLICT");
+    // Keep the existing DELETED/DELETE storage values for compatibility.
+    // Cancellation retains the original record and appends exact ledger reversals.
     const before = auditSnapshot(existing);
     const revision = await tx.transactionRevision.create({
       data: {
@@ -744,7 +391,7 @@ export async function deleteFinancialTransaction(actor: FinanceActor, transactio
         revision: existing.postingVersion,
         action: "DELETE",
         before,
-        after: { ...before, status: "DELETED" },
+        after: { ...before, status: "DELETED", operation: "CANCEL" },
         actorId: actor.id,
       },
     });

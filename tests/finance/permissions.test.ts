@@ -4,7 +4,7 @@ import test from "node:test";
 import {
   assertCanCreateCashTransaction,
   assertCanCreateCapitalTransaction,
-  assertCanDeleteTransaction,
+  assertCanCancelTransaction,
   assertCanViewSummary,
 } from "../../lib/finance/permissions";
 
@@ -13,13 +13,13 @@ const teller = { id: "teller", role: "TELLER" as const, active: true };
 
 test("owners can perform owner-only operations", () => {
   assert.doesNotThrow(() => assertCanCreateCapitalTransaction(owner));
-  assert.doesNotThrow(() => assertCanDeleteTransaction(owner));
+  assert.doesNotThrow(() => assertCanCancelTransaction(owner));
   assert.doesNotThrow(() => assertCanViewSummary(owner));
 });
 
-test("tellers can create cash transactions but cannot mutate or view summaries", () => {
+test("tellers can create cash transactions but cannot cancel or view summaries", () => {
   assert.doesNotThrow(() => assertCanCreateCashTransaction(teller));
-  assert.throws(() => assertCanDeleteTransaction(teller), /Owner permission required/);
+  assert.throws(() => assertCanCancelTransaction(teller), /Owner permission required/);
   assert.throws(() => assertCanViewSummary(teller), /Owner permission required/);
 });
 

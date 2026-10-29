@@ -4,6 +4,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 
 import { financialTransactionVisibilityWhere } from "./access";
+import { aggregateIncome, summaryPeriod, type SummaryFilters } from "./summary";
 import type { AccountType, FinanceActor } from "./types";
 
 export function formatMoney(value: bigint | number | string) {
@@ -72,7 +73,7 @@ export async function getDashboardData(actor: FinanceActor) {
   const grandTotal = actor.role === "OWNER"
     ? groups.reduce((sum, group, index) => index === 2 || index === 5 ? sum + group.value : sum, 0n)
     : null;
-  return { groups, recent, grandTotal };
+  return { groups, recent, grandTotal, accounts };
 }
 
 export type CashTransactionFilters = {
@@ -123,8 +124,6 @@ export async function getCashTransactions(actor: FinanceActor, type: "CASH_IN" |
   const phoneTerm = term.replace(/\D/g, "").replace(/^959/, "09");
   const searchWhere: Prisma.FinancialTransactionWhereInput = term
     ? { OR: [
-        { reference: { contains: term } },
-        { systemReference: { contains: term } },
         { customerName: { contains: term } },
         { customerPhone: { contains: term } },
         ...(phoneTerm && phoneTerm !== term ? [{ customerPhone: { contains: phoneTerm } }] : []),
@@ -154,10 +153,10 @@ export async function getCashTransactions(actor: FinanceActor, type: "CASH_IN" |
     amount: amountRange,
   });
   return prisma.financialTransaction.findMany({
-    where: { AND: [{ type, status: "POSTED" }, visibility, searchWhere, ...structured] },
+    where: { AND: [{ type }, visibility, searchWhere, ...structured] },
     orderBy: { createdAt: "desc" },
     take: 100,
-    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, createdBy: true },
+    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, deletedBy: true, createdBy: true },
   });
 }
 
@@ -174,8 +173,8 @@ export async function getCashFilterOptions(actor: FinanceActor) {
 export async function getCashTransaction(actor: FinanceActor, id: string) {
   const visibility = await financialTransactionVisibilityWhere(actor);
   return prisma.financialTransaction.findFirst({
-    where: { AND: [{ id, status: "POSTED", type: { in: ["CASH_IN", "CASH_OUT"] } }, visibility] },
-    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, provider: true, createdBy: true, revisions: true },
+    where: { AND: [{ id, type: { in: ["CASH_IN", "CASH_OUT"] } }, visibility] },
+    include: { account: true, sourceAccount: true, destinationAccount: true, feeAccount: true, provider: true, createdBy: true, deletedBy: true, revisions: true },
   });
 }
 
@@ -233,17 +232,24 @@ export async function getUsers() {
   });
 }
 
-export async function getSummary() {
-  const [accounts, feeEntries] = await Promise.all([
+export async function getSummary(filters: SummaryFilters = {}) {
+  const period = summaryPeriod(filters);
+  const createdAt = { gte: period.start, lt: period.end };
+  const staffWhere = period.staffId ? { createdById: period.staffId } : {};
+  const [accounts, feeEntries, transactions, staff] = await Promise.all([
     getAccountBalances(),
     prisma.ledgerEntry.findMany({
-      where: { systemAccount: "FEE_INCOME" },
-      select: { side: true, amount: true },
+      where: { systemAccount: "FEE_INCOME", createdAt, transaction: staffWhere },
+      select: { side: true, amount: true, createdAt: true, transaction: { select: { createdById: true } } },
+    }),
+    prisma.financialTransaction.findMany({
+      where: { type: { in: ["CASH_IN", "CASH_OUT"] }, createdAt, ...staffWhere },
+      select: { id: true, createdAt: true, createdById: true },
+    }),
+    prisma.user.findMany({
+      orderBy: [{ role: "asc" }, { name: "asc" }],
+      select: { id: true, name: true, email: true, role: true, active: true },
     }),
   ]);
-  const feeIncome = feeEntries.reduce(
-    (sum, entry) => sum + (entry.side === "CREDIT" ? entry.amount : -entry.amount),
-    0n,
-  );
-  return { accounts, feeIncome };
+  return { accounts, period, staff, ...aggregateIncome(period, feeEntries, transactions, staff) };
 }

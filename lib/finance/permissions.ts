@@ -25,6 +25,5 @@ export const assertCanManageAccounts = assertOwner;
 export const assertCanManageStaffAssignments = assertOwner;
 export const assertCanCreateInternalTransfer = assertOwner;
 export const assertCanCreateCapitalTransaction = assertOwner;
-export const assertCanEditTransaction = assertOwner;
-export const assertCanDeleteTransaction = assertOwner;
+export const assertCanCancelTransaction = assertOwner;
 export const assertCanViewSummary = assertOwner;

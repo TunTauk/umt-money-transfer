@@ -4,23 +4,29 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@/generated/prisma/client";
 
 type AuthOptions = {
   allowSignUp?: boolean;
   serverActions?: boolean;
+  databaseClient?: typeof prisma | Prisma.TransactionClient;
+  autoSignIn?: boolean;
 };
 
 export function createAuth({
   allowSignUp = false,
   serverActions = true,
+  databaseClient = prisma,
+  autoSignIn = true,
 }: AuthOptions = {}) {
   return betterAuth({
     appName: "UMT Money Transfer",
-    database: prismaAdapter(prisma, {
+    database: prismaAdapter(databaseClient, {
       provider: "mysql",
     }),
     emailAndPassword: {
       enabled: true,
+      autoSignIn,
       disableSignUp: !allowSignUp,
       minPasswordLength: 8,
     },

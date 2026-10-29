@@ -72,6 +72,7 @@ export async function createFinancialAccount(
 export async function assignTellerAccounts(
   actor: FinanceActor,
   input: { userId: string; bankAccountId?: string; cashAccountId?: string },
+  transaction?: Prisma.TransactionClient,
 ) {
   assertCanManageStaffAssignments(actor);
   const bankAccountId = input.bankAccountId?.trim();
@@ -82,7 +83,7 @@ export async function assignTellerAccounts(
     { accountType: "CASH" as const, financialAccountId: cashAccountId },
   ];
 
-  return prisma.$transaction(async (tx) => {
+  const assign = async (tx: Prisma.TransactionClient) => {
     const user = await tx.user.findUnique({ where: { id: input.userId } });
     financeInvariant(user?.active && user.role === "TELLER", "Active teller not found", "NOT_FOUND");
     for (const { accountType, financialAccountId } of selected) {
@@ -120,7 +121,10 @@ export async function assignTellerAccounts(
     }
 
     return assignments;
-  }, { isolationLevel: "Serializable" satisfies Prisma.TransactionIsolationLevel });
+  };
+  return transaction ? assign(transaction) : prisma.$transaction(assign, {
+    isolationLevel: "Serializable" satisfies Prisma.TransactionIsolationLevel,
+  });
 }
 
 export async function setFinancialAccountActive(

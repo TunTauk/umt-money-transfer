@@ -4,13 +4,14 @@ import { createAuth } from "@/lib/auth-config";
 import { isValidEmail, normalizeEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 
+import { assignTellerAccounts } from "./accounts";
 import { financeInvariant } from "./errors";
 import { assertOwner } from "./permissions";
 import type { FinanceActor } from "./types";
 
 export async function createTeller(
   actor: FinanceActor,
-  input: { name: string; email: string; password: string },
+  input: { name: string; email: string; password: string; bankAccountId?: string; cashAccountId?: string },
 ) {
   assertOwner(actor);
   const name = input.name.trim();
@@ -20,16 +21,23 @@ export async function createTeller(
   financeInvariant(input.password.length >= 8, "Initial password must be at least 8 characters");
   financeInvariant(!await prisma.user.findUnique({ where: { email }, select: { id: true } }), "A user with this email already exists", "CONFLICT");
 
-  const provisioningAuth = createAuth({ allowSignUp: true, serverActions: false });
-  const result = await provisioningAuth.api.signUpEmail({ body: { name, email, password: input.password } });
-  try {
-    return await prisma.user.update({
+  financeInvariant(input.bankAccountId?.trim() || input.cashAccountId?.trim(), "At least one account is required");
+
+  // Credentials, user identity, and assignments either all commit or all roll back.
+  return prisma.$transaction(async (tx) => {
+    const provisioningAuth = createAuth({
+      allowSignUp: true, serverActions: false, databaseClient: tx, autoSignIn: false,
+    });
+    const result = await provisioningAuth.api.signUpEmail({ body: { name, email, password: input.password } });
+    const user = await tx.user.update({
       where: { id: result.user.id },
       data: { name, role: "TELLER", active: true },
     });
-  } finally {
-    await prisma.authSession.deleteMany({ where: { userId: result.user.id } });
-  }
+    await assignTellerAccounts(actor, {
+      userId: user.id, bankAccountId: input.bankAccountId, cashAccountId: input.cashAccountId,
+    }, tx);
+    return user;
+  }, { isolationLevel: "Serializable", timeout: 15000 });
 }
 
 export async function setTellerActive(actor: FinanceActor, userId: string, active: boolean) {

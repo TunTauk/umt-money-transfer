@@ -43,7 +43,7 @@ function fixture() {
       },
     },
     financialTransaction: {
-      async findUnique() { return stored; },
+      async findUnique({ where }: { where: { reference?: string } }) { return where.reference && stored?.reference !== where.reference ? null : stored; },
       async create({ data }: { data: Record<string, unknown> }) {
         creates.push(data);
         stored = { id: "transfer", status: "POSTED", postingVersion: 1, ...data };
@@ -109,7 +109,7 @@ globals.prisma = {
     return operation(db.tx);
   },
 };
-const { createInternalTransfer, editInternalTransfer } = await import("../../lib/finance/transactions");
+const { createInternalTransfer, createCapitalTransaction } = await import("../../lib/finance/transactions");
 globals.prisma = previousPrisma;
 
 const owner: FinanceActor = { id: "owner", role: "OWNER", active: true };
@@ -207,85 +207,43 @@ test("confirmation uses normalized amount, note and reference", async () => {
   await createInternalTransfer(owner, { ...input, amount: "100", note: "hello", confirmationKey: error.confirmationKey });
 });
 
-async function existingTransfer() {
+test("an opposite transfer offsets the original without editing its posting", async () => {
   db = fixture();
   db.seed("main-BANK", 100n);
-  await createInternalTransfer(owner, input);
-  db.clearWrites();
-}
-
-test("edit restores original source funds and reuses posting entries for reversal", async () => {
-  await existingTransfer();
-  const result = await editInternalTransfer(owner, "transfer", input);
-  assert.equal(result?.postingVersion, 2);
-  assert.equal(result?.reference, input.reference);
-  assert.equal(db.postingReads, 1);
-  assert.equal(db.revisions.length, 1);
-  assert.equal(db.ledgerWrites.length, 2);
-  assert.equal(db.ledgerWrites[0][1].side, "DEBIT");
-  assert.equal(db.ledgerWrites[0][1].amount, 100n);
-  const reads = db.balanceReads;
-  assert.strictEqual(await createInternalTransfer(owner, input), result);
-  assert.equal(db.balanceReads, reads);
+  const original = await createInternalTransfer(owner, input);
+  const snapshot = structuredClone(original);
+  const originalEntries = structuredClone(db.entries);
+  await createInternalTransfer(owner, { ...input, reference: "TRANSFER-REVERSAL", direction: "CHILD_TO_MAIN", note: `Reverses ${input.reference}` });
+  assert.deepEqual(original, snapshot);
+  assert.deepEqual(db.entries.slice(0, originalEntries.length), originalEntries);
+  assert.equal(db.updates.length, 0);
+  assert.equal(db.revisions.length, 0);
+  assert.equal(db.creates.length, 2);
+  const net = db.entries.filter((entry) => entry.financialAccountId === "child-BANK").reduce((sum, entry) => sum + (entry.side === "DEBIT" ? entry.amount : -entry.amount), 0n);
+  assert.equal(net, 0n);
 });
 
-test("edit warns on effective source balance before revision or ledger writes", async () => {
-  await existingTransfer();
-  const changed = { ...input, amount: "120" };
-  const error = await warning(editInternalTransfer(owner, "transfer", changed));
-  assert.match(error.message, /100 MMK.*120 MMK.*-20 MMK/);
-  await editInternalTransfer(owner, "transfer", { ...changed, confirmationKey: error.confirmationKey });
-  assert.equal(db.updates[0].amount, 120n);
-});
-
-test("switching edit direction removes original receipt from the new source balance", async () => {
-  await existingTransfer();
-  const changed = { ...input, direction: "CHILD_TO_MAIN" as const };
-  const error = await warning(editInternalTransfer(owner, "transfer", changed));
-  assert.match(error.message, /child BANK.*0 MMK.*100 MMK.*-100 MMK/);
-  await editInternalTransfer(owner, "transfer", { ...changed, confirmationKey: error.confirmationKey });
-});
-
-test("new edit source does not gain funds from an unrelated original posting", async () => {
-  await existingTransfer();
-  const changed = { ...input, direction: "CHILD_TO_MAIN" as const, childAccountId: "other-BANK" };
-  const error = await warning(editInternalTransfer(owner, "transfer", changed));
-  assert.match(error.message, /other BANK.*0 MMK/);
-  db.seed("other-BANK", 100n);
-  await editInternalTransfer(owner, "transfer", changed);
-});
-
-for (const change of ["balance", "version", "id"] as const) {
-  test(`edit confirmation becomes stale after ${change} changes`, async () => {
-    await existingTransfer();
-    const changed = { ...input, amount: "120" };
-    const first = await warning(editInternalTransfer(owner, "transfer", changed));
-    if (change === "balance") db.seed("main-BANK", -1n);
-    if (change === "version") {
-      db.patchStored({ postingVersion: 2 });
-      for (const entry of db.entries.filter((entry) => entry.transactionId === "transfer")) entry.postingVersion = 2;
-    }
-    if (change === "id") db.patchStored({ id: "other-transfer" });
-    const second = await warning(editInternalTransfer(owner, "transfer", { ...changed, confirmationKey: first.confirmationKey }));
-    assert.notEqual(second.confirmationKey, first.confirmationKey);
+for (const accountType of ["BANK", "CASH"] as const) {
+  test(`${accountType} opposite capital entry offsets the original without editing it`, async () => {
+    db = fixture();
+    const original = await createCapitalTransaction(owner, { reference: "CAPITAL-1", accountType, type: "CAPITAL_DEPOSIT", amount: "100" });
+    const snapshot = structuredClone(original);
+    await createCapitalTransaction(owner, { reference: "CAPITAL-REVERSAL", accountType, type: "CAPITAL_WITHDRAWAL", amount: "100", note: "Reverses CAPITAL-1" });
+    assert.deepEqual(original, snapshot);
+    assert.equal(db.updates.length, 0);
+    assert.equal(db.revisions.length, 0);
+    assert.equal(db.creates.length, 2);
+    const net = db.entries.filter((entry) => entry.financialAccountId === `main-${accountType}`).reduce((sum, entry) => sum + (entry.side === "DEBIT" ? entry.amount : -entry.amount), 0n);
+    assert.equal(net, 0n);
   });
 }
-
-test("edit cannot change reference and missing postings fail without writes", async () => {
-  await existingTransfer();
-  await assert.rejects(editInternalTransfer(owner, "transfer", { ...input, reference: "OTHER" }), /reference cannot be changed/);
-  noWrites();
-  db.entries.splice(1);
-  await assert.rejects(editInternalTransfer(owner, "transfer", input), /Current ledger posting is missing/);
-  noWrites();
-});
 
 test("confirmation never bypasses owner and active staff permissions", async () => {
   db = fixture();
   const error = await warning(createInternalTransfer(owner, input));
   const confirmed = { ...input, confirmationKey: error.confirmationKey };
   for (const actor of [{ ...owner, role: "TELLER" as const }, { ...owner, active: false }]) {
-    for (const operation of [createInternalTransfer(actor, confirmed), editInternalTransfer(actor, "transfer", confirmed)]) {
+    for (const operation of [createInternalTransfer(actor, confirmed)]) {
       await assert.rejects(operation, (error: unknown) => {
         assert.ok(error instanceof FinanceError);
         assert.equal(error.code, "FORBIDDEN");

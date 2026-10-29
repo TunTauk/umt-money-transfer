@@ -88,7 +88,7 @@ globals.prisma = {
     return operation(db.tx);
   },
 };
-const { createCashTransaction, editCashTransaction, deleteFinancialTransaction } = await import("../../lib/finance/transactions");
+const { createCashTransaction, cancelCashTransaction } = await import("../../lib/finance/transactions");
 globals.prisma = previousPrisma;
 
 const owner: FinanceActor = { id: "owner", role: "OWNER", active: true };
@@ -102,18 +102,12 @@ for (const type of ["CASH_IN", "CASH_OUT"] as const) {
   const receivingAccountId = type === "CASH_IN" ? "cash" : "bank";
   const payingAccountId = type === "CASH_IN" ? "bank" : "cash";
   const validInput = { ...input, type, receivingAccountId, payingAccountId };
-  test(`${type} rejects invalid phones on create and edit without financial changes`, async () => {
+  test(`${type} rejects invalid phones without financial changes`, async () => {
     for (const customerPhone of ["09abccd", "09", "09123456789abc"]) {
       db = fixture();
       await assert.rejects(createCashTransaction(owner, { ...validInput, customerPhone }), /complete Myanmar mobile number/);
       assert.equal(db.creates.length, 0);
-      const original = await createCashTransaction(owner, validInput);
-      await assert.rejects(editCashTransaction(owner, "transaction", { ...validInput, customerPhone }), /complete Myanmar mobile number/);
-      assert.equal(db.creates.length, 1);
-      assert.equal(db.updates.length, 0);
-      assert.equal(db.revisions.length, 0);
-      assert.equal(db.ledgerWrites.length, 0);
-      assert.strictEqual(await db.tx.financialTransaction.findUnique({ where: { id: "transaction" } }), original);
+
     }
   });
   for (const actor of [owner, teller]) {
@@ -144,41 +138,18 @@ for (const type of ["CASH_IN", "CASH_OUT"] as const) {
 
 for (const type of ["CASH_IN", "CASH_OUT"] as const) {
   for (const actor of [owner, teller]) {
-    for (const operation of ["CREATE", "EDIT"] as const) {
-      test(`${actor.role} rejects every wrong ${type} leg combination on ${operation} without writes`, async () => {
-        for (const receivingAccountId of ["bank", "cash"]) {
-          for (const payingAccountId of ["bank", "cash"]) {
-            if (receivingAccountId === (type === "CASH_IN" ? "cash" : "bank") &&
-                payingAccountId === (type === "CASH_IN" ? "bank" : "cash")) continue;
-            db = fixture();
-            const validInput = {
-              ...input, type,
-              receivingAccountId: type === "CASH_IN" ? "cash" : "bank",
-              payingAccountId: type === "CASH_IN" ? "bank" : "cash",
-            };
-            const old = operation === "EDIT" ? await createCashTransaction(actor, validInput) : null;
-            if (old) {
-              const posting = db.creates[0].ledgerEntries as { create: StoredEntry[] };
-              db.postings.push(...posting.create.map((entry, index) => ({ ...entry, id: `entry-${index}` })));
-            }
-            const originalPosting = structuredClone(db.postings);
-            const invalidInput = { ...input, type, receivingAccountId, payingAccountId };
-            await assert.rejects(operation === "CREATE"
-              ? createCashTransaction(actor, invalidInput)
-              : editCashTransaction(actor, "transaction", invalidInput),
-            actor.role === "TELLER" && operation === "EDIT"
-              ? /Owner permission required/
-              : /Active (bank|cash) account not found/);
-            assert.equal(db.creates.length, operation === "EDIT" ? 1 : 0);
-            assert.equal(db.updates.length, 0);
-            assert.equal(db.revisions.length, 0);
-            assert.equal(db.ledgerWrites.length, 0);
-            assert.deepEqual(db.postings, originalPosting);
-            assert.strictEqual(await db.tx.financialTransaction.findUnique({ where: { id: "transaction" } }), old);
-          }
+    test(`${actor.role} rejects wrong ${type} account legs before writing`, async () => {
+      for (const receivingAccountId of ["bank", "cash"]) {
+        for (const payingAccountId of ["bank", "cash"]) {
+          if (receivingAccountId === (type === "CASH_IN" ? "cash" : "bank") && payingAccountId === (type === "CASH_IN" ? "bank" : "cash")) continue;
+          db = fixture();
+          await assert.rejects(createCashTransaction(actor, { ...input, type, receivingAccountId, payingAccountId }), /Active (bank|cash) account not found/);
+          assert.equal(db.creates.length, 0);
+          assert.equal(db.updates.length, 0);
+          assert.equal(db.ledgerWrites.length, 0);
         }
-      });
-    }
+      }
+    });
   }
 }
 
@@ -259,55 +230,7 @@ test("deducted and zero-fee separate modes ignore fee accounts", async () => {
   }
 });
 
-for (const historical of ["nullable", "bank-bank", "bank-cash", "cash-bank", "cash-cash", "new"]) {
-  for (const type of ["CASH_IN", "CASH_OUT"] as const) {
-    test(`editing ${historical} ${type} audits account legs and reverses stored ledger`, async () => {
-      db = fixture();
-      const receivingAccountId = type === "CASH_IN" ? "cash" : "bank";
-      const payingAccountId = type === "CASH_IN" ? "bank" : "cash";
-      const old = await createCashTransaction(owner, { ...input, type, receivingAccountId, payingAccountId });
-      const sourceAccountId = historical === "nullable" ? null : historical === "new" ? payingAccountId : historical.split("-")[1];
-      const destinationAccountId = historical === "nullable" ? null : historical === "new" ? receivingAccountId : historical.split("-")[0];
-      db.setStored({ ...old, sourceAccountId, destinationAccountId });
-      db.postings.push(
-        { id: "entry-1", financialAccountId: destinationAccountId, systemAccount: historical === "nullable" ? "CUSTOMER_CLEARING" : null, side: "DEBIT", amount: 102n, memo: "Original receive" },
-        { id: "entry-2", financialAccountId: sourceAccountId ?? "bank", systemAccount: null, side: "CREDIT", amount: 100n, memo: "Original pay" },
-        { id: "entry-3", financialAccountId: null, systemAccount: "FEE_INCOME", side: "CREDIT", amount: 2n, memo: "Original fee" },
-      );
-      const originalPosting = structuredClone(db.postings);
-      const editedInput = { ...input, type, receivingAccountId: `other-${receivingAccountId}`, payingAccountId: `other-${payingAccountId}`, feeMode: "SEPARATE" as const, feeAccountId: "bank" };
-      const edited = await editCashTransaction(owner, "transaction", editedInput);
-      const before = db.revisions[0].before as Record<string, unknown>;
-      const after = db.revisions[0].after as Record<string, unknown>;
-      assert.equal(before.sourceAccountId, sourceAccountId);
-      assert.equal(before.destinationAccountId, destinationAccountId);
-      assert.equal(after.sourceAccountId, editedInput.payingAccountId);
-      assert.equal(after.destinationAccountId, editedInput.receivingAccountId);
-      assert.equal(edited?.sourceAccountId, editedInput.payingAccountId);
-      assert.equal(edited?.destinationAccountId, editedInput.receivingAccountId);
-      assert.equal(edited?.accountId, "other-bank");
-      assert.equal(edited?.postingVersion, 2);
-      assert.equal(db.ledgerWrites.length, 2);
-      for (const [index, original] of originalPosting.entries()) {
-        const reversed = db.ledgerWrites[0][index];
-        assert.equal(reversed.financialAccountId, original.financialAccountId);
-        assert.equal(reversed.systemAccount, original.systemAccount);
-        assert.equal(reversed.amount, original.amount);
-        assert.equal(reversed.side, original.side === "DEBIT" ? "CREDIT" : "DEBIT");
-        assert.equal(reversed.reversalOfId, original.id);
-        assert.equal(reversed.kind, "REVERSAL");
-      }
-      assert.deepEqual(db.postings, originalPosting);
-      assert.equal(db.ledgerWrites[1][0].financialAccountId, editedInput.receivingAccountId);
-      assert.equal(db.ledgerWrites[1][1].financialAccountId, editedInput.payingAccountId);
-      assert.equal(db.ledgerWrites[1][2].financialAccountId, "bank");
-      assert.ok(db.ledgerWrites[1].every((entry) => entry.postingVersion === 2));
-      assert.strictEqual(await createCashTransaction(owner, editedInput), edited);
-    });
-  }
-}
-
-test("deleting historical cash reverses stored entries without filling null account legs", async () => {
+test("cancelling historical cash reverses stored entries without filling null account legs", async () => {
   db = fixture();
   const old = await createCashTransaction(owner, input);
   db.setStored({ ...old, sourceAccountId: null, destinationAccountId: null });
@@ -315,11 +238,86 @@ test("deleting historical cash reverses stored entries without filling null acco
     { id: "receive", financialAccountId: null, systemAccount: "CUSTOMER_CLEARING", side: "DEBIT", amount: 100n, memo: "Legacy receive" },
     { id: "pay", financialAccountId: "bank", systemAccount: null, side: "CREDIT", amount: 100n, memo: "Legacy pay" },
   );
-  const deleted = await deleteFinancialTransaction(owner, "transaction");
+  const deleted = await cancelCashTransaction(owner, "transaction");
   assert.equal(deleted.sourceAccountId, null);
   assert.equal(deleted.destinationAccountId, null);
   assert.equal(db.ledgerWrites[0][0].systemAccount, "CUSTOMER_CLEARING");
   assert.equal(db.ledgerWrites[0][0].side, "CREDIT");
   assert.equal((db.revisions[0].before as Record<string, unknown>).sourceAccountId, null);
   assert.equal(db.updates[0].status, "DELETED");
+});
+
+for (const type of ["INTERNAL_TRANSFER", "CAPITAL_DEPOSIT", "CAPITAL_WITHDRAWAL"] as const) {
+  test(`${type} rejects cancellation without changing records or ledger`, async () => {
+    for (const status of ["POSTED", "DELETED"] as const) {
+      db = fixture();
+      db.setStored({ id: "immutable", type, status, postingVersion: 1 });
+      await assert.rejects(cancelCashTransaction(owner, "immutable"), { code: "FORBIDDEN" });
+      assert.equal(db.updates.length, 0);
+      assert.equal(db.revisions.length, 0);
+      assert.equal(db.ledgerWrites.length, 0);
+      assert.equal(db.creates.length, 0);
+    }
+  });
+}
+
+for (const type of ["CASH_IN", "CASH_OUT"] as const) {
+  for (const feeMode of ["DEDUCTED", "SEPARATE"] as const) {
+    test(`${type} cancellation exactly offsets principal and ${feeMode} fee and preserves the original`, async () => {
+      db = fixture();
+      const original = await createCashTransaction(owner, {
+        ...input, type, feeMode, feeAccountId: "cash",
+        receivingAccountId: type === "CASH_IN" ? "cash" : "bank",
+        payingAccountId: type === "CASH_IN" ? "bank" : "cash",
+      });
+      const snapshot = structuredClone(original);
+      const posting = db.creates[0].ledgerEntries as { create: StoredEntry[] };
+      db.postings.push(...posting.create.map((entry, index) => ({ ...entry, id: `entry-${index}` })));
+      const originalPosting = structuredClone(db.postings);
+      const cancelled = await cancelCashTransaction(owner, "transaction");
+      assert.deepEqual(original, snapshot);
+      assert.deepEqual(db.postings, originalPosting);
+      assert.equal(cancelled.status, "DELETED");
+      assert.equal(cancelled.deletedById, owner.id);
+      assert.ok(cancelled.deletedAt instanceof Date);
+      assert.equal(cancelled.amount, original.amount);
+      assert.equal(cancelled.feeAmount, original.feeAmount);
+      assert.equal(db.creates.length, 1);
+      assert.equal(db.updates.length, 1);
+      assert.equal(db.revisions.length, 1);
+      assert.equal(db.revisions[0].actorId, owner.id);
+      assert.equal((db.revisions[0].after as { operation: string }).operation, "CANCEL");
+      for (const [index, entry] of originalPosting.entries()) {
+        const reversal = db.ledgerWrites[0][index];
+        assert.equal(reversal.financialAccountId, entry.financialAccountId);
+        assert.equal(reversal.systemAccount, entry.systemAccount);
+        assert.equal(reversal.amount, entry.amount);
+        assert.equal(reversal.side, entry.side === "DEBIT" ? "CREDIT" : "DEBIT");
+        assert.equal(reversal.reversalOfId, entry.id);
+      }
+      assert.strictEqual(await cancelCashTransaction(owner, "transaction"), cancelled);
+      assert.equal(db.ledgerWrites.length, 1, "Repeated cancellation must not reverse twice");
+      assert.equal(db.revisions.length, 1);
+    });
+  }
+}
+
+test("only active owners can cancel cash transactions", async () => {
+  for (const actor of [teller, { ...owner, active: false }, { ...teller, active: false }]) {
+    db = fixture();
+    await assert.rejects(cancelCashTransaction(actor, "transaction"), { code: "FORBIDDEN" });
+    assert.equal(db.updates.length, 0);
+    assert.equal(db.revisions.length, 0);
+    assert.equal(db.ledgerWrites.length, 0);
+  }
+});
+
+test("missing transactions and missing postings fail before writes", async () => {
+  db = fixture();
+  await assert.rejects(cancelCashTransaction(owner, "missing"), { code: "NOT_FOUND" });
+  await createCashTransaction(owner, input);
+  await assert.rejects(cancelCashTransaction(owner, "transaction"), /Current ledger posting is missing/);
+  assert.equal(db.updates.length, 0);
+  assert.equal(db.revisions.length, 0);
+  assert.equal(db.ledgerWrites.length, 0);
 });

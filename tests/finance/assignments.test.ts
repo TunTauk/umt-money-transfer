@@ -210,3 +210,22 @@ test("only an active owner may manage assignments", async () => {
     assert.deepEqual(db.writes, []);
   }
 });
+
+test("initial assignments can share the user-creation transaction", async () => {
+  db = fixture();
+  const result = await assignTellerAccounts(owner, both, db.tx);
+  assert.equal(db.transactions, 0, "Must not open a separate transaction during teller creation");
+  assert.equal(result.length, 2);
+  assert.deepEqual(db.writes, ["upsert:BANK", "upsert:CASH"]);
+});
+
+test("initial assignments reject full accounts before assignment writes", async () => {
+  db = fixture();
+  db.assignments.push(
+    { userId: "staff-1", accountType: "BANK", financialAccountId: "bank", createdById: owner.id },
+    { userId: "staff-2", accountType: "BANK", financialAccountId: "bank", createdById: owner.id },
+  );
+  await assert.rejects(assignTellerAccounts(owner, both, db.tx), { code: "CONFLICT" });
+  assert.equal(db.transactions, 0);
+  assert.deepEqual(db.writes, []);
+});
